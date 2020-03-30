@@ -29,7 +29,7 @@ fargs = [fig, poly]
 apt._draw_cursor(ax, frames[0][0], frames[0][1])
 anim = FuncAnimation(fig, apt._update_frame_poly, frames=frames, fargs=fargs,
                      interval=400, repeat=False)
-anim.save(os.path.join(my_path, "atom_selector_gui.gif"), writer='imagemagick')
+anim.save(os.path.join(my_path, "atom_selector_gui.gif"), writer='pillow')
 plt.close(fig)
 
 #####
@@ -50,5 +50,5 @@ fargs = [fig, poly]
 apt._draw_cursor(ax, frames[0][0], frames[0][1])
 anim = FuncAnimation(fig, apt._update_frame_poly, frames=frames, fargs=fargs,
                      interval=400, repeat=False)
-anim.save(os.path.join(my_path, "atom_selector_invert_selection_gui.gif"), writer='imagemagick')
+anim.save(os.path.join(my_path, "atom_selector_invert_selection_gui.gif"), writer='pillow')
 plt.close(fig)
