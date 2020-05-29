@@ -241,7 +241,7 @@ class TestCenterOfMass:
     def test_compare_center_of_mass(self):
         from scipy.ndimage import center_of_mass
         rand = np.random.random((5, 5))
-        center_of_mass(rand) == afr.calculate_center_of_mass(rand)
+        assert center_of_mass(rand) == afr.calculate_center_of_mass(rand)
 
     def test_non_square0(self):
         image = np.zeros((40, 20))
