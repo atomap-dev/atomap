@@ -236,12 +236,12 @@ class TestCenterOfMass:
     def test_find_center(self):
         center = np.zeros((5, 5))
         center[1, 1] = 1
-        assert afr.calculate_center_of_mass(center) == (1, 1)
+        assert tuple(afr.calculate_center_of_mass(center)) == (1, 1)
 
     def test_compare_center_of_mass(self):
         from scipy.ndimage import center_of_mass
         rand = np.random.random((5, 5))
-        assert center_of_mass(rand) == afr.calculate_center_of_mass(rand)
+        assert center_of_mass(rand) == tuple(afr.calculate_center_of_mass(rand))
 
     def test_non_square0(self):
         image = np.zeros((40, 20))
@@ -258,6 +258,14 @@ class TestCenterOfMass:
         cy, cx = afr.calculate_center_of_mass(image)
         assert cy == float(y)
         assert cx == float(x)
+
+    def test_nd_2D_array(self):
+        image = np.zeros((2, 2, 40, 80))
+        y, x = 38, 11
+        image[:, :, y, x] = 10.
+        cy, cx = afr.calculate_center_of_mass(image).T
+        assert (cy == float(y)).all()
+        assert (cx == float(x)).all()
 
     def test_center_of_mass_dummy_data(self):
         sub = dd.get_distorted_cubic_sublattice()
