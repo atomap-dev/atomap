@@ -2843,3 +2843,23 @@ class Sublattice():
         pdf = an.pair_distribution_function(
                 image, self.atom_positions, n_bins, rel_range)
         return pdf
+    
+    def set_element_info(self, element, z):
+        """Set which atoms are present along atomic columns for all atoms in
+        the sublattice. This will set all atomic columns to have the same
+        atoms present. If you want to set elements for each atom individually
+        see Atom_Position.set_element_info().
+        
+        Parameters
+        ----------
+        element : str or list of str
+            elements contained in the atomic column.
+        z : list of floats
+
+        Examples
+        --------
+        >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
+        >>> sublattice.set_element_info("C", [0, 0.5])
+        """
+        
+        [atom.set_element_info(element, z) for atom in self.atom_list]
