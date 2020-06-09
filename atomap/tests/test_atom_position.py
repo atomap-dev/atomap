@@ -442,3 +442,14 @@ class TestEstimateLocalScanningDistortion:
                 image, radius=4, edge_skip=1)
         assert approx(scanning_distortions[0]) == 0.0
         assert approx(scanning_distortions[1]) != 0.0
+
+class TestAtomPositionElementInfo:
+    
+    def test_simple(self):
+        atom = Atom_Position(20, 10)
+        atom.set_element_info("C", [0., 0.5])
+        assert atom.element_info[0.] == "C"
+        
+        atom.set_element_info(["C","O"], [0., 0.5])
+        assert atom.element_info[0.] == "C"
+        assert atom.element_info[0.5] == "O"

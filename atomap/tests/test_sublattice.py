@@ -1303,3 +1303,11 @@ class TestEstimateLocalScanningDistortion:
         output1 = sublattice.estimate_local_scanning_distortion(edge_skip=1)
         assert output0[2] != output1[2]
         assert output0[3] != output1[3]
+
+class TestSublatticeElementInfo:
+    
+    def test_simple(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        sublattice.set_element_info("C", [0., 0.5])
+        assert sublattice.atom_list[0].element_info[0.] == "C"
+        assert sublattice.atom_list[0].element_info[0.5] == "C"
