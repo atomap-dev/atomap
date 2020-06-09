@@ -822,9 +822,9 @@ class Atom_Position:
         return atom_slice
 
     def set_element_info(self, element, z):
-        """Set which atoms are present along the atomic column at this atom 
+        """Set which atoms are present along the atomic column at this atom
         position.
-        
+
         Parameters
         ----------
         element : str or list of str
@@ -837,13 +837,13 @@ class Atom_Position:
         >>> atom = Atom_Position(x=15, y=10, sigma_x=5, sigma_y=3)
         >>> atom.set_element_info("C", [0, 0.5])
         """
-        
+
         self.element_info = {}
-        
-        if isinstance(element,str):
+
+        if isinstance(element, str):
             for zc in z:
                 self.element_info[zc] = element
-        elif isinstance(element,list):
+        elif isinstance(element, list):
             for i, zc in enumerate(z):
                 self.element_info[zc] = element[i]
         else:
