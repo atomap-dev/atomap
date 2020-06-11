@@ -127,19 +127,19 @@ class TestAtomLatticeInputOutput:
         al0_qualname = self.atom_lattice.__class__.__qualname__
         al1_qualname = atom_lattice_load.__class__.__qualname__
         assert al0_qualname == al1_qualname
-        
+
     def test_save_load_element_info(self):
         save_path = pjoin(self.tmpdir.name, "test_atomic_lattice_save.hdf5")
         sublattice0 = self.atom_lattice.sublattice_list[0]
-        sublattice0.set_element_info('C',[0., 0.5])
+        sublattice0.set_element_info('C', [0., 0.5])
         self.atom_lattice.save(
             filename=save_path, overwrite=True)
         atom_lattice_load = load_atom_lattice_from_hdf5(
                 save_path, construct_zone_axes=False)
-        
+
         el_info = atom_lattice_load.sublattice_list[0].atom_list[
             0].element_info
-        
+
         assert el_info[0.] == 'C'
         assert el_info[0.5] == 'C'
 

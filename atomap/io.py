@@ -73,7 +73,7 @@ def load_atom_lattice_from_hdf5(filename, construct_zone_axes=True):
                         sublattice.atom_list,
                         rotation_array):
                     atom.rotation = rotation
-            
+
             if 'element_info' in sublattice_set.keys():
                 for i, atom_column in enumerate(sublattice.atom_list):
                     atom_column.element_info = {}
@@ -235,7 +235,7 @@ def save_atom_lattice_to_hdf5(atom_lattice, filename, overwrite=False):
             zone_axis_names_byte.append(zone_axis_name.encode())
         h5f[subgroup_name].attrs[
                 'zone_axis_names_byte'] = zone_axis_names_byte
-        
+
         if hasattr(sublattice.atom_list[0], 'element_info'):
             subgroup = h5f[subgroup_name]
             el_info = subgroup.create_group('element_info')
