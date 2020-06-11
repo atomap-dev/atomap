@@ -2860,6 +2860,8 @@ class Sublattice():
         --------
         >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
         >>> sublattice.set_element_info("C", [0, 0.5])
+        >>> sublattice2 = am.dummy_data.get_simple_cubic_sublattice()
+        >>> sublattice2.set_element_info(["C", "O"], [0, 0.5])
         """
 
         [atom.set_element_info(element, z) for atom in self.atom_list]
