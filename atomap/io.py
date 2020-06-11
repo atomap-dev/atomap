@@ -73,6 +73,15 @@ def load_atom_lattice_from_hdf5(filename, construct_zone_axes=True):
                         sublattice.atom_list,
                         rotation_array):
                     atom.rotation = rotation
+            
+            if 'element_info' in sublattice_set.keys():
+                for i, atom_column in enumerate(sublattice.atom_list):
+                    atom_column.element_info = {}
+                    el_info = sublattice_set['element_info']
+                    for atom_z in el_info['atom'+str(i)].attrs:
+                        atom_column.element_info[
+                            float(atom_z)] = sublattice_set[
+                                'element_info']['atom'+str(i)].attrs[atom_z]
 
             sublattice.pixel_size = sublattice_set.attrs['pixel_size']
 
@@ -226,6 +235,14 @@ def save_atom_lattice_to_hdf5(atom_lattice, filename, overwrite=False):
             zone_axis_names_byte.append(zone_axis_name.encode())
         h5f[subgroup_name].attrs[
                 'zone_axis_names_byte'] = zone_axis_names_byte
+        
+        if hasattr(sublattice.atom_list[0], 'element_info'):
+            subgroup = h5f[subgroup_name]
+            el_info = subgroup.create_group('element_info')
+            for i, column in enumerate(sublattice.atom_list):
+                atom_grp = el_info.create_group('atom'+str(i))
+                for atom in column.element_info:
+                    atom_grp.attrs[str(atom)] = column.element_info[atom]
 
     if atom_lattice.image is not None:
         h5f.create_dataset(
