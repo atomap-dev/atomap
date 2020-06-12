@@ -175,7 +175,7 @@ class Atom_Lattice():
         --------
         >>> al = am.dummy_data.get_simple_atom_lattice_two_sublattices()
         >>> al.sublattice_list[0].set_element_info("C", [0.])
-        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [0., 0.5])
+        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [-2., 2.])
         >>> atoms = al.convert_to_ase()
 
         """

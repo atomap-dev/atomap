@@ -34,6 +34,7 @@ setup(
             'scikit-learn',
             'scikit-image>=0.13',
             'hyperspy>=1.5.2',
+            'ase'
             ],
         classifiers = [
             'Development Status :: 3 - Alpha',
