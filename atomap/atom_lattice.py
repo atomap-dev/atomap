@@ -162,6 +162,23 @@ class Atom_Lattice():
         return signal
 
     def convert_to_ase(self):
+        """
+        Convert the Atomlattice object to an Atoms object of the Atomic
+        Simulation Environment package. All Sublattices must have element_info
+        set.
+        
+        Returns
+        -------
+        atoms : ASE Atoms object
+
+        Examples
+        --------
+        >>> al = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        >>> al.sublattice_list[0].set_element_info("C", [0.])
+        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [0., 0.5])
+        >>> atoms = al.convert_to_ase()
+
+        """
         atoms = Atoms()
         for sublattice in self.sublattice_list:
             for atom_column in sublattice.atom_list:
