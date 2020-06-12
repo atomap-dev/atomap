@@ -4,6 +4,7 @@ from hyperspy.signals import Signal2D
 import atomap.atom_finding_refining as afr
 import atomap.plotting as pl
 import atomap.tools as at
+from ase import Atoms
 
 
 class Atom_Lattice():
@@ -159,6 +160,19 @@ class Atom_Lattice():
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
         return signal
+
+    def convert_to_ase(self):
+        atoms = Atoms()
+        for sublattice in self.sublattice_list:
+            for atom_column in sublattice.atom_list:
+                for atom in atom_column.element_info:
+                    new_atom = Atoms(atom_column.element_info[atom],
+                                     positions=[(
+                                         atom_column.pixel_x,
+                                         atom_column.pixel_y,
+                                         atom)])
+                    atoms += new_atom
+        return(atoms)
 
     def save(self, filename=None, overwrite=False):
         """
