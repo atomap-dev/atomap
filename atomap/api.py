@@ -14,3 +14,4 @@ import atomap.dummy_data as dummy_data
 import atomap.example_data as example_data
 
 import atomap.quantification as quant
+from convert_ase import load_ase
