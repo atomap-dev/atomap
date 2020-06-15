@@ -165,7 +165,7 @@ class Atom_Lattice():
         """
         Convert the Atomlattice object to an Atoms object of the Atomic
         Simulation Environment package. All Sublattices must have element_info
-        set.
+        set. All sublattices must have the correct scale set (in Angstroms).
         
         Returns
         -------
@@ -185,8 +185,8 @@ class Atom_Lattice():
                 for atom in atom_column.element_info:
                     new_atom = Atoms(atom_column.element_info[atom],
                                      positions=[(
-                                         atom_column.pixel_x,
-                                         atom_column.pixel_y,
+                                         atom_column.pixel_x*sublattice.scale,
+                                         atom_column.pixel_y*sublattice.scale,
                                          atom)])
                     atoms += new_atom
         return(atoms)
