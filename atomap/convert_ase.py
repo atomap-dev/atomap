@@ -81,9 +81,11 @@ def load_ase(atoms, image_size=(1024, 1024), gaussian_blur=3):
     for lattice in sublattice_list:
         for atom in lattice.atom_list:
             atom.set_element_info(columns[(atom.pixel_x*axes_dict[0]['scale'],
-                                           atom.pixel_y*axes_dict[1]['scale'])][1],
+                                           atom.pixel_y*axes_dict[1][
+                                               'scale'])][1],
                                   columns[(atom.pixel_x*axes_dict[0]['scale'],
-                                           atom.pixel_y*axes_dict[1]['scale'])][0])
+                                           atom.pixel_y*axes_dict[1][
+                                               'scale'])][0])
 
     atomlattice = atom_lattice.Atom_Lattice(image=image,
                                             sublattice_list=sublattice_list)
