@@ -185,9 +185,9 @@ class Atom_Lattice():
                 for atom in atom_column.element_info:
                     new_atom = Atoms(atom_column.element_info[atom],
                                      positions=[(
-                                         atom_column.pixel_x*
+                                         atom_column.pixel_x *
                                          sublattice.pixel_size,
-                                         atom_column.pixel_y*
+                                         atom_column.pixel_y *
                                          sublattice.pixel_size,
                                          atom)])
                     atoms += new_atom
