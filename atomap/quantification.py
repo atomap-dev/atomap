@@ -459,7 +459,13 @@ def _plot_fitted_hist(intensities, model, rgb, sort_indices, bins=50):
     fig.show()
 
 
-def statistical_quant(image, sublattice, model, num_atoms, plot=True):
+def statistical_quant(image,
+                      sublattice,
+                      model,
+                      max_atom_nums,
+                      frac_bond_length,
+                      element,
+                      plot=True):
     """Use the statistical quantification technique to estimate the number of
     atoms within each atomic column in an ADF-STEM image.
 
@@ -470,7 +476,7 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
     image : Hyperspy Signal object or array-like
     sublattice : Sublattice object
     model : GaussianMixture model object
-    num_atoms : int
+    max_atom_nums : int
         Number of atoms in longest atomic column as determined using the
         plot_statistical_quant_criteria() function.
     plot : bool, default True
@@ -491,7 +497,7 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
     >>> sublattice.refine_atom_positions_using_2d_gaussian()
     >>> models = am.quant.get_statistical_quant_criteria([sublattice], 10)
     >>> sub_lattices = am.quant.statistical_quant(s, sublattice,
-    ...                                           models[3], 4, plot=False)
+    ...                                           models[3], 4, 0.15, 'C')
     """
     # Get array of intensities of Gaussians of each atom
     intensities = [2*np.pi*atom.amplitude_gaussian*atom.sigma_x*atom.sigma_y
@@ -507,7 +513,7 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
     labels = model.predict(int_array)
 
     dic = {}
-    for i in range(num_atoms):
+    for i in range(max_atom_nums):
         dic[int(sort_indices[i])] = i
 
     sorted_labels = np.copy(labels)
@@ -515,7 +521,7 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
         sorted_labels[labels == k] = v
 
     from matplotlib import cm
-    x = np.linspace(0.0, 1.0, num_atoms)
+    x = np.linspace(0.0, 1.0, max_atom_nums)
     rgb = cm.get_cmap('viridis')(x)[np.newaxis, :, :3].tolist()
 
     sub_lattices = {}
@@ -526,7 +532,7 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
                 atom_positions[np.where(sorted_labels == num)],
                 image=np.array(image.data), color=rgb[0][num])
 
-    for i in range(num_atoms):
+    for i in range(max_atom_nums):
         sublattice_list.append(sub_lattices[i])
 
     atom_lattice = Atom_Lattice(image=np.array(image.data), name='quant',
@@ -535,5 +541,11 @@ def statistical_quant(image, sublattice, model, num_atoms, plot=True):
     if plot:
         atom_lattice.plot()
         _plot_fitted_hist(int_array, model, rgb, sort_indices)
+
+    list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
+
+    for atom in sublattice.atom_list:
+        for num in range(1, max_atom_nums):
+            atom.set_element_info(element, list_of_z[0:num])
 
     return(atom_lattice)
