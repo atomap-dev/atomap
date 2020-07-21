@@ -500,6 +500,11 @@ def statistical_quant(image,
     >>> sublattice.atom_list[0].element_info
     {0.125: 'C', 0.375: 'C', 0.625: 'C', 0.875: 'C'}
 
+    Setting max_atom_nums as 8:
+
+    >>> sub_lattices = am.quant.statistical_quant(
+    ...     s, sublattice, models[3], 8, 'C', plot=False)
+
     """
     # Get array of intensities of Gaussians of each atom
     intensities = [2*np.pi*atom.amplitude_gaussian*atom.sigma_x*atom.sigma_y
@@ -515,7 +520,7 @@ def statistical_quant(image,
     labels = model.predict(int_array)
 
     dic = {}
-    for i in range(max_atom_nums):
+    for i in range(model.n_components):
         dic[int(sort_indices[i])] = i
 
     sorted_labels = np.copy(labels)
@@ -525,6 +530,7 @@ def statistical_quant(image,
     from matplotlib import cm
     x = np.linspace(0.0, 1.0, max_atom_nums)
     rgb = cm.get_cmap('viridis')(x)[np.newaxis, :, :3].tolist()
+    rgb[0] = rgb[0][-model.n_components:]
 
     sub_lattices = {}
     sublattice_list = []
@@ -534,7 +540,7 @@ def statistical_quant(image,
                 atom_positions[np.where(sorted_labels == num)],
                 image=np.array(image.data), color=rgb[0][num])
 
-    for i in range(max_atom_nums):
+    for i in range(model.n_components):
         sublattice_list.append(sub_lattices[i])
 
     atom_lattice = Atom_Lattice(image=np.array(image.data), name='quant',
@@ -545,8 +551,8 @@ def statistical_quant(image,
         _plot_fitted_hist(int_array, model, rgb, sort_indices)
 
     list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
-
-    for atom, count in zip(sublattice.atom_list, sorted_labels+1):
+    atom_count = (sorted_labels+1) + (max_atom_nums - model.n_components)
+    for atom, count in zip(sublattice.atom_list, atom_count):
         atom.set_element_info(element, list_of_z[0:count])
 
     return(atom_lattice)

@@ -100,7 +100,7 @@ class TestStatisticalQuant:
         models = quant.get_statistical_quant_criteria([self.sublattice], 10)
         atom_lattice = quant.statistical_quant(self.tdata.signal,
                                                self.sublattice, models[3], 4,
-                                               plot=False)
+                                               'C', plot=False)
 
         assert len(atom_lattice.sublattice_list[0].atom_list) == 39
         assert len(atom_lattice.sublattice_list[1].atom_list) == 52
