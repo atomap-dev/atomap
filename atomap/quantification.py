@@ -463,7 +463,6 @@ def statistical_quant(image,
                       sublattice,
                       model,
                       max_atom_nums,
-                      frac_bond_length,
                       element,
                       plot=True):
     """Use the statistical quantification technique to estimate the number of
@@ -496,8 +495,8 @@ def statistical_quant(image,
     >>> sublattice.construct_zone_axes()
     >>> sublattice.refine_atom_positions_using_2d_gaussian()
     >>> models = am.quant.get_statistical_quant_criteria([sublattice], 10)
-    >>> sub_lattices = am.quant.statistical_quant(s, sublattice,
-    ...                                           models[3], 4, 0.15, 'C')
+    >>> sub_lattices = am.quant.statistical_quant(
+    ...     s, sublattice, models[3], 4, 'C')
     """
     # Get array of intensities of Gaussians of each atom
     intensities = [2*np.pi*atom.amplitude_gaussian*atom.sigma_x*atom.sigma_y
@@ -544,8 +543,7 @@ def statistical_quant(image,
 
     list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
 
-    for atom in sublattice.atom_list:
-        for num in range(1, max_atom_nums):
-            atom.set_element_info(element, list_of_z[0:num])
+    for atom, count in zip(sublattice.atom_list, sorted_labels+1):
+        atom.set_element_info(element, list_of_z[0:count])
 
     return(atom_lattice)
