@@ -100,11 +100,12 @@ Once you have determined the number of Gaussians in your Gaussian mixture model,
 .. code-block:: python
 
     >>> model = models[3] # 4th model
-    >>> atom_lattice = am.quant.statistical_quant(sublattice.image, sublattice, model, 4)
+    >>> atom_lattice = am.quant.statistical_quant(sublattice, model, 4, 'C')
 
 The function returns an ``Atom_Lattice`` object, in which each ``Sublattice`` corresponds to atomic columns of different atomic number.
 If plotting is selected (as it is by default) this plots the histogram of column intensities with the Gaussian mixture model overlayed.
 It also displays the image of the particle with sublattices coloured differently to indicate number of atoms in each column.
+Finally, it will set the ``element_info`` attribute for each ``Atom_Position``, which includes the element and z coordinates.
 
 .. figure:: images/quant/quant_output1a.png
     :scale: 50 %
