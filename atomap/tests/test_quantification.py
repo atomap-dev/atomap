@@ -105,3 +105,9 @@ class TestStatisticalQuant:
         assert len(atom_lattice.sublattice_list[1].atom_list) == 52
         assert len(atom_lattice.sublattice_list[2].atom_list) == 52
         assert len(atom_lattice.sublattice_list[3].atom_list) == 13
+
+        # confirm sublattice.element_info has been assigned correctly
+        assert(self.sublattice.atom_list[0].element_info ==
+               {0.125: 'C', 0.375: 'C', 0.625: 'C', 0.875: 'C'})
+        assert len(self.sublattice.atom_list[0].element_info) == 4
+        assert self.sublattice.atom_list[0].element_info[0.125] == 'C'
