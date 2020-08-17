@@ -19,6 +19,47 @@ A Gaussian mixture model is then fit to this distribution, with each Gaussian co
 Absolute Integrator
 ===================
 
+The absolute integrator function expects signals in the form of HyperSpy Signal2Ds where the Signal dimension looks like an atomic lattice. The Voronoi integrator function can take additional dimensions (such as EDS, EELS or 4D-STEM) as navigation dimensions. The Watershed integrator can only take 2D-datasets.
+
+As an example using the `nanoparticle dataset <https://gitlab.com/atomap/atomap_demos/-/blob/release/nanoparticle_example_notebook/simulated_nanoparticle.tif>`_ from the `Atomap-demos repository <https://gitlab.com/atomap/atomap_demos/-/tree/release>`_, we can integrate over the atomic columns, letting the Voronoi cells expand infinitely.
+
+.. code-block:: python
+
+    >>> s = hs.load('simulated_nanoparticle.tif')
+    >>> points_x, points_y = am.get_atom_positions(s, separation=4).T
+    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y, )
+    >>> i_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle1.png
+    :scale: 70 %
+    :align: center
+
+The infinitely expanding cells make it difficult for the eye to interpret the image. There are two ways to handle this:
+One can remove any cells that exist a certain distance from the image border, effectively removing one layer of atoms around the nanoparticle. This functionality is also optionally callable from the integrate function with ``remove_edge_cells=True``.
+
+.. code-block:: python
+
+    >>> from atomap.tools import remove_integrated_edge_cells
+    >>> integrated_intensity, intensity_record, point_record = remove_integrated_edge_cells(integrated_intensity, intensity_record, point_record, edge_pixels=30)
+    >>> i_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle_remove_edge.png
+    :scale: 70 %
+    :align: center
+
+Alternatively one can specify the ``max_radius`` argument in order to limit the growth of the Voronoi cells:
+
+.. code-block:: python
+
+    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y, max_radius=5)
+    >>> i_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle_max_radius.png
+    :scale: 70 %
+    :align: center
+
+The ``integrated_intensity`` object contains a numpy array of intensities. The intensities refer to the atomic columns by their array index, and the indices can be visualised in the ``points_record`` object.
+
 The following section describes methods incorporated from the AbsoluteIntegrator code for normalisation and quantification of ADF STEM images.
 
 .. For a full example please see the notebook in the Atomap-demos repository: https://gitlab.com/atomap/atomap_demos/adf_quantification
