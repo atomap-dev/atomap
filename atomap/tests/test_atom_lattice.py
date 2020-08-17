@@ -71,7 +71,7 @@ class TestAtomLatticeIntegrate:
         results = atom_lattice.integrate_column_intensity()
         assert len(results[0]) == len(atom_lattice.x_position)
         assert atom_lattice.image.shape == results[1].data.shape
-        assert atom_lattice.image.shape == results[2].shape
+        assert atom_lattice.image.shape == results[2].data.shape
 
 
 class TestAtomLatticePlot:

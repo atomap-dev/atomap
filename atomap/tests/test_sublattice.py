@@ -1013,7 +1013,7 @@ class TestSubLatticeIntegrate:
         results = sublattice.integrate_column_intensity()
         assert len(results[0]) == len(sublattice.x_position)
         assert sublattice.image.shape == results[1].data.shape
-        assert sublattice.image.shape == results[2].shape
+        assert sublattice.image.shape == results[2].data.shape
 
 
 class TestProjectPropertyLineCrossing:

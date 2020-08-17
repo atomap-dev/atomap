@@ -35,6 +35,7 @@ setup(
             'scikit-image>=0.13',
             'hyperspy>=1.5.2',
             'ase>=3.17.0'
+            'numba'
             ],
         classifiers = [
             'Development Status :: 3 - Alpha',
