@@ -1,4 +1,4 @@
-from atomap.convert_ase import load_ase
+from atomap.convert_ase import ase_to_atom_lattice
 from ase.cluster import Octahedron
 import math
 
@@ -7,7 +7,7 @@ class TestASEImport:
 
     def test_simple(self):
         atoms = Octahedron('Ag', 5, cutoff=2)
-        atomlattice = load_ase(atoms, (128, 128), gaussian_blur=1)
+        atomlattice = ase_to_atom_lattice(atoms, (128, 128), gaussian_blur=1)
 
         assert atomlattice.sublattice_list[0].atom_list[0].pixel_x == 0.0
         assert math.isclose(atomlattice.sublattice_list[

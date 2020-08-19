@@ -18,12 +18,19 @@ For example:
 .. code-block:: python
 
     >>> import atomap.api as am
-    >>> atom_lattice = am.load_atom_lattice_from_hdf5("fantasite.hdf5")
+    >>> atom_lattice = am.dummy_data.get_fantasite_atom_lattice()
     >>> atom_lattice.sublattice_list[0].set_element_info('Sr', [0.5])
     >>> atom_lattice.sublattice_list[1].set_element_info(['Ti', 'O'], [0.0, 1.0])
     >>> atoms = atom_lattice.convert_to_ase()
 
 The converted Atoms object can now be saved as an atomic structure file (xyz, cif, etc...), can be visualized in 3D and can be input to atomistic simulations.
+
+Visualization of atomic structure in 3D:
+
+.. code-block:: python
+
+    >>> from ase.visualize import view
+    view(atoms) # doctest: +SKIP
 
 Note: In order to accurately convert an atomic structure, the :py:attr:`~atomap.sublattice.Sublattice.pixel_size` attribute must be set correctly for each :py:class:`~atomap.sublattice.Sublattice`.
 
@@ -39,4 +46,4 @@ For example, to import a nanoparticle example dataset from ASE:
     >>> import atomap.api as am
     >>> from ase.cluster import Octahedron
     >>> atoms = Octahedron('Ag', 5, cutoff=2)
-    >>> atomlattice = am.load_ase(atoms, (128, 128), gaussian_blur=1)
+    >>> atomlattice = am.ase_to_atom_lattice(atoms, (128, 128), gaussian_blur=1)

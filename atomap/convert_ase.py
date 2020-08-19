@@ -5,7 +5,7 @@ import numpy as np
 import hyperspy.api as hs
 
 
-def load_ase(atoms, image_size=(1024, 1024), gaussian_blur=3):
+def ase_to_atom_lattice(atoms, image_size=None, gaussian_blur=3):
     """
     Load Atom_lattice object from an ASE Atoms object.
 
@@ -27,6 +27,9 @@ def load_ase(atoms, image_size=(1024, 1024), gaussian_blur=3):
     >>> atomlattice = load_ase(atoms)
 
     """
+
+    if image_size is None:
+        image_size = (1024, 1024)
 
     columns = {}
     for atom in atoms:
@@ -95,9 +98,12 @@ def load_ase(atoms, image_size=(1024, 1024), gaussian_blur=3):
 
 def _generate_image_from_ase(
         atoms,
-        image_size=(1024, 1024),
+        image_size=None,
         gaussian_blur=3):
     image_array = np.zeros(image_size)
+
+    if image_size is None:
+        image_size = (1024, 1024)
 
     offset_axis0 = atoms.positions[:, 0].min()
     offset_axis1 = atoms.positions[:, 1].min()
