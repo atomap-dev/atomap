@@ -4,6 +4,7 @@ from hyperspy.signals import Signal2D
 import atomap.atom_finding_refining as afr
 import atomap.plotting as pl
 import atomap.tools as at
+from ase import Atoms
 
 
 class Atom_Lattice():
@@ -159,6 +160,38 @@ class Atom_Lattice():
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
         return signal
+
+    def convert_to_ase(self):
+        """
+        Convert the Atomlattice object to an Atoms object of the Atomic
+        Simulation Environment package. All Sublattices must have element_info
+        set. All sublattices must have the correct scale set (in Angstroms).
+
+        Returns
+        -------
+        atoms : ASE Atoms object
+
+        Examples
+        --------
+        >>> al = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        >>> al.sublattice_list[0].set_element_info("C", [0.])
+        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [-2., 2.])
+        >>> atoms = al.convert_to_ase()
+
+        """
+        atoms = Atoms()
+        for sublattice in self.sublattice_list:
+            for atom_column in sublattice.atom_list:
+                for atom in atom_column.element_info:
+                    new_atom = Atoms(atom_column.element_info[atom],
+                                     positions=[(
+                                         atom_column.pixel_x *
+                                         sublattice.pixel_size,
+                                         atom_column.pixel_y *
+                                         sublattice.pixel_size,
+                                         atom)])
+                    atoms += new_atom
+        return(atoms)
 
     def save(self, filename=None, overwrite=False):
         """

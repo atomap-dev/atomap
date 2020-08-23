@@ -109,6 +109,26 @@ class TestAtomLatticeSignalProperty:
         assert signal.axes_manager.signal_axes[1].scale == 0.2
 
 
+class TestAtomLatticeASEConversion:
+
+    def test_simple(self):
+        sublattice = am.Sublattice([[10, 10], ], np.ones((20, 20)),
+                                   pixel_size=0.2)
+        sublattice.set_element_info('C', [0.1, 0.5])
+        atom_lattice = am.Atom_Lattice(np.ones((100, 100)),
+                                       sublattice_list=[sublattice])
+        atoms = atom_lattice.convert_to_ase()
+
+        assert atoms[0].x == 2.0
+        assert atoms[0].y == 2.0
+        assert atoms[0].z == 0.1
+        assert atoms[0].symbol == 'C'
+        assert atoms[1].x == 2.0
+        assert atoms[1].y == 2.0
+        assert atoms[1].z == 0.5
+        assert atoms[1].symbol == 'C'
+
+
 class TestDumbbellLatticeInit:
 
     def test_empty(self):
