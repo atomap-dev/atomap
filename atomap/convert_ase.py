@@ -22,9 +22,9 @@ def ase_to_atom_lattice(atoms, image_size=None, gaussian_blur=3):
     Examples
     --------
     >>> from ase.cluster import Octahedron
-    >>> from atomap.convert_ase import load_ase
-    >>> atoms = Octahedron('Ag', 5, cutoff=2)
-    >>> atomlattice = load_ase(atoms)
+    >>> from atomap.convert_ase import ase_to_atom_lattice
+    >>> atoms = Octahedron('Ag', 10, cutoff=2)
+    >>> atomlattice = ase_to_atom_lattice(atoms)
 
     """
 

@@ -30,7 +30,7 @@ Visualization of atomic structure in 3D:
 .. code-block:: python
 
     >>> from ase.visualize import view
-    view(atoms) # doctest: +SKIP
+    >>> view(atoms) # doctest: +SKIP
 
 Note: In order to accurately convert an atomic structure, the :py:attr:`~atomap.sublattice.Sublattice.pixel_size` attribute must be set correctly for each :py:class:`~atomap.sublattice.Sublattice`.
 
