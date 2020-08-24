@@ -45,5 +45,5 @@ For example, to import a nanoparticle example dataset from ASE:
 
     >>> import atomap.api as am
     >>> from ase.cluster import Octahedron
-    >>> atoms = Octahedron('Ag', 5, cutoff=2)
+    >>> atoms = Octahedron('Ag', 10, cutoff=2)
     >>> atomlattice = am.ase_to_atom_lattice(atoms, (128, 128), gaussian_blur=1)
