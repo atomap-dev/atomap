@@ -204,9 +204,9 @@ class Atom_Plane():
         >>> sublattice.construct_zone_axes()
         >>> atom_plane = sublattice.atom_plane_list[10]
         >>> pos_distance = atom_plane.position_distance_to_neighbor()
-        >>> x_pos = pos_distance[0]
-        >>> y_pos = pos_distance[1]
-        >>> distance = pos_distance[2]
+        >>> x_pos = pos_distance[:, 0]
+        >>> y_pos = pos_distance[:, 1]
+        >>> distance = pos_distance[:, 2]
         """
         atom_distances = []
         if len(self.atom_list) < 2:

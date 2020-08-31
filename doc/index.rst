@@ -60,6 +60,7 @@ Contents on this webpage
    automation
    examples
    quantification
+   working_with_atomic_models
    nanoparticle_example
    quantify_scan_distortions
    make_testdata

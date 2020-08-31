@@ -17,6 +17,7 @@ requirements:
     - matplotlib
     - ipython
     - hyperspy
+    - ase
   run:
     - python
     - h5py
@@ -25,3 +26,4 @@ requirements:
     - matplotlib
     - ipython
     - hyperspy
+    - ase
