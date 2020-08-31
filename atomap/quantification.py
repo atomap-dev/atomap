@@ -460,7 +460,7 @@ def _plot_fitted_hist(intensities, model, truncated_cmap,
     fig.show()
 
 
-def statistical_quant(sublattice, model, max_atom_nums, element,
+def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
                       image=None, plot=True, cmap='viridis'):
     """Use the statistical quantification technique to estimate the number of
     atoms within each atomic column in an ADF-STEM image.
@@ -476,6 +476,11 @@ def statistical_quant(sublattice, model, max_atom_nums, element,
         get_statistical_quant_criteria() function.
     element : str or list of str
         elements contained in the atomic column.
+    z_spacing : float
+        The distance between each atom in the z direction. If set to a single
+        value, the z_spacing will all be set to that value. Note that if
+        z_spacing is set to None, then the z coordinates will be fractional,
+        i.e., set equally between 0 and 1.
     image : Hyperspy Signal2D object or array-like, optional
     plot : bool, default True
     cmap : Matplotlib colormap, default 'viridis'
@@ -498,15 +503,18 @@ def statistical_quant(sublattice, model, max_atom_nums, element,
     >>> sublattice.construct_zone_axes()
     >>> sublattice.refine_atom_positions_using_2d_gaussian()
     >>> models = am.quant.get_statistical_quant_criteria([sublattice], 10)
+    >>> element, z_spacing = 'C', 2.4
     >>> atom_lattice_quant = am.quant.statistical_quant(
-    ...     sublattice, models[3], 4, 'C', plot=False)
+    ...     sublattice, models[3], 4, element, z_spacing, plot=False)
     >>> sublattice.atom_list[0].element_info
-    {0.125: 'C', 0.375: 'C', 0.625: 'C', 0.875: 'C'}
+    {0.0: 'C', 2.4: 'C', 4.8: 'C', 7.2: 'C'}
 
     Setting max_atom_nums as 8, resulting in columns of 8, 7, 6, and 5:
 
     >>> atom_lattice_quant = am.quant.statistical_quant(
-    ...     sublattice, models[3], 8, 'C', plot=False)
+    ...     sublattice, models[3], 8, element, z_spacing, plot=False)
+    >>> sublattice.atom_list[0].element_info
+    {9.6: 'C', 12.0: 'C', 14.4: 'C', 16.8: 'C'}
 
     """
     # Get array of intensities of Gaussians of each atom
@@ -554,8 +562,15 @@ def statistical_quant(sublattice, model, max_atom_nums, element,
     # future addition: building model from top/bottom/centre
     # if built from bottom: list_of_z[0:count]
     # if built from top   : list_of_z[max_num_atoms-count:]
-    list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
-    atom_count = (sorted_labels+1) + (max_atom_nums - model.n_components)
+    if z_spacing is None:
+        list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
+    else:
+        list_of_z = np.arange(
+            max_atom_nums-model.n_components, max_atom_nums).tolist()
+        list_of_z = [i*z_spacing for i in list_of_z]
+
+    list_of_z = [round(i, 6) for i in list_of_z]
+    atom_count = (sorted_labels+1) + (max_atom_nums-model.n_components)
     for atom, count in zip(sublattice.atom_list, atom_count):
         atom.set_element_info(element, list_of_z[0:count])
 

@@ -99,7 +99,7 @@ class TestStatisticalQuant:
     def test_statistical_method(self):
         models = quant.get_statistical_quant_criteria([self.sublattice], 10)
         atom_lattice = quant.statistical_quant(self.sublattice, models[3], 4,
-                                               'C', plot=False)
+                                               'C', 3.5, plot=False)
 
         assert len(atom_lattice.sublattice_list[0].atom_list) == 39
         assert len(atom_lattice.sublattice_list[1].atom_list) == 52
@@ -108,6 +108,6 @@ class TestStatisticalQuant:
 
         # confirm sublattice.element_info has been assigned correctly
         assert(self.sublattice.atom_list[0].element_info ==
-               {0.125: 'C', 0.375: 'C', 0.625: 'C', 0.875: 'C'})
+               {0: 'C', 3.5: 'C', 7.0: 'C', 10.5: 'C'})
         assert len(self.sublattice.atom_list[0].element_info) == 4
-        assert self.sublattice.atom_list[0].element_info[0.125] == 'C'
+        assert self.sublattice.atom_list[0].element_info[7.0] == 'C'
