@@ -461,7 +461,8 @@ def _plot_fitted_hist(intensities, model, truncated_cmap,
 
 
 def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
-                      image=None, plot=True, cmap='viridis'):
+                      z_ordering="bottom", image=None, plot=True,
+                      cmap='viridis'):
     """Use the statistical quantification technique to estimate the number of
     atoms within each atomic column in an ADF-STEM image.
 
@@ -481,6 +482,10 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
         value, the z_spacing will all be set to that value. Note that if
         z_spacing is set to None, then the z coordinates will be fractional,
         i.e., set equally between 0 and 1.
+    z_ordering : str, default "bottom"
+        Determins whether the atomic columns are built from the bottom, top or
+        center of the unit cell. Options are "bottom", "top" and "center".
+        "centre" is useful for spherical nanoparticles, for example.
     image : Hyperspy Signal2D object or array-like, optional
     plot : bool, default True
     cmap : Matplotlib colormap, default 'viridis'
@@ -504,8 +509,8 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     >>> sublattice.refine_atom_positions_using_2d_gaussian()
     >>> models = am.quant.get_statistical_quant_criteria([sublattice], 10)
     >>> element, z_spacing = 'C', 2.4
-    >>> atom_lattice_quant = am.quant.statistical_quant(
-    ...     sublattice, models[3], 4, element, z_spacing, plot=False)
+    >>> atom_lattice_quant = am.quant.statistical_quant(sublattice,
+    ...     models[3], 4, element, z_spacing, z_ordering="bottom", plot=False)
     >>> sublattice.atom_list[0].element_info
     {0.0: 'C', 2.4: 'C', 4.8: 'C', 7.2: 'C'}
 
@@ -515,6 +520,14 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     ...     sublattice, models[3], 8, element, z_spacing, plot=False)
     >>> sublattice.atom_list[0].element_info
     {9.6: 'C', 12.0: 'C', 14.4: 'C', 16.8: 'C'}
+
+    Convert the sublattice to an ASE Atoms object for visualisation:
+
+    >>> sublattice.pixel_size = 0.1
+    >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
+    >>> atoms = atom_lattice_1.convert_to_ase()
+    >>> from ase.visualize import view
+    >>> view(atoms)
 
     """
     # Get array of intensities of Gaussians of each atom
@@ -559,9 +572,6 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
         atom_lattice.plot()
         _plot_fitted_hist(int_array, model, truncated_cmap, sort_indices)
 
-    # future addition: building model from top/bottom/centre
-    # if built from bottom: list_of_z[0:count]
-    # if built from top   : list_of_z[max_num_atoms-count:]
     if z_spacing is None:
         list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
     else:
@@ -572,6 +582,21 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     list_of_z = [round(i, 6) for i in list_of_z]
     atom_count = (sorted_labels+1) + (max_atom_nums-model.n_components)
     for atom, count in zip(sublattice.atom_list, atom_count):
-        atom.set_element_info(element, list_of_z[0:count])
+        if "bottom" in z_ordering.lower():
+            atom.set_element_info(element, list_of_z[0:count])
+        elif "top" in z_ordering.lower():
+            atom.set_element_info(element, list_of_z[
+                max_atom_nums-count:])
+        elif "center" in z_ordering.lower():
+            unit_cell_height = list_of_z[-1] + (z_spacing/2)
+            cen_list_of_z = np.asarray(list_of_z)
+            # adds half the distance from the top atom to the top of the
+            # unit cell to each atom coordinate.
+            cen_list_of_z = cen_list_of_z + (
+                unit_cell_height - np.max(cen_list_of_z[0:count])) / 2
+            atom.set_element_info(element, list(cen_list_of_z)[0:count])
+        else:
+            raise ValueError(
+                "z_ordering must be either 'bottom', 'top' or 'center'.")
 
     return(atom_lattice)

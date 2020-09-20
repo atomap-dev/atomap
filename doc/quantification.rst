@@ -113,3 +113,22 @@ Finally, it will set the ``element_info`` attribute for each ``Atom_Position``, 
 
 .. figure:: images/quant/quant_output1b.png
     :scale: 50 %
+
+
+Visualise the selected model
+----------------------------
+
+The ``z_ordering`` parameter can be used to built the atomic columns in a given direction.
+The ``z_ordering`` options are "bottom", "top" and "center". "center" can be useful for sperical nanoparticles.
+For more info on working with atomic models with Atomap, see :ref:`Working with Atomic Models <working_with_atomic_models>`.
+
+.. code-block:: python
+
+    >>> from ase.visualize import view
+    >>> sublattice.pixel_size = 0.1
+    >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
+    >>> atoms = atom_lattice_1.convert_to_ase()
+    >>> view(atoms)
+
+.. figure:: images/quant/quant_view_bottom.png
+    :scale: 50 %
