@@ -108,6 +108,6 @@ class TestStatisticalQuant:
 
         # confirm sublattice.element_info has been assigned correctly
         assert(self.sublattice.atom_list[0].element_info ==
-               {0: 'C', 3.5: 'C', 7.0: 'C', 10.5: 'C'})
+               {1.75: 'C', 5.25: 'C', 8.75: 'C', 12.25: 'C'})
         assert len(self.sublattice.atom_list[0].element_info) == 4
-        assert self.sublattice.atom_list[0].element_info[7.0] == 'C'
+        assert self.sublattice.atom_list[0].element_info[5.25] == 'C'

@@ -469,6 +469,8 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     Parameters
     ----------
     sublattice : Sublattice object
+        The sublattice element_info, such as element and z coordinate of each
+        atomic column will be changed inplace.
     model : GaussianMixture model object
         A model can be determined with the get_statistical_quant_criteria()
         function. See the examples below for more details.
@@ -494,6 +496,7 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     -------
     atom_lattice : Atomap Atom_Lattice
         Each sublattice contains columns of the same number of atoms.
+    The sublattice element_info will be changed inplace.
 
     References
     ----------
@@ -512,14 +515,12 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     >>> atom_lattice_quant = am.quant.statistical_quant(sublattice,
     ...     models[3], 4, element, z_spacing, z_ordering="bottom", plot=False)
     >>> sublattice.atom_list[0].element_info
-    {0.0: 'C', 2.4: 'C', 4.8: 'C', 7.2: 'C'}
+    {1.2: 'C', 3.6: 'C', 6.0: 'C', 8.4: 'C'}
 
-    Setting max_atom_nums as 8, resulting in columns of 8, 7, 6, and 5:
+    Setting max_atom_nums as 8, resulting in columns of 8, 7, 6, and 5 atoms:
 
     >>> atom_lattice_quant = am.quant.statistical_quant(
     ...     sublattice, models[3], 8, element, z_spacing, plot=False)
-    >>> sublattice.atom_list[0].element_info
-    {9.6: 'C', 12.0: 'C', 14.4: 'C', 16.8: 'C'}
 
     Convert the sublattice to an ASE Atoms object for visualisation:
 
@@ -575,11 +576,11 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     if z_spacing is None:
         list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
     else:
-        list_of_z = np.arange(
-            max_atom_nums-model.n_components, max_atom_nums).tolist()
+        list_of_z = np.arange(0, max_atom_nums).tolist()
         list_of_z = [i*z_spacing for i in list_of_z]
-
+        list_of_z = [i+(z_spacing/2) for i in list_of_z]
     list_of_z = [round(i, 6) for i in list_of_z]
+
     atom_count = (sorted_labels+1) + (max_atom_nums-model.n_components)
     for atom, count in zip(sublattice.atom_list, atom_count):
         if "bottom" in z_ordering.lower():

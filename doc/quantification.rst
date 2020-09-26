@@ -99,8 +99,8 @@ Once you have determined the number of Gaussians in your Gaussian mixture model,
 
 .. code-block:: python
 
-    >>> model = models[3] # 4th model
-    >>> z_spacing = 2.4 # Angstrom
+    >>> model = models[3]  # 4th model
+    >>> z_spacing = 2.4  # Angstrom
     >>> atom_lattice = am.quant.statistical_quant(sublattice, model, 4, 'C', z_spacing)
 
 The function returns an ``Atom_Lattice`` object, in which each ``Sublattice`` corresponds to atomic columns of different atomic number.
@@ -118,7 +118,7 @@ Finally, it will set the ``element_info`` attribute for each ``Atom_Position``, 
 Visualise the selected model
 ----------------------------
 
-The ``z_ordering`` parameter can be used to built the atomic columns in a given direction.
+The ``z_ordering`` parameter can be used to build the atomic columns in a given direction.
 The ``z_ordering`` options are "bottom", "top" and "center". "center" can be useful for sperical nanoparticles.
 For more info on working with atomic models with Atomap, see :ref:`Working with Atomic Models <working_with_atomic_models>`.
 
