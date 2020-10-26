@@ -2586,7 +2586,6 @@ class Sublattice():
                 color=color, add_numbers=add_numbers, markersize=markersize)
         signal.plot(**kwargs, plot_markers=True)
 
-
     def plot_planes(self, image=None, add_numbers=True, color='red', **kwargs):
         """
         Show the atomic planes for all zone vectors.
