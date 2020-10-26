@@ -873,13 +873,15 @@ def array2signal1d(array, scale=1.0, offset=0.0):
     return signal
 
 
-def array2signal2d(numpy_array, scale=1.0, rotate_flip=False):
+def array2signal2d(numpy_array, scale=1.0, units='', rotate_flip=False):
     if rotate_flip:
         signal = Signal2D(np.rot90(np.fliplr(numpy_array)))
     else:
         signal = Signal2D(numpy_array)
     signal.axes_manager[-1].scale = scale
     signal.axes_manager[-2].scale = scale
+    signal.axes_manager[-1].units = units
+    signal.axes_manager[-2].units = units
     return signal
 
 

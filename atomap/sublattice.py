@@ -35,6 +35,7 @@ class Sublattice():
             name='',
             color='red',
             pixel_size=1.,
+            units='pix'
             ):
         """
         Parameters
@@ -81,6 +82,12 @@ class Sublattice():
         >>> s_sublattice = sublattice.get_atom_list_on_image()
         >>> s_sublattice.plot()
 
+        Add pixel size and units when creating sublattice
+
+        >>> sublattice = Sublattice(atom_positions, image_data,
+        ...                         pixel_size=5, units='nm')
+        >>> sublattice.plot()
+
         More atom positions
 
         >>> x, y = np.mgrid[0:100:10j, 0:100:10j]
@@ -106,6 +113,7 @@ class Sublattice():
         self.pixel_size = pixel_size
         self._plot_color = color
         self._pixel_separation = 0.0
+        self.units = units
 
     def __repr__(self):
         return '<%s, %s (atoms:%s,planes:%s)>' % (
@@ -219,6 +227,8 @@ class Sublattice():
         s = Signal2D(self.image)
         s.axes_manager.signal_axes[0].scale = self.pixel_size
         s.axes_manager.signal_axes[1].scale = self.pixel_size
+        s.axes_manager.signal_axes[0].units = self.units
+        s.axes_manager.signal_axes[1].units = self.units
         return s
 
     def get_zone_vector_index(self, zone_vector_id):
@@ -528,8 +538,8 @@ class Sublattice():
                 add_zero_value_sublattice.y_position)
         data_map = self._get_regular_grid_from_unregular_property(
                 x_list, y_list, z_list, upscale=upscale_map)
-        signal = at.array2signal2d(
-                data_map[2], self.pixel_size/upscale_map, rotate_flip=True)
+        signal = at.array2signal2d(data_map[2], self.pixel_size/upscale_map,
+                                   units=self.units, rotate_flip=True)
         if atom_plane_list is not None:
             marker_list = _make_atom_planes_marker_list(
                     atom_plane_list, scale=data_scale, add_numbers=False)
@@ -1384,7 +1394,7 @@ class Sublattice():
                 add_numbers=add_numbers,
                 scale=self.pixel_size,
                 color=color)
-        signal = at.array2signal2d(image, self.pixel_size)
+        signal = at.array2signal2d(image, self.pixel_size, self.units)
         add_marker(signal, marker_list, permanent=True, plot_marker=False)
         return signal
 
@@ -1451,7 +1461,7 @@ class Sublattice():
                     self.atom_planes_by_zone_vector[zone_vector])
         marker_list = _make_multidim_atom_plane_marker_list(
                 atom_plane_list, scale=self.pixel_size)
-        signal = at.array2signal2d(image, self.pixel_size)
+        signal = at.array2signal2d(image, self.pixel_size, self.units)
         signal = hs.stack([signal]*len(zone_vector_list))
         add_marker(signal, marker_list, permanent=True, plot_marker=False)
         signal.metadata.General.title = "Atom planes by zone vector"
@@ -1533,7 +1543,7 @@ class Sublattice():
                 color=color,
                 markersize=markersize,
                 add_numbers=add_numbers)
-        signal = at.array2signal2d(image, self.pixel_size)
+        signal = at.array2signal2d(image, self.pixel_size, self.units)
         add_marker(signal, marker_list, permanent=True, plot_marker=False)
 
         return signal
@@ -1580,7 +1590,7 @@ class Sublattice():
                     elli_rot[0]*vector_scale,
                     elli_rot[1]*vector_scale,
                     ])
-        signal = at.array2signal2d(image, self.pixel_size)
+        signal = at.array2signal2d(image, self.pixel_size, self.units)
         marker_list = _make_arrow_marker_list(
                 elli_list,
                 scale=self.pixel_size,
@@ -2576,6 +2586,7 @@ class Sublattice():
                 color=color, add_numbers=add_numbers, markersize=markersize)
         signal.plot(**kwargs, plot_markers=True)
 
+
     def plot_planes(self, image=None, add_numbers=True, color='red', **kwargs):
         """
         Show the atomic planes for all zone vectors.
@@ -2734,7 +2745,7 @@ class Sublattice():
         vector_list = an.get_vector_shift_list(sublattice, middle_pos_list)
         marker_list = vector_list_to_marker_list(
                 vector_list, color=color, scale=self.pixel_size)
-        signal = at.array2signal2d(self.image, self.pixel_size)
+        signal = at.array2signal2d(self.image, self.pixel_size, self.units)
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
         signal.metadata.add_node('vector_list')
         signal.metadata.vector_list = vector_list
