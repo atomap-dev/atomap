@@ -128,7 +128,7 @@ For more info on working with atomic models with Atomap, see :ref:`Working with 
     >>> sublattice.pixel_size = 0.1
     >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
     >>> atoms = atom_lattice_1.convert_to_ase()
-    >>> view(atoms)
+    >>> view(atoms) # doctest: +SKIP
 
 .. figure:: images/quant/quant_view_bottom.png
     :scale: 50 %
