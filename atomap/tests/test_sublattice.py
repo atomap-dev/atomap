@@ -1015,6 +1015,21 @@ class TestSubLatticeIntegrate:
         assert sublattice.image.shape == results[1].data.shape
         assert sublattice.image.shape == results[2].data.shape
 
+    def test_remove_edge_cells(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        results0 = sublattice.integrate_column_intensity()
+        results1 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        assert results1[1].data[0, 0] != results0[1].data[0, 0]
+
+    def test_edge_pixels(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        results0 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        results1 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True, edge_pixels=30)
+        assert results1[1].data[30, 30] != results0[1].data[30, 30]
+
 
 class TestProjectPropertyLineCrossing:
 

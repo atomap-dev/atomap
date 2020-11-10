@@ -1592,7 +1592,12 @@ class Sublattice():
         return signal
 
     def integrate_column_intensity(
-            self, method='Voronoi', max_radius='Auto', data_to_integrate=None):
+            self,
+            method='Voronoi',
+            max_radius='Auto',
+            data_to_integrate=None,
+            remove_edge_cells=False,
+            edge_pixels=1):
         """Integrate signal around the atoms in the sublattice
 
         If the sublattice is a part of an Atom_Lattice object, this function
@@ -1610,6 +1615,13 @@ class Sublattice():
         data_to_integrate : NumPy array, HyperSpy signal or array-like
             Works with 2D, 3D and 4D arrays, so for example an EEL spectrum
             image can be used.
+        remove_edge_cells : bool
+            Determine whether to replace the cells touching the signal edge
+            with np.nan values, which makes automatic contrast estimation
+            easier later.
+        edge_pixels : int
+            Only used if remove_edge_cells is True. Determines the number of
+            pixels from the border to remove.
 
         Returns
         -------
@@ -1629,8 +1641,14 @@ class Sublattice():
         if data_to_integrate is None:
             data_to_integrate = self.image
         i_points, i_record, p_record = at.integrate(
-                data_to_integrate, self.x_position, self.y_position,
-                method=method, max_radius=max_radius)
+            data_to_integrate,
+            self.x_position,
+            self.y_position,
+            method=method,
+            max_radius=max_radius,
+            remove_edge_cells=remove_edge_cells,
+            edge_pixels=edge_pixels,
+        )
         return(i_points, i_record, p_record)
 
     def get_atom_column_amplitude_max_intensity(

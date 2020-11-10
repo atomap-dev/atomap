@@ -73,6 +73,21 @@ class TestAtomLatticeIntegrate:
         assert atom_lattice.image.shape == results[1].data.shape
         assert atom_lattice.image.shape == results[2].data.shape
 
+    def test_remove_edge_cells(self):
+        atom_lattice = dd.get_simple_atom_lattice_two_sublattices()
+        results0 = atom_lattice.integrate_column_intensity()
+        results1 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        assert results1[1].data[0, 0] != results0[1].data[0, 0]
+
+    def test_edge_pixels(self):
+        atom_lattice = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        results0 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        results1 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True, edge_pixels=30)
+        assert results1[1].data[30, 30] != results0[1].data[30, 30]
+
 
 class TestAtomLatticePlot:
 
