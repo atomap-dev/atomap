@@ -555,10 +555,12 @@ class TestIntegrate:
                      10, 0, 15, 0, 4, 8, 12, 16, 20])
         )
 
+
 class TestVoronoi:
     def setup_method(self):
         np.random.seed(1)
-        self.s = am.dummy_data.get_dumbbell_heterostructure_signal().isig[:64, :64]
+        s = am.dummy_data.get_dumbbell_heterostructure_signal()
+        self.s = s.isig[:64, :64]
         self.points = am.get_atom_positions(self.s, separation=3).T
 
         self.i_true = np.array([
@@ -568,13 +570,26 @@ class TestVoronoi:
             38.09332358, np.nan, 37.73917033])
 
     def test_integrate_voronoi(self):
-        i, ir, pr = am.integrate(self.s, *self.points, method='Voronoi', remove_edge_cells=True, edge_pixels=3)
+        i, ir, pr = am.integrate(
+            self.s,
+            *self.points,
+            method='Voronoi',
+            remove_edge_cells=True,
+            edge_pixels=3,
+        )
         np.testing.assert_almost_equal(i, self.i_true)
 
     def test_remove_edges(self):
-        i, ir, pr = am.integrate(self.s, *self.points, method='Voronoi', remove_edge_cells=False)
+        i, ir, pr = am.integrate(
+            self.s,
+            *self.points,
+            method='Voronoi',
+            remove_edge_cells=False,
+        )
         i, ir, pr = remove_integrated_edge_cells(i, ir, pr, 3)
         np.testing.assert_almost_equal(i, self.i_true)
+
+
 class TestGetAtomSelectionFromVerts:
 
     def test_simple(self):

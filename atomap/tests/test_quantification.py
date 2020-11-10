@@ -116,16 +116,21 @@ class TestStatisticalQuant:
         sublattice = self.sublattice
         models = quant.get_statistical_quant_criteria([sublattice], 10)
 
-        quant.statistical_quant(
-            sublattice, models[3], 4, 'C', 3.5, z_ordering='top', plot=False)
+        kwargs = {
+            'sublattice': sublattice,
+            'model': models[3],
+            'max_atom_nums': 44,
+            'element': 'C',
+            'z_spacing': 3.5,
+            'plot': False,
+        }
+        quant.statistical_quant(**kwargs, z_ordering='top')
         pos_top = list(sublattice.atom_list[-1].element_info)[0]
 
-        quant.statistical_quant(
-            sublattice, models[3], 4, 'C', 3.5, z_ordering='center', plot=False)
+        quant.statistical_quant(**kwargs, z_ordering='center')
         pos_center = list(sublattice.atom_list[-1].element_info)[0]
 
-        quant.statistical_quant(
-            sublattice, models[3], 4, 'C', 3.5, z_ordering='bottom', plot=False)
+        quant.statistical_quant(**kwargs, z_ordering='bottom')
         pos_bottom = list(sublattice.atom_list[-1].element_info)[0]
 
         assert pos_top > pos_center

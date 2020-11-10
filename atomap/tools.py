@@ -946,6 +946,7 @@ def _get_n_nearest_neighbors(position_list, nearest_neighbors, leafsize=100):
             position_neighbor_list.append(delta_position)
     return(np.array(position_neighbor_list))
 
+
 @nb.jit()
 def find_smallest_distance(i, j, points):
     '''
@@ -977,6 +978,7 @@ def find_smallest_distance(i, j, points):
     distMin = distance_log[minIndex]
     return minIndex, distMin
 
+
 def calculate_point_record(image, points, max_radius):
     '''
     Creates a Voronoi array where equal values belong to
@@ -994,10 +996,11 @@ def calculate_point_record(image, points, max_radius):
     the same Voronoi cell
     '''
     point_record = np.zeros(image.shape[-2:], dtype=int)
-    for i, j in progressbar(np.ndindex(point_record.shape),
-                     desc="Calculating Voronoi",
-                     total=np.prod(point_record.shape), 
-                     leave=False):
+    for i, j in progressbar(
+            np.ndindex(point_record.shape),
+            desc="Calculating Voronoi",
+            total=np.prod(point_record.shape),
+            leave=False):
         minIndex, distMin = find_smallest_distance(i, j, points)
         if distMin >= max_radius:
             point_record[i][j] = 0
@@ -1005,7 +1008,9 @@ def calculate_point_record(image, points, max_radius):
             point_record[i][j] = minIndex + 1
     return point_record
 
-def get_integrated_intensity(point_record, image, point_index, include_edge_cells=True):
+
+def get_integrated_intensity(
+        point_record, image, point_index, include_edge_cells=True):
     '''
     Using a Voronoi point_record array, integrate a (minimum 2D)
     image array at each pixel
@@ -1025,7 +1030,6 @@ def get_integrated_intensity(point_record, image, point_index, include_edge_cell
     currentFeature = currentMask * image
     integrated_record = np.sum(currentFeature, axis=(-1, -2))
     return integrated_record
-
 
 
 class Fingerprinter:
@@ -1233,15 +1237,18 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
         raise NotImplementedError(
                 "Oops! You have asked for an unimplemented method.")
     point_record -= 1
-    for point_index in progressbar(range(points.shape[1]), desc='Integrating',
-                             disable=not show_progressbar):
+    for point_index in progressbar(
+            range(points.shape[1]),
+            desc='Integrating',
+            disable=not show_progressbar):
         integrated_intensity[point_index] = get_integrated_intensity(
             point_record, image, point_index)
 
-    for i, j in progressbar(np.ndindex(image.shape[-2:]),
-                     desc="Building intensity map",
-                     total=np.prod(image.shape[-2:]),
-                     leave=False):
+    for i, j in progressbar(
+            np.ndindex(image.shape[-2:]),
+            desc="Building intensity map",
+            total=np.prod(image.shape[-2:]),
+            leave=False):
 
         point_index = point_record[i, j]
         if point_index == -1:
@@ -1268,8 +1275,8 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
             edge_pixels=edge_pixels,
             use_nans=True,
             inplace=True)
-
     return integrated_intensity, intensity_record, point_record
+
 
 def _border_elems(image, pixels=1):
     """
@@ -1344,13 +1351,15 @@ def remove_integrated_edge_cells(i_points, i_record, p_record,
 
     border = _border_elems(p_record.data, edge_pixels)
     border_indices = np.array(list(set(border)))
-    indices = np.in1d(p_record.data, border_indices).reshape(p_record.data.shape)
+    indices = np.in1d(p_record.data, border_indices)
+    indices = indices.reshape(p_record.data.shape)
     i_points[border_indices] = np.nan if use_nans else 0
     i_record.data[..., indices] = np.nan if use_nans else 0
     p_record.data[indices] = -1
 
     if not inplace:
         return i_points, i_record, p_record
+
 
 def _make_mask(image, points_x, points_y):
     '''
@@ -1362,6 +1371,7 @@ def _make_mask(image, points_x, points_y):
     values = np.arange(len(points_x))
     mask[tuple(indices)] = values
     return mask
+
 
 def fliplr_points_and_signal(signal, x_array, y_array):
     """Horizontally flip a set of points and a HyperSpy signal.
