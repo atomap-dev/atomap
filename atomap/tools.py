@@ -968,7 +968,7 @@ def find_smallest_distance(i, j, points):
     >>> import numpy as np
     >>> points = np.random.random((2, 10000))
     >>> i, j = 0.5, 0.5
-    >>> find_smallest_distance(i, j, points)
+    >>> smallest_distance = find_smallest_distance(i, j, points)
 
     '''
     distance_log = ((points[0] - float(i))**2 +
@@ -1155,7 +1155,7 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
         Determine whether to replace the cells touching the signal edge with
         np.nan values, which makes automatic contrast estimation easier later
     edge_pixels : int
-        Only used if remove_edge_cells is True. Determines the number of 
+        Only used if remove_edge_cells is True. Determines the number of
         pixels from the border to remove.
     show_progressbar : bool, optional
         Default True
@@ -1259,14 +1259,14 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
     point_record = Signal2D(point_record)
     point_record.metadata.Signal.quantity = "Column Index"
     intensity_record.metadata.Signal.quantity = "Integrated Intensity"
-    
+
     if remove_edge_cells:
         remove_integrated_edge_cells(
-            integrated_intensity, 
-            intensity_record, 
-            point_record, 
-            edge_pixels=edge_pixels, 
-            use_nans=True, 
+            integrated_intensity,
+            intensity_record,
+            point_record,
+            edge_pixels=edge_pixels,
+            use_nans=True,
             inplace=True)
 
     return integrated_intensity, intensity_record, point_record
@@ -1275,15 +1275,15 @@ def _border_elems(image, pixels=1):
     """
     Return the values of the edges along the border of the image, with
     border width `pixels`.
-    
+
     Example
     -------
     >>> import numpy as np
     >>> a = np.array([
-    ...     [1,1,1], 
-    ...     [2,5,3], 
+    ...     [1,1,1],
+    ...     [2,5,3],
     ...     [4,4,4]])
-    >>> _border_elems(a, pixels=1)
+    >>> b = _border_elems(a, pixels=1)
 
     """
     arr = np.ones_like(image, dtype=bool)
@@ -1297,18 +1297,18 @@ def remove_integrated_edge_cells(i_points, i_record, p_record,
     the image border.
 
     Note on using use_nans: If this is used on a dataset with more than
-    two dimensions, the resulting hyperspy i_record signal might be needed to
-    be viewed with i_record.plot(navigator='slider'), since hyperspy may throw
+    two dimensions, the resulting HyperSpy i_record signal might be needed to
+    be viewed with i_record.plot(navigator='slider'), since HyperSpy may throw
     an error when plotting a dataset with only NaNs present.
 
     Parameters
     ----------
     i_points : NumPy array
-        The output of the atomap integrate function or method
-    i_record : NumPy array
-        The output of the atomap integrate function or method
-    p_record : NumPy array
-        The output of the atomap integrate function or method
+        The output of the Atomap integrate function or method
+    i_record : HyperSpy signal
+        The output of the Atomap integrate function or method
+    p_record : HyperSpy signal
+        The output of the Atomap integrate function or method
 
     Returns
     -------
@@ -1318,22 +1318,25 @@ def remove_integrated_edge_cells(i_points, i_record, p_record,
     i_record : HyperSpy signal
         Modified integrated intensity record, with either np.nan or 0
         on the removed values, which preserves the atom index
-    p_record : NumPy array, same size as image
+    p_record : HyperSpy signal, same size as image
         Modified points record, where removed areas have value = -1.
 
     Example
     -------
+
+    >>> s = am.dummy_data.get_fantasite()
     >>> points_x, points_y = am.get_atom_positions(s).T
     >>> i, ir, pr = am.integrate(
-    ...     s, 
-    ...     points_x, 
-    ...     points_y, 
-    ...     method='Voronoi'
-    ...     remove_edge_cells=False)
-    >>> i2, ir2, pr2 = remove_integrated_edge_cells(i, ir, pr, pixels=5,
-                                                use_nans=True)
-    """
+    ...    s,
+    ...    points_x,
+    ...    points_y,
+    ...    method='Voronoi',
+    ...    remove_edge_cells=False)
+    >>> from atomap.tools import remove_integrated_edge_cells
+    >>> i2, ir2, pr2 = remove_integrated_edge_cells(
+    ...    i, ir, pr, edge_pixels=5, use_nans=True)
 
+    """
     if not inplace:
         i_points = i_points.copy()
         i_record = i_record.deepcopy()
