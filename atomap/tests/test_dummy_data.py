@@ -76,6 +76,10 @@ class TestDummyData:
         sublattice = dd.get_scanning_distortion_sublattice()
         sublattice.plot()
 
+    def test_nanoparticle(self):
+        s = dd.get_nanoparticle_signal()
+        s.plot()
+
 
 class TestDummyDataFantasite:
 

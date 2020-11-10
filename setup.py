@@ -49,6 +49,7 @@ setup(
                 'test_ABF_cropped.hdf5',
                 'test_atom_lattice.hdf5'],
             'atomap.example_data': [
-                'example_detector_image.hspy'],
+                'example_detector_image.hspy',
+                'simulated_nanoparticle.hspy'],
             }
 )
