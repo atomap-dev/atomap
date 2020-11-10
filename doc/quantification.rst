@@ -140,15 +140,36 @@ Once you have determined the number of Gaussians in your Gaussian mixture model,
 
 .. code-block:: python
 
-    >>> model = models[3] # 4th model
-    >>> atom_lattice = am.quant.statistical_quant(sublattice.image, sublattice, model, 4)
+    >>> model = models[3]  # 4th model
+    >>> z_spacing = 2.4  # Angstrom
+    >>> atom_lattice = am.quant.statistical_quant(sublattice, model, 4, 'C', z_spacing)
 
 The function returns an ``Atom_Lattice`` object, in which each ``Sublattice`` corresponds to atomic columns of different atomic number.
 If plotting is selected (as it is by default) this plots the histogram of column intensities with the Gaussian mixture model overlayed.
 It also displays the image of the particle with sublattices coloured differently to indicate number of atoms in each column.
+Finally, it will set the ``element_info`` attribute for each ``Atom_Position``, which includes the element and z coordinates in Angstrom.
 
 .. figure:: images/quant/quant_output1a.png
     :scale: 50 %
 
 .. figure:: images/quant/quant_output1b.png
+    :scale: 50 %
+
+
+Visualise the selected model
+----------------------------
+
+The ``z_ordering`` parameter can be used to build the atomic columns in a given direction.
+The ``z_ordering`` options are "bottom", "top" and "center". "center" can be useful for sperical nanoparticles.
+For more info on working with atomic models with Atomap, see :ref:`Working with Atomic Models <working_with_atomic_models>`.
+
+.. code-block:: python
+
+    >>> from ase.visualize import view
+    >>> sublattice.pixel_size = 0.1
+    >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
+    >>> atoms = atom_lattice_1.convert_to_ase()
+    >>> view(atoms) # doctest: +SKIP
+
+.. figure:: images/quant/quant_view_bottom.png
     :scale: 50 %

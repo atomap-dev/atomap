@@ -179,6 +179,12 @@ class Atom_Lattice():
         >>> atoms = al.convert_to_ase()
 
         """
+        if not hasattr(self.sublattice_list[0].atom_list[0], 'element_info'):
+            raise AttributeError(
+                "Atom position is missing element_info, each sublattice need "
+                "to have run 'set_element_info'. For example: "
+                "atom_lattice.sublattice_list[0].set_element_info(\"C\", [0.])"
+            )
         atoms = Atoms()
         for sublattice in self.sublattice_list:
             for atom_column in sublattice.atom_list:

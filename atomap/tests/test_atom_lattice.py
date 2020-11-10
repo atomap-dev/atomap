@@ -128,6 +128,11 @@ class TestAtomLatticeASEConversion:
         assert atoms[1].z == 0.5
         assert atoms[1].symbol == 'C'
 
+    def test_not_set_element_info(self):
+        atom_lattice = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        with pytest.raises(AttributeError):
+            atom_lattice.convert_to_ase()
+
 
 class TestDumbbellLatticeInit:
 
