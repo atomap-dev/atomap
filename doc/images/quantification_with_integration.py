@@ -11,7 +11,7 @@ if not os.path.exists(my_path):
     os.makedirs(my_path)
 
 # image 1
-s = hs.load(os.path.join(my_path, 'simulated_nanoparticle.tif'))
+s = am.dummy_data.get_nanoparticle_signal()
 points_x, points_y = am.get_atom_positions(s, separation=4).T
 i_points, i_record, p_record = am.integrate(s, points_x, points_y)
 i_record.plot(cmap='viridis')

@@ -25,11 +25,11 @@ As an example using the `nanoparticle dataset <https://gitlab.com/atomap/atomap_
 
 .. code-block:: python
 
-    >>> import hyperspy.api as hs
-    >>> s = hs.load('simulated_nanoparticle.tif')
+    >>> import atomap.api as am
+    >>> s = am.dummy_data.get_nanoparticle_signal()
     >>> points_x, points_y = am.get_atom_positions(s, separation=4).T
     >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y)
-    >>> i_record.plot(cmap='viridis')
+    >>> intensity_record.plot(cmap='viridis')
 
 .. image:: images/quantification/voronoi_nanoparticle1.png
     :scale: 70 %
@@ -42,7 +42,7 @@ One can remove any cells that exist a certain distance from the image border, ef
 
     >>> from atomap.tools import remove_integrated_edge_cells
     >>> integrated_intensity, intensity_record, point_record = remove_integrated_edge_cells(integrated_intensity, intensity_record, point_record, edge_pixels=30)
-    >>> i_record.plot(cmap='viridis')
+    >>> intensity_record.plot(cmap='viridis')
 
 .. image:: images/quantification/voronoi_nanoparticle_remove_edge.png
     :scale: 70 %
@@ -53,7 +53,7 @@ Alternatively one can specify the ``max_radius`` argument in order to limit the 
 .. code-block:: python
 
     >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y, max_radius=5)
-    >>> i_record.plot(cmap='viridis')
+    >>> intensity_record.plot(cmap='viridis')
 
 .. image:: images/quantification/voronoi_nanoparticle_max_radius.png
     :scale: 70 %
