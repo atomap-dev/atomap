@@ -111,3 +111,22 @@ class TestStatisticalQuant:
                {1.75: 'C', 5.25: 'C', 8.75: 'C', 12.25: 'C'})
         assert len(self.sublattice.atom_list[0].element_info) == 4
         assert self.sublattice.atom_list[0].element_info[5.25] == 'C'
+
+    def test_z_ordering(self):
+        sublattice = self.sublattice
+        models = quant.get_statistical_quant_criteria([sublattice], 10)
+
+        quant.statistical_quant(
+            sublattice, models[3], 4, 'C', 3.5, z_ordering='top', plot=False)
+        pos_top = list(sublattice.atom_list[-1].element_info)[0]
+
+        quant.statistical_quant(
+            sublattice, models[3], 4, 'C', 3.5, z_ordering='center', plot=False)
+        pos_center = list(sublattice.atom_list[-1].element_info)[0]
+
+        quant.statistical_quant(
+            sublattice, models[3], 4, 'C', 3.5, z_ordering='bottom', plot=False)
+        pos_bottom = list(sublattice.atom_list[-1].element_info)[0]
+
+        assert pos_top > pos_center
+        assert pos_center > pos_bottom
