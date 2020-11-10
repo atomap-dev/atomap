@@ -25,9 +25,10 @@ As an example using the `nanoparticle dataset <https://gitlab.com/atomap/atomap_
 
 .. code-block:: python
 
+    >>> import hyperspy.api as hs
     >>> s = hs.load('simulated_nanoparticle.tif')
     >>> points_x, points_y = am.get_atom_positions(s, separation=4).T
-    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y, )
+    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y)
     >>> i_record.plot(cmap='viridis')
 
 .. image:: images/quantification/voronoi_nanoparticle1.png
