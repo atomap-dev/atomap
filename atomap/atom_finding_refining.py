@@ -529,7 +529,10 @@ def _crop_array(arr, center_x, center_y, radius):
 
 
 def calculate_center_of_mass(arr):
-    """Find the center of mass of a single 2D array, or a list (or multidimensional array) of 2D arrays.
+    """Find the center of mass of a NumPy array.
+
+    Find the center of mass of a single 2D array, or a
+    list (or multidimensional array) of 2D arrays.
 
     Parameters
     ----------
@@ -537,7 +540,8 @@ def calculate_center_of_mass(arr):
 
     Returns
     -------
-    cy, cx: array of floats (or nd-array of floats) giving centre coordinates with sub-pixel accuracy
+    cy, cx: array of floats (or nd-array of floats)
+        Giving centre coordinates with sub-pixel accuracy
 
     Examples
     --------
@@ -557,7 +561,7 @@ def calculate_center_of_mass(arr):
     # arr -= arr.min()
     if len(arr.shape) > 2:
         arr = (arr.T / np.sum(arr, axis=(-1, -2)).T).T
-    else: 
+    else:
         arr = arr / np.sum(arr, axis=(-1, -2))
 
     dy = np.sum(arr, -1)
