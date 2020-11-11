@@ -32,7 +32,7 @@ setup(
             'h5py',
             'matplotlib>=3.1.0',
             'scikit-learn',
-            'scikit-image>=0.13',
+            'scikit-image>=0.17.1',
             'hyperspy>=1.5.2',
             'ase>=3.17.0'
             'numba'
