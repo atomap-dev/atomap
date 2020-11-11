@@ -4,6 +4,7 @@ from hyperspy.signals import Signal2D
 import atomap.atom_finding_refining as afr
 import atomap.plotting as pl
 import atomap.tools as at
+from ase import Atoms
 
 
 class Atom_Lattice():
@@ -101,7 +102,12 @@ class Atom_Lattice():
             afr.construct_zone_axes_from_sublattice(sublattice)
 
     def integrate_column_intensity(
-            self, method='Voronoi', max_radius='Auto', data_to_integrate=None):
+            self,
+            method='Voronoi',
+            max_radius='Auto',
+            data_to_integrate=None,
+            remove_edge_cells=False,
+            edge_pixels=1):
         """Integrate signal around the atoms in the atom lattice.
 
         See atomap.tools.integrate for more information about the parameters.
@@ -114,6 +120,13 @@ class Atom_Lattice():
         data_to_integrate : NumPy array, HyperSpy signal or array-like
             Works with 2D, 3D and 4D arrays, so for example an EEL spectrum
             image can be used.
+        remove_edge_cells : bool
+            Determine whether to replace the cells touching the signal edge
+            with np.nan values, which makes automatic contrast estimation
+            easier later.
+        edge_pixels : int
+            Only used if remove_edge_cells is True. Determines the number of
+            pixels from the border to remove.
 
         Returns
         -------
@@ -132,8 +145,14 @@ class Atom_Lattice():
         if data_to_integrate is None:
             data_to_integrate = self.image
         i_points, i_record, p_record = at.integrate(
-                data_to_integrate, self.x_position, self.y_position,
-                method=method, max_radius=max_radius)
+            data_to_integrate,
+            self.x_position,
+            self.y_position,
+            method=method,
+            max_radius=max_radius,
+            remove_edge_cells=remove_edge_cells,
+            edge_pixels=edge_pixels,
+        )
         return(i_points, i_record, p_record)
 
     def get_sublattice_atom_list_on_image(
@@ -159,6 +178,44 @@ class Atom_Lattice():
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
         return signal
+
+    def convert_to_ase(self):
+        """
+        Convert the Atomlattice object to an Atoms object of the Atomic
+        Simulation Environment package. All Sublattices must have element_info
+        set. All sublattices must have the correct scale set (in Angstroms).
+
+        Returns
+        -------
+        atoms : ASE Atoms object
+
+        Examples
+        --------
+        >>> al = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        >>> al.sublattice_list[0].set_element_info("C", [0.])
+        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [-2., 2.])
+        >>> atoms = al.convert_to_ase()
+
+        """
+        if not hasattr(self.sublattice_list[0].atom_list[0], 'element_info'):
+            raise AttributeError(
+                "Atom position is missing element_info, each sublattice need "
+                "to have run 'set_element_info'. For example: "
+                "atom_lattice.sublattice_list[0].set_element_info(\"C\", [0.])"
+            )
+        atoms = Atoms()
+        for sublattice in self.sublattice_list:
+            for atom_column in sublattice.atom_list:
+                for atom in atom_column.element_info:
+                    new_atom = Atoms(atom_column.element_info[atom],
+                                     positions=[(
+                                         atom_column.pixel_x *
+                                         sublattice.pixel_size,
+                                         atom_column.pixel_y *
+                                         sublattice.pixel_size,
+                                         atom)])
+                    atoms += new_atom
+        return(atoms)
 
     def save(self, filename=None, overwrite=False):
         """

@@ -71,7 +71,22 @@ class TestAtomLatticeIntegrate:
         results = atom_lattice.integrate_column_intensity()
         assert len(results[0]) == len(atom_lattice.x_position)
         assert atom_lattice.image.shape == results[1].data.shape
-        assert atom_lattice.image.shape == results[2].shape
+        assert atom_lattice.image.shape == results[2].data.shape
+
+    def test_remove_edge_cells(self):
+        atom_lattice = dd.get_simple_atom_lattice_two_sublattices()
+        results0 = atom_lattice.integrate_column_intensity()
+        results1 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        assert results1[1].data[0, 0] != results0[1].data[0, 0]
+
+    def test_edge_pixels(self):
+        atom_lattice = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        results0 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        results1 = atom_lattice.integrate_column_intensity(
+            remove_edge_cells=True, edge_pixels=30)
+        assert results1[1].data[30, 30] != results0[1].data[30, 30]
 
 
 class TestAtomLatticePlot:
@@ -107,6 +122,31 @@ class TestAtomLatticeSignalProperty:
         signal = atom_lattice.signal
         assert signal.axes_manager.signal_axes[0].scale == 0.2
         assert signal.axes_manager.signal_axes[1].scale == 0.2
+
+
+class TestAtomLatticeASEConversion:
+
+    def test_simple(self):
+        sublattice = am.Sublattice([[10, 10], ], np.ones((20, 20)),
+                                   pixel_size=0.2)
+        sublattice.set_element_info('C', [0.1, 0.5])
+        atom_lattice = am.Atom_Lattice(np.ones((100, 100)),
+                                       sublattice_list=[sublattice])
+        atoms = atom_lattice.convert_to_ase()
+
+        assert atoms[0].x == 2.0
+        assert atoms[0].y == 2.0
+        assert atoms[0].z == 0.1
+        assert atoms[0].symbol == 'C'
+        assert atoms[1].x == 2.0
+        assert atoms[1].y == 2.0
+        assert atoms[1].z == 0.5
+        assert atoms[1].symbol == 'C'
+
+    def test_not_set_element_info(self):
+        atom_lattice = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        with pytest.raises(AttributeError):
+            atom_lattice.convert_to_ase()
 
 
 class TestDumbbellLatticeInit:

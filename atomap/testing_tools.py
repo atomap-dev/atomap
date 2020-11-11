@@ -36,7 +36,7 @@ class MakeTestData(object):
             to the image generating process being slower. Default 5.
         add_row_scan_distortion : scalar
             Shift horizontal rows to emulate scanning distortions.
-            By default this is off, set to a number to enabel.
+            By default this is off, set to a number to enable.
             The amount of distortion is proportional to the number given.
         show_progressbar : bool
             If True, will show a progressbar when generating the image data,

@@ -15,4 +15,3 @@ def userguide_doc_setup_teardown(request):
     yield
     os.chdir(org_dir)
     tmp_dir.cleanup()
-    plt.close('all')

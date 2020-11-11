@@ -98,11 +98,40 @@ class TestStatisticalQuant:
 
     def test_statistical_method(self):
         models = quant.get_statistical_quant_criteria([self.sublattice], 10)
-        atom_lattice = quant.statistical_quant(self.tdata.signal,
-                                               self.sublattice, models[3], 4,
-                                               plot=False)
+        atom_lattice = quant.statistical_quant(self.sublattice, models[3], 4,
+                                               'C', 3.5, plot=False)
 
         assert len(atom_lattice.sublattice_list[0].atom_list) == 39
         assert len(atom_lattice.sublattice_list[1].atom_list) == 52
         assert len(atom_lattice.sublattice_list[2].atom_list) == 52
         assert len(atom_lattice.sublattice_list[3].atom_list) == 13
+
+        # confirm sublattice.element_info has been assigned correctly
+        assert(self.sublattice.atom_list[0].element_info ==
+               {1.75: 'C', 5.25: 'C', 8.75: 'C', 12.25: 'C'})
+        assert len(self.sublattice.atom_list[0].element_info) == 4
+        assert self.sublattice.atom_list[0].element_info[5.25] == 'C'
+
+    def test_z_ordering(self):
+        sublattice = self.sublattice
+        models = quant.get_statistical_quant_criteria([sublattice], 10)
+
+        kwargs = {
+            'sublattice': sublattice,
+            'model': models[3],
+            'max_atom_nums': 44,
+            'element': 'C',
+            'z_spacing': 3.5,
+            'plot': False,
+        }
+        quant.statistical_quant(**kwargs, z_ordering='top')
+        pos_top = list(sublattice.atom_list[-1].element_info)[0]
+
+        quant.statistical_quant(**kwargs, z_ordering='center')
+        pos_center = list(sublattice.atom_list[-1].element_info)[0]
+
+        quant.statistical_quant(**kwargs, z_ordering='bottom')
+        pos_bottom = list(sublattice.atom_list[-1].element_info)[0]
+
+        assert pos_top > pos_center
+        assert pos_center > pos_bottom

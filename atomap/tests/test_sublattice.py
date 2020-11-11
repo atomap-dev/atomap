@@ -1013,7 +1013,22 @@ class TestSubLatticeIntegrate:
         results = sublattice.integrate_column_intensity()
         assert len(results[0]) == len(sublattice.x_position)
         assert sublattice.image.shape == results[1].data.shape
-        assert sublattice.image.shape == results[2].shape
+        assert sublattice.image.shape == results[2].data.shape
+
+    def test_remove_edge_cells(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        results0 = sublattice.integrate_column_intensity()
+        results1 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        assert results1[1].data[0, 0] != results0[1].data[0, 0]
+
+    def test_edge_pixels(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        results0 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True)
+        results1 = sublattice.integrate_column_intensity(
+            remove_edge_cells=True, edge_pixels=30)
+        assert results1[1].data[30, 30] != results0[1].data[30, 30]
 
 
 class TestProjectPropertyLineCrossing:
@@ -1303,3 +1318,12 @@ class TestEstimateLocalScanningDistortion:
         output1 = sublattice.estimate_local_scanning_distortion(edge_skip=1)
         assert output0[2] != output1[2]
         assert output0[3] != output1[3]
+
+
+class TestSublatticeElementInfo:
+
+    def test_simple(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        sublattice.set_element_info("C", [0., 0.5])
+        assert sublattice.atom_list[0].element_info[0.] == "C"
+        assert sublattice.atom_list[0].element_info[0.5] == "C"

@@ -8,9 +8,10 @@ from scipy.spatial import cKDTree
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 import hyperspy.api as hs
-from hyperspy.signals import Signal1D, Signal2D
-from skimage.morphology import watershed
+from hyperspy.signals import Signal1D, Signal2D, BaseSignal
+from skimage.segmentation import watershed
 
+import numba as nb
 from atomap.atom_finding_refining import (
     _fit_atom_positions_with_gaussian_model)
 from sklearn.cluster import DBSCAN
@@ -946,6 +947,91 @@ def _get_n_nearest_neighbors(position_list, nearest_neighbors, leafsize=100):
     return(np.array(position_neighbor_list))
 
 
+@nb.jit()
+def find_smallest_distance(i, j, points):
+    '''
+    Finds the smallest distance between coordinates (i, j)
+    and a list of coordinates.
+
+    Parameters
+    ----------
+    i : Integer
+    j : Integer
+    points : array like of shape (2,N)
+
+    Returns
+    -------
+    distMin  : Minimum distance
+    minIndex : Index of minimum distance in points
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> points = np.random.random((2, 10000))
+    >>> i, j = 0.5, 0.5
+    >>> smallest_distance = find_smallest_distance(i, j, points)
+
+    '''
+    distance_log = ((points[0] - float(i))**2 +
+                    (points[1] - float(j))**2)**0.5
+    minIndex = np.argmin(distance_log)
+    distMin = distance_log[minIndex]
+    return minIndex, distMin
+
+
+def calculate_point_record(image, points, max_radius):
+    '''
+    Creates a Voronoi array where equal values belong to
+    the same Voronoi cell
+
+    Parameters
+    ----------
+    point_record : 2D zero array of same shape as the image to be mapped
+    points: Array like of shape (2,N)
+    max_radius: Integer, max radius of each Voronoi Cell
+
+    Returns
+    -------
+    point_record : Voronoi array where equal values belong to
+    the same Voronoi cell
+    '''
+    point_record = np.zeros(image.shape[-2:], dtype=int)
+    for i, j in progressbar(
+            np.ndindex(point_record.shape),
+            desc="Calculating Voronoi",
+            total=np.prod(point_record.shape),
+            leave=False):
+        minIndex, distMin = find_smallest_distance(i, j, points)
+        if distMin >= max_radius:
+            point_record[i][j] = 0
+        else:
+            point_record[i][j] = minIndex + 1
+    return point_record
+
+
+def get_integrated_intensity(
+        point_record, image, point_index, include_edge_cells=True):
+    '''
+    Using a Voronoi point_record array, integrate a (minimum 2D)
+    image array at each pixel
+
+    Parameters
+    ----------
+    point_record : 2D zero array of same shape as the image to be mapped
+    image : The ndarray to integrate the voronoi cells on
+    point_index: Array like of shape (2,N)
+
+    Returns
+    -------
+    integrated_record : Voronoi array where equal values belong to
+    the same Voronoi cell
+    '''
+    currentMask = (point_record == point_index)
+    currentFeature = currentMask * image
+    integrated_record = np.sum(currentFeature, axis=(-1, -2))
+    return integrated_record
+
+
 class Fingerprinter:
     """
     Produces a distance-fingerprint from an array of neighbor distance vectors.
@@ -1048,7 +1134,7 @@ class Fingerprinter:
 
 
 def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
-              show_progressbar=True):
+              show_progressbar=True, remove_edge_cells=False, edge_pixels=1):
     """Given a spectrum image a set of points and a maximum outer radius,
     this function integrates around each point in an image, using either
     Voronoi cell or watershed segmentation methods.
@@ -1069,6 +1155,12 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
         This allows analysis of a surface and particles.
         If 'max_radius' is left as 'Auto' then it will be set to the largest
         dimension in the image.
+    remove_edge_cells : bool
+        Determine whether to replace the cells touching the signal edge with
+        np.nan values, which makes automatic contrast estimation easier later
+    edge_pixels : int
+        Only used if remove_edge_cells is True. Determines the number of
+        pixels from the border to remove.
     show_progressbar : bool, optional
         Default True
 
@@ -1080,7 +1172,7 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
     intensity_record : HyperSpy signal, same size as s
         Each pixel/voxel in a particular segment or region has the value of the
         integration, value.
-    point_record : NumPy array, same size as image
+    point_record : HyperSpy Signal2D with no navigation dimension
         Image showing where each integration region is, pixels equating to
         point 0 (integrated_intensity[0]) all have value 0, all pixels
         equating to integrated_intensity[1] all have value 1 etc.
@@ -1118,74 +1210,166 @@ def integrate(s, points_x, points_y, method='Voronoi', max_radius='Auto',
     if len(image.shape) < 2:
         raise ValueError("s must have at least 2 dimensions")
     intensity_record = np.zeros_like(image, dtype=float)
-    currentFeature = np.zeros_like(image.T, dtype=float)
-    point_record = np.zeros(image.shape[0:2][::-1], dtype=int)
-    integrated_intensity = np.zeros_like(sum(sum(currentFeature.T)))
-    integrated_intensity = np.array(
-            [integrated_intensity for i in range(len(points_x))])
-    integrated_intensity = np.dstack(integrated_intensity)
-    integrated_intensity = np.squeeze(integrated_intensity.T)
+    integrated_intensity = np.zeros(image.shape[:-2])
+    integrated_intensity = np.stack([
+        integrated_intensity for i in range(len(points_x))])
+
     points = np.array((points_y, points_x))
     # Setting max_radius to the width of the image, if none is set.
     if method == 'Voronoi':
         if max_radius == 'Auto':
-            max_radius = max(point_record.shape)
+            max_radius = max(image.shape[-2:])
         elif max_radius <= 0:
             raise ValueError("max_radius must be higher than 0.")
-        distance_log = np.zeros_like(points[0])
-
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-
-                # For every pixel the distance to all points must be
-                # calculated.
-                distance_log = ((points[0] - float(i))**2 +
-                                (points[1] - float(j))**2)**0.5
-
-                # Next for that pixel the minimum distance to and point should
-                # be checked and discarded if too large:
-                distMin = np.min(distance_log)
-                minIndex = np.argmin(distance_log)
-
-                if distMin >= max_radius:
-                    point_record[j][i] = 0
-                else:
-                    point_record[j][i] = minIndex + 1
+        point_record = calculate_point_record(
+            image,
+            points,
+            max_radius)
 
     elif method == 'Watershed':
         if len(image.shape) > 2:
             raise ValueError(
                 "Currently Watershed method is only implemented for 2D data.")
-        points_map = _make_mask(point_record, points[0], points[1])
+        points_map = _make_mask(image.T, points[0], points[1])
         point_record = watershed(-image, points_map.T)
-        point_record = point_record.T
 
     else:
         raise NotImplementedError(
                 "Oops! You have asked for an unimplemented method.")
     point_record -= 1
-    for point in progressbar(range(points[0].shape[0]), desc='Integrating',
-                             disable=not show_progressbar):
-        currentMask = (point_record == point)
-        currentFeature = currentMask * image.T
-        integrated_intensity[point] = sum(sum(currentFeature.T)).T
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                if currentMask.T[i][j]:
-                    intensity_record[i][j] = integrated_intensity[point]
+    for point_index in progressbar(
+            range(points.shape[1]),
+            desc='Integrating',
+            disable=not show_progressbar):
+        integrated_intensity[point_index] = get_integrated_intensity(
+            point_record, image, point_index)
 
-    if hasattr(s, '_deepcopy_with_new_data'):
-        s_intensity_record = s._deepcopy_with_new_data(
+    for i, j in progressbar(
+            np.ndindex(image.shape[-2:]),
+            desc="Building intensity map",
+            total=np.prod(image.shape[-2:]),
+            leave=False):
+
+        point_index = point_record[i, j]
+        if point_index == -1:
+            intensity_record[..., i, j] = np.nan
+        else:
+            summed = integrated_intensity[point_index]
+            intensity_record[..., i, j] = summed
+
+    if isinstance(s, BaseSignal):
+        intensity_record = s._deepcopy_with_new_data(
             intensity_record, copy_variance=True)
     else:
-        s_intensity_record = Signal2D(intensity_record)
-    return (integrated_intensity, s_intensity_record, point_record.T)
+        intensity_record = Signal2D(intensity_record)
+
+    point_record = Signal2D(point_record)
+    point_record.metadata.Signal.quantity = "Column Index"
+    intensity_record.metadata.Signal.quantity = "Integrated Intensity"
+
+    if remove_edge_cells:
+        remove_integrated_edge_cells(
+            integrated_intensity,
+            intensity_record,
+            point_record,
+            edge_pixels=edge_pixels,
+            use_nans=True,
+            inplace=True)
+    return integrated_intensity, intensity_record, point_record
+
+
+def _border_elems(image, pixels=1):
+    """
+    Return the values of the edges along the border of the image, with
+    border width `pixels`.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> a = np.array([
+    ...     [1,1,1],
+    ...     [2,5,3],
+    ...     [4,4,4]])
+    >>> b = _border_elems(a, pixels=1)
+
+    """
+    arr = np.ones_like(image, dtype=bool)
+    arr[pixels:-1-(pixels-1), pixels:-1-(pixels-1)] = False
+    return image[arr]
+
+
+def remove_integrated_edge_cells(i_points, i_record, p_record,
+                                 edge_pixels=1, use_nans=True, inplace=False):
+    """Removes any cells that touch within a number of pixels of
+    the image border.
+
+    Note on using use_nans: If this is used on a dataset with more than
+    two dimensions, the resulting HyperSpy i_record signal might be needed to
+    be viewed with i_record.plot(navigator='slider'), since HyperSpy may throw
+    an error when plotting a dataset with only NaNs present.
+
+    Parameters
+    ----------
+    i_points : NumPy array
+        The output of the Atomap integrate function or method
+    i_record : HyperSpy signal
+        The output of the Atomap integrate function or method
+    p_record : HyperSpy signal
+        The output of the Atomap integrate function or method
+
+    Returns
+    -------
+    i_points : NumPy array
+        Modified list of integrated intensities with either np.nan or 0
+        on the removed values, which preserves the atom index.
+    i_record : HyperSpy signal
+        Modified integrated intensity record, with either np.nan or 0
+        on the removed values, which preserves the atom index
+    p_record : HyperSpy signal, same size as image
+        Modified points record, where removed areas have value = -1.
+
+    Example
+    -------
+
+    >>> s = am.dummy_data.get_fantasite()
+    >>> points_x, points_y = am.get_atom_positions(s).T
+    >>> i, ir, pr = am.integrate(
+    ...    s,
+    ...    points_x,
+    ...    points_y,
+    ...    method='Voronoi',
+    ...    remove_edge_cells=False)
+    >>> from atomap.tools import remove_integrated_edge_cells
+    >>> i2, ir2, pr2 = remove_integrated_edge_cells(
+    ...    i, ir, pr, edge_pixels=5, use_nans=True)
+
+    """
+    if not inplace:
+        i_points = i_points.copy()
+        i_record = i_record.deepcopy()
+        p_record = p_record.deepcopy()
+
+    border = _border_elems(p_record.data, edge_pixels)
+    border_indices = np.array(list(set(border)))
+    indices = np.in1d(p_record.data, border_indices)
+    indices = indices.reshape(p_record.data.shape)
+    i_points[border_indices] = np.nan if use_nans else 0
+    i_record.data[..., indices] = np.nan if use_nans else 0
+    p_record.data[indices] = -1
+
+    if not inplace:
+        return i_points, i_record, p_record
 
 
 def _make_mask(image, points_x, points_y):
-    mask = np.zeros_like(image)
-    for i in range(len(points_x)):
-        mask[int(points_y[i])][int(points_x[i])] = i + 1
+    '''
+    Create points_map for the watershed integration
+    function
+    '''
+    mask = np.zeros(image.shape[-2:])
+    indices = np.round(np.array([points_y, points_x])).astype(int)
+    values = np.arange(len(points_x))
+    mask[tuple(indices)] = values
     return mask
 
 

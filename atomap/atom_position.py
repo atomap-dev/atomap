@@ -820,3 +820,34 @@ class Atom_Position:
         ix1, iy1 = min(im_x, ix1), min(im_y, iy1)
         atom_slice = np.s_[iy0:iy1, ix0:ix1]
         return atom_slice
+
+    def set_element_info(self, element, z):
+        """Set which atoms are present along the atomic column at this atom
+        position.
+
+        Parameters
+        ----------
+        element : str or list of str
+            elements contained in the atomic column.
+        z : list of floats
+
+        Examples
+        --------
+        >>> from atomap.atom_position import Atom_Position
+        >>> atom = Atom_Position(x=15, y=10, sigma_x=5, sigma_y=3)
+        >>> atom.set_element_info("C", [0, 0.5])
+        >>> atom2 = Atom_Position(x=10, y=15, sigma_x=5, sigma_y=3)
+        >>> atom2.set_element_info(["C", "O"], [0, 0.5])
+        """
+
+        self.element_info = {}
+
+        if isinstance(element, str):
+            for zc in z:
+                self.element_info[zc] = element
+        elif isinstance(element, list):
+            for i, zc in enumerate(z):
+                self.element_info[zc] = element[i]
+        else:
+            raise TypeError(
+                "element must be either a str or list of str")
