@@ -1173,6 +1173,33 @@ class TestSignalProperty:
         assert signal.axes_manager.signal_axes[0].scale == 0.5
         assert signal.axes_manager.signal_axes[1].scale == 0.5
 
+    def test_units(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        sublattice.units = 'nm'
+        signal = sublattice.signal
+        assert signal.axes_manager.signal_axes[0].units == "nm"
+        assert signal.axes_manager.signal_axes[1].units == "nm"
+
+    def test_units_and_pixel_size(self):
+        sublattice = dd.get_simple_cubic_sublattice()
+        sublattice.units = 'nm'
+        sublattice.pixel_size = 0.2
+        signal = sublattice.signal
+        assert signal.axes_manager.signal_axes[0].units == "nm"
+        assert signal.axes_manager.signal_axes[1].units == "nm"
+        assert signal.axes_manager.signal_axes[0].scale == 0.2
+        assert signal.axes_manager.signal_axes[1].scale == 0.2
+
+    def test_units_and_pixel_size_from_sublattice_init(self):
+        image = np.zeros((20, 40))
+        peaks = [[10, 10], [20, 20]]
+        sublattice = Sublattice(peaks, image, units='nm', pixel_size=0.5)
+        signal = sublattice.signal
+        assert signal.axes_manager.signal_axes[0].units == "nm"
+        assert signal.axes_manager.signal_axes[1].units == "nm"
+        assert signal.axes_manager.signal_axes[0].scale == 0.5
+        assert signal.axes_manager.signal_axes[1].scale == 0.5
+
 
 class TestFindMissingAtomsFromZoneVector:
 

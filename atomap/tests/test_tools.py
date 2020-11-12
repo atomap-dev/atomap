@@ -20,9 +20,12 @@ class TestArray2Signal:
     def test_array2signal2d(self):
         array = np.arange(100).reshape(10, 10)
         scale = 0.2
-        s = array2signal2d(array, scale=scale)
+        units = 'nm'
+        s = array2signal2d(array, scale=scale, units=units)
         assert s.axes_manager[0].scale == scale
         assert s.axes_manager[1].scale == scale
+        assert s.axes_manager[0].units == units
+        assert s.axes_manager[1].units == units
         assert s.axes_manager.shape == array.shape
 
     def test_array2signal1d(self):

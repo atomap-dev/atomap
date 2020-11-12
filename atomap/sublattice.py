@@ -34,26 +34,29 @@ class Sublattice():
             original_image=None,
             name='',
             color='red',
-            pixel_size=1.,
-            units='pix'
+            pixel_size=None,
+            units=None,
             ):
         """
         Parameters
         ----------
         atom_position_list : NumPy array
             In the form [[x0, y0], [x1, y1], [x2, y2], ... ]
-        image : 2D NumPy array
+        image : HyperSpy signal, 2D NumPy array or 2D array-like
             A HyperSpy signal with 2 dimensions can also be used directly.
+            Pixel size and units will be copied from a HyperSpy signal
         original_image : 2D NumPy array, optional
         name : string, default ''
         color : string, optional
             Plotting color, default red.
         pixel_size : float, optional
             Scaling number, default 1.
+        units : string, optional
+            Default "pixel".
 
         Attributes
         ----------
-        image: 2D NumPy array, or 2D array-like.
+        image: 2D NumPy array
         x_position : NumPy Array
         y_position : NumPy Array
         atom_positions : NumPy Array
@@ -84,8 +87,8 @@ class Sublattice():
 
         Add pixel size and units when creating sublattice
 
-        >>> sublattice = Sublattice(atom_positions, image_data,
-        ...                         pixel_size=5, units='nm')
+        >>> sublattice = Sublattice(
+        ...     atom_positions, image_data, pixel_size=5, units='nm')
         >>> sublattice.plot()
 
         More atom positions
@@ -99,7 +102,12 @@ class Sublattice():
         >>> sublattice.get_atom_list_on_image(markersize=50).plot()
 
         """
-        at._image_init(self, image=image, original_image=original_image)
+        at._image_init(
+            self,
+            image=image,
+            original_image=original_image,
+            pixel_size=pixel_size,
+            units=units)
         self.atom_list = []
         for atom_position in atom_position_list:
             atom = Atom_Position(atom_position[0], atom_position[1])
@@ -110,10 +118,8 @@ class Sublattice():
         self.atom_planes_by_zone_vector = {}
         self._plot_clim = None
         self.name = name
-        self.pixel_size = pixel_size
         self._plot_color = color
         self._pixel_separation = 0.0
-        self.units = units
 
     def __repr__(self):
         return '<%s, %s (atoms:%s,planes:%s)>' % (
