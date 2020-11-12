@@ -78,18 +78,26 @@ class Sublattice():
         Examples
         --------
         >>> import numpy as np
-        >>> from atomap.sublattice import Sublattice
+        >>> import atomap.api as am
         >>> atom_positions = [[2, 2], [2, 4], [4, 2], [4, 4]]
         >>> image_data = np.random.random((7, 7))
-        >>> sublattice = Sublattice(atom_positions, image_data)
+        >>> sublattice = am.Sublattice(atom_positions, image_data)
         >>> s_sublattice = sublattice.get_atom_list_on_image()
         >>> s_sublattice.plot()
 
         Add pixel size and units when creating sublattice
 
-        >>> sublattice = Sublattice(
+        >>> sublattice = am.Sublattice(
         ...     atom_positions, image_data, pixel_size=5, units='nm')
         >>> sublattice.plot()
+
+        Using a HyperSpy signal2D as image. Here, the pixel_size and units
+        will be taken from the signal. So if the signal is calibrated,
+        the sublattice will be as well.
+
+        >>> s = am.dummy_data.get_fantasite()
+        >>> atom_positions = am.get_atom_positions(s)
+        >>> sublattice = am.Sublattice(atom_positions, s)
 
         More atom positions
 
@@ -97,7 +105,7 @@ class Sublattice():
         >>> x, y = x.flatten(), y.flatten()
         >>> atom_positions = np.dstack((x, y))[0]
         >>> image_data = np.random.random((100, 100))
-        >>> sublattice = Sublattice(atom_positions, image_data, color='yellow',
+        >>> sublattice = am.Sublattice(atom_positions, image_data, color='yellow',
         ...     name='the sublattice')
         >>> sublattice.get_atom_list_on_image(markersize=50).plot()
 
