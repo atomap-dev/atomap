@@ -54,12 +54,19 @@ by adding ``nbval-skip`` to the tag for that cell.
 Style checks
 ------------
 
-In Atomap the PEP8 style guide is followed.
-To check style compliance use flake8:
+In Atomap the PEP8 style guide is followed, and the `Black <https://black.readthedocs.io/en/stable/>`_
+code formatter is used. To automatically format the code:
 
 .. code-block:: bash
 
-    $ python3 -m flake8 --exclude atomap/api.py atomap/
+    $ python3 -m black atomap/
+
+
+To only check the code, without changing it:
+
+.. code-block:: bash
+
+    $ python3 -m black atomap/ --diff --check
 
 
 Generating the sphinx page
