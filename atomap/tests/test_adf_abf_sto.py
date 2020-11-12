@@ -7,9 +7,7 @@ from atomap.atom_lattice import Atom_Lattice
 
 my_path = os.path.dirname(__file__)
 s_adf_filename = os.path.join(my_path, "datasets", "test_ADF_cropped.hdf5")
-s_adf_main = load(s_adf_filename)
 s_abf_filename = os.path.join(my_path, "datasets", "test_ABF_cropped.hdf5")
-s_abf_main = load(s_abf_filename)
 
 
 class TestAdfAbfStoAutoprocess:
@@ -17,14 +15,14 @@ class TestAdfAbfStoAutoprocess:
     def setup_method(self):
         peak_separation = 0.15
 
-        s_adf = s_adf_main.deepcopy()
+        s_adf = load(s_adf_filename)
         s_adf.change_dtype('float64')
         s_adf_modified = afr.subtract_average_background(s_adf)
         self.s_adf_modified = afr.do_pca_on_signal(s_adf_modified)
         self.pixel_size = s_adf.axes_manager[0].scale
         self.pixel_separation = peak_separation/self.pixel_size
 
-        s_abf = s_adf_main.deepcopy()
+        s_abf = load(s_abf_filename)
         s_abf.change_dtype('float64')
 
         self.peaks = afr.get_atom_positions(
@@ -66,6 +64,7 @@ class TestAdfAbfStoAutoprocess:
 class TestAdfAbfStoManualprocess:
 
     def test_manual_processing(self):
+        s_adf_main = load(s_adf_filename)
         s = s_adf_main.deepcopy()
         s.change_dtype('float32')
         atom_positions = afr.get_atom_positions(
