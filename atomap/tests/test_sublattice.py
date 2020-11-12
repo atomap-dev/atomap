@@ -147,6 +147,41 @@ class TestInitSublattice:
                     0, 127, size=(10, 10)).astype('float16')
             Sublattice(atom_positions, image_data)
 
+    def test_units_pixel_size(self):
+        image = np.zeros((100, 50))
+        sublattice = Sublattice(
+            atom_position_list=self.peaks,
+            image=image,
+            units='nm',
+            pixel_size=0.2)
+        assert sublattice.units == "nm"
+        assert sublattice.pixel_size == 0.2
+
+    def test_calibrated_signal_input(self):
+        s = Signal2D(np.zeros((100, 50)))
+        s.axes_manager[-1].units = 'nm'
+        s.axes_manager[-2].units = 'nm'
+        s.axes_manager[-1].scale = 0.1
+        s.axes_manager[-2].scale = 0.1
+        sublattice = Sublattice(
+            atom_position_list=self.peaks, image=s)
+        assert sublattice.units == "nm"
+        assert sublattice.pixel_size == 0.1
+
+    def test_calibrated_signal_input_and_parameters(self):
+        s = Signal2D(np.zeros((100, 50)))
+        s.axes_manager[-1].units = 'nm'
+        s.axes_manager[-2].units = 'nm'
+        s.axes_manager[-1].scale = 0.1
+        s.axes_manager[-2].scale = 0.1
+        sublattice = Sublattice(
+            atom_position_list=self.peaks,
+            image=s,
+            units='pm',
+            pixel_size=0.2)
+        assert sublattice.units == "pm"
+        assert sublattice.pixel_size == 0.2
+
 
 class TestSublatticeSingleAtom:
 

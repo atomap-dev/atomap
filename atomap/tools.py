@@ -1628,7 +1628,12 @@ def _get_atom_selection_from_verts(atom_positions, verts,
     return atom_positions_selected
 
 
-def _image_init(lattice_object, image, original_image=None):
+def _image_init(
+        lattice_object,
+        image,
+        original_image=None,
+        pixel_size=None,
+        units=None):
     if image is not None:
         if not hasattr(image, '__array__'):
             raise ValueError(
@@ -1646,6 +1651,23 @@ def _image_init(lattice_object, image, original_image=None):
                     str(len(image_out.shape)))
     else:
         image_out = None
+
+    if units is None:
+        if hasattr(image, "axes_manager"):
+            units = image.axes_manager[-1].units
+            if units.__str__() == "<undefined>":
+                units = "pixel"
+        else:
+            units = "pixel"
+
+    if pixel_size is None:
+        if hasattr(image, "axes_manager"):
+            pixel_size = image.axes_manager[-1].scale
+        else:
+            pixel_size = 1.
+
+    lattice_object.units = units
+    lattice_object.pixel_size = pixel_size
 
     if original_image is not None:
         if not hasattr(original_image, '__array__'):
