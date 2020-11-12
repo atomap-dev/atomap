@@ -39,6 +39,10 @@ class TestAtomLatticeInputOutput:
         sublattice1 = self.atom_lattice.sublattice_list[1]
         sublattice0.name = "test 0"
         sublattice1.name = "test 1"
+        sublattice0.units = "pm"
+        sublattice1.units = "pm"
+        sublattice0.pixel_size = 0.01
+        sublattice1.pixel_size = 0.01
         sublattice0._plot_color = "blue"
         sublattice1._plot_color = "green"
         assert len(sublattice0.atom_list) == 10
@@ -57,6 +61,10 @@ class TestAtomLatticeInputOutput:
         assert len(sl1.atom_list) == 13
         assert sl0.name == "test 0"
         assert sl1.name == "test 1"
+        assert sl0.units == "pm"
+        assert sl1.units == "pm"
+        assert sl0.pixel_size == 0.01
+        assert sl1.pixel_size == 0.01
         assert sl0._plot_color == "blue"
         assert sl1._plot_color == "green"
 

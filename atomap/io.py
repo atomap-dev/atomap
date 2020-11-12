@@ -92,6 +92,11 @@ def load_atom_lattice_from_hdf5(filename, construct_zone_axes=True):
             else:
                 sublattice.name = ''
 
+            if 'units' in sublattice_set.attrs.keys():
+                sublattice.units = sublattice_set.attrs['units']
+            else:
+                sublattice.units = "pixel"
+
             if type(sublattice.name) == bytes:
                 sublattice.name = sublattice.name.decode()
 
@@ -221,6 +226,7 @@ def save_atom_lattice_to_hdf5(atom_lattice, filename, overwrite=False):
                 compression='gzip')
 
         h5f[subgroup_name].attrs['pixel_size'] = sublattice.pixel_size
+        h5f[subgroup_name].attrs['units'] = sublattice.units
         h5f[subgroup_name].attrs[
                 'pixel_separation'] = sublattice._pixel_separation
         h5f[subgroup_name].attrs['name'] = sublattice.name
