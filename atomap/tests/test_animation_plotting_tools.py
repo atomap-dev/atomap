@@ -5,7 +5,6 @@ import atomap.animation_plotting_tools as apt
 
 
 class TestDrawCursor:
-
     def test_simple(self):
         fig0, ax0 = plt.subplots()
         ax0.imshow(np.arange(100).reshape(10, 10))
@@ -33,20 +32,26 @@ class TestDrawCursor:
 
 
 class TestUpdateFrame:
-
     def test_simple(self):
         fig, ax = plt.subplots()
         ax.imshow(np.arange(100).reshape(10, 10))
         apt._draw_cursor(ax, 5, 8)
         frames = [[5, 9, False], [2, 2, True]]
-        fargs = [fig, ]
-        FuncAnimation(fig, apt._update_frame, frames=frames,
-                      fargs=fargs, interval=200, repeat=False)
+        fargs = [
+            fig,
+        ]
+        FuncAnimation(
+            fig,
+            apt._update_frame,
+            frames=frames,
+            fargs=fargs,
+            interval=200,
+            repeat=False,
+        )
         plt.close(fig)
 
 
 class TestGenerateFramesPositionList:
-
     def test_simple(self):
         position_list = [[10, 10], [30, 20]]
         frames = apt._generate_frames_position_list(position_list, num=10)

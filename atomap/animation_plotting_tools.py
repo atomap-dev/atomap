@@ -29,11 +29,21 @@ def _draw_cursor(ax, x, y, xd=10, yd=-30):
     """
     xd, yd = 10, -30
     arrowprops = dict(
-            width=2.9, headwidth=10.3, headlength=15.06,
-            edgecolor='white', facecolor='black')
-    ax.annotate('', xy=(x, y), xytext=(xd, yd),
-                xycoords='data', textcoords='offset pixels',
-                arrowprops=arrowprops, annotation_clip=False)
+        width=2.9,
+        headwidth=10.3,
+        headlength=15.06,
+        edgecolor="white",
+        facecolor="black",
+    )
+    ax.annotate(
+        "",
+        xy=(x, y),
+        xytext=(xd, yd),
+        xycoords="data",
+        textcoords="offset pixels",
+        arrowprops=arrowprops,
+        annotation_clip=False,
+    )
 
 
 def _update_frame(pos, fig):

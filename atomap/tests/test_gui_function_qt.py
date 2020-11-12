@@ -9,7 +9,6 @@ import atomap.gui_classes as agc
 
 
 class TestAddAtomAdderRemoving:
-
     def test_no_atoms_input(self):
         data = np.random.random((200, 200))
         peaks = ipf.add_atoms_with_gui(data)
@@ -23,7 +22,13 @@ class TestAddAtomAdderRemoving:
 
     def test_atoms_input(self):
         data = np.random.random((50, 200))
-        peaks = ipf.add_atoms_with_gui(data, [[120, 20], [120, 30], ])
+        peaks = ipf.add_atoms_with_gui(
+            data,
+            [
+                [120, 20],
+                [120, 30],
+            ],
+        )
         fig = plt.figure(1)
         x0, y0 = fig.axes[0].transData.transform((100, 10))
         assert len(peaks) == 2
@@ -71,7 +76,7 @@ class TestAddAtomAdderRemoving:
 
     def test_linear_norm(self):
         data = np.random.random((200, 200))
-        peaks = ipf.add_atoms_with_gui(data, norm='linear')
+        peaks = ipf.add_atoms_with_gui(data, norm="linear")
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((100, 100))
         assert len(peaks) == 0
@@ -82,7 +87,7 @@ class TestAddAtomAdderRemoving:
 
     def test_log_norm(self):
         data = np.random.random((200, 200))
-        peaks = ipf.add_atoms_with_gui(data, norm='log')
+        peaks = ipf.add_atoms_with_gui(data, norm="log")
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((100, 100))
         assert len(peaks) == 0
@@ -93,16 +98,15 @@ class TestAddAtomAdderRemoving:
 
     def test_log_norm_negative_image_values(self):
         data = np.random.random((200, 200)) - 10
-        ipf.add_atoms_with_gui(data, norm='log')
+        ipf.add_atoms_with_gui(data, norm="log")
 
     def test_signal_input(self):
         s = Signal2D(np.random.random((200, 200)))
-        ipf.add_atoms_with_gui(s, norm='log')
-        ipf.add_atoms_with_gui(s, norm='linear')
+        ipf.add_atoms_with_gui(s, norm="log")
+        ipf.add_atoms_with_gui(s, norm="linear")
 
 
 class TestToggleAtomRefinePosition:
-
     def test_toggle_one(self):
         atom_position_list = [[10, 10], [10, 20]]
         sublattice = Sublattice(atom_position_list, np.zeros((30, 30)))
@@ -145,12 +149,12 @@ class TestToggleAtomRefinePosition:
         sublattice.toggle_atom_refine_position_with_gui()
         fig = plt.figure(1)
         x0, y0 = fig.axes[0].transData.transform(
-                (x_pos[0] + delta_pos, y_pos[0] + delta_pos))
+            (x_pos[0] + delta_pos, y_pos[0] + delta_pos)
+        )
         fig.canvas.button_press_event(x0, y0, 1)
         print(atom0.refine_position)
         print(atom1.refine_position)
-        sublattice.refine_atom_positions_using_center_of_mass(
-                mask_radius=4)
+        sublattice.refine_atom_positions_using_center_of_mass(mask_radius=4)
         assert atom0.pixel_x == (x_pos[0] + delta_pos)
         assert atom0.pixel_y == (y_pos[0] + delta_pos)
         assert atom1.pixel_x != (x_pos[1] + delta_pos)
@@ -158,7 +162,6 @@ class TestToggleAtomRefinePosition:
 
 
 class TestSelectAtomsWithGui:
-
     def test_select_one_atom(self):
         image = np.random.random((200, 200))
         atom_positions = [[10, 20], [50, 50]]
@@ -175,7 +178,8 @@ class TestSelectAtomsWithGui:
         image = np.random.random((200, 200))
         atom_positions = [[10, 20], [50, 50]]
         atom_selector = agc.GetAtomSelection(
-                image, atom_positions, invert_selection=True)
+            image, atom_positions, invert_selection=True
+        )
         fig = atom_selector.fig
         poly = atom_selector.poly
         position_list = [[5, 5], [5, 25], [25, 25], [25, 5], [5, 5]]
@@ -200,13 +204,15 @@ class TestSelectAtomsWithGui:
         atom_positions = [[10, 20], [50, 50]]
         verts = [(5, 5), (5, 30), (20, 30), (20, 5)]
         atom_positions_selected = ipf.select_atoms_with_gui(
-                image, atom_positions, verts=verts)
+            image, atom_positions, verts=verts
+        )
         assert len(atom_positions_selected) == 1
         assert (atom_positions_selected[0] == [10, 20]).all()
 
         verts = [(5, 5), (5, 60), (60, 60), (60, 5)]
         atom_positions_selected = ipf.select_atoms_with_gui(
-                image, atom_positions, verts=verts)
+            image, atom_positions, verts=verts
+        )
         assert len(atom_positions_selected) == 2
         assert (atom_positions_selected[0] == [10, 20]).all()
         assert (atom_positions_selected[1] == [50, 50]).all()
@@ -216,6 +222,7 @@ class TestSelectAtomsWithGui:
         atom_positions = [[10, 20], [50, 50]]
         verts = [(5, 5), (5, 30), (20, 30), (20, 5)]
         atom_positions_selected = ipf.select_atoms_with_gui(
-                image, atom_positions, verts=verts, invert_selection=True)
+            image, atom_positions, verts=verts, invert_selection=True
+        )
         assert len(atom_positions_selected) == 1
         assert (atom_positions_selected[0] == [50, 50]).all()

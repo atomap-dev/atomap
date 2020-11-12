@@ -39,7 +39,7 @@ def ODR_linear_fitter(x, y):
     Odr = scipy.odr.ODR(Data, Model, [10000, 1], maxit=10000)
     output = Odr.run()
     beta = output.beta
-    return(beta)
+    return beta
 
 
 def get_shortest_distance_point_to_line(x_list, y_list, line):
@@ -73,7 +73,7 @@ def get_shortest_distance_point_to_line(x_list, y_list, line):
     """
     x0, y0 = np.asarray(x_list), np.asarray(y_list)
     a, b, c = line[0], -1, line[1]
-    num = a*x0 + b*y0 + c
-    den = sqrt(a**2 + b**2)
-    d = num/den
-    return(d)
+    num = a * x0 + b * y0 + c
+    den = sqrt(a ** 2 + b ** 2)
+    d = num / den
+    return d

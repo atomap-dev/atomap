@@ -10,13 +10,14 @@ from atomap.external.gaussian2d import Gaussian2D
 
 
 def get_atom_positions(
-        signal,
-        separation=5,
-        threshold_rel=0.02,
-        pca=False,
-        subtract_background=False,
-        normalize_intensity=False,
-        remove_too_close_atoms=True):
+    signal,
+    separation=5,
+    threshold_rel=0.02,
+    pca=False,
+    subtract_background=False,
+    normalize_intensity=False,
+    remove_too_close_atoms=True,
+):
     """
     Find the most intense features in a HyperSpy signal, where the
     features has to be separated by a minimum distance.
@@ -55,8 +56,7 @@ def get_atom_positions(
         raise ValueError("Separation can not be smaller than 1")
     sig_dims = len(signal.data.shape)
     if sig_dims != 2:
-        raise ValueError(
-                "signal must have 2 dimensions, not {0}".format(sig_dims))
+        raise ValueError("signal must have 2 dimensions, not {0}".format(sig_dims))
     if pca:
         signal = do_pca_on_signal(signal)
     if subtract_background:
@@ -65,26 +65,26 @@ def get_atom_positions(
         signal = normalize_signal(signal)
 
     image_data = signal.data
-    if image_data.dtype is np.dtype('float16'):
-        image_data = image_data.astype('float32')
-    if image_data.dtype is np.dtype('int8'):
-        image_data = image_data.astype('int32')
-    if image_data.dtype is np.dtype('int16'):
-        image_data = image_data.astype('int32')
+    if image_data.dtype is np.dtype("float16"):
+        image_data = image_data.astype("float32")
+    if image_data.dtype is np.dtype("int8"):
+        image_data = image_data.astype("int32")
+    if image_data.dtype is np.dtype("int16"):
+        image_data = image_data.astype("int32")
 
     temp_positions = peak_local_max(
-            image=image_data,
-            min_distance=int(separation),
-            threshold_rel=threshold_rel,
-            indices=True)
+        image=image_data,
+        min_distance=int(separation),
+        threshold_rel=threshold_rel,
+        indices=True,
+    )
 
     # The X- and Y-axes are switched in HyperSpy compared to NumPy
     # so we need to flip them here
     atom_positions = np.fliplr(temp_positions)
     if remove_too_close_atoms:
-        atom_positions = _remove_too_close_atoms(
-                atom_positions, int(separation)/2)
-    return(atom_positions)
+        atom_positions = _remove_too_close_atoms(atom_positions, int(separation) / 2)
+    return atom_positions
 
 
 def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance):
@@ -128,15 +128,15 @@ def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance):
 
 
 def find_features_by_separation(
-        signal,
-        separation_range,
-        separation_step=1,
-        threshold_rel=0.02,
-        pca=False,
-        subtract_background=False,
-        normalize_intensity=False,
-        show_progressbar=True,
-        ):
+    signal,
+    separation_range,
+    separation_step=1,
+    threshold_rel=0.02,
+    pca=False,
+    subtract_background=False,
+    normalize_intensity=False,
+    show_progressbar=True,
+):
     """
     Do peak finding with a varying amount of peak separation
     constrained.
@@ -157,39 +157,36 @@ def find_features_by_separation(
     tuple, (separation_list, peak_list)
 
     """
-    separation_list = range(
-            separation_range[0],
-            separation_range[1],
-            separation_step)
+    separation_list = range(separation_range[0], separation_range[1], separation_step)
 
     separation_value_list = []
     peak_list = []
-    for separation in progressbar(separation_list,
-                                  disable=not show_progressbar):
+    for separation in progressbar(separation_list, disable=not show_progressbar):
         peaks = get_atom_positions(
-                signal,
-                separation=separation,
-                threshold_rel=threshold_rel,
-                pca=pca,
-                normalize_intensity=normalize_intensity,
-                subtract_background=subtract_background)
+            signal,
+            separation=separation,
+            threshold_rel=threshold_rel,
+            pca=pca,
+            normalize_intensity=normalize_intensity,
+            subtract_background=subtract_background,
+        )
 
         separation_value_list.append(separation)
         peak_list.append(peaks)
 
-    return(separation_value_list, peak_list)
+    return (separation_value_list, peak_list)
 
 
 def get_feature_separation(
-        signal,
-        separation_range=(5, 30),
-        separation_step=1,
-        pca=False,
-        subtract_background=False,
-        normalize_intensity=False,
-        threshold_rel=0.02,
-        show_progressbar=True,
-        ):
+    signal,
+    separation_range=(5, 30),
+    separation_step=1,
+    pca=False,
+    subtract_background=False,
+    normalize_intensity=False,
+    threshold_rel=0.02,
+    show_progressbar=True,
+):
     """
     Plot the peak positions on in a HyperSpy signal, as a function
     of peak separation.
@@ -216,34 +213,39 @@ def get_feature_separation(
     """
     if separation_range[0] > separation_range[1]:
         raise ValueError(
-                "The lower range of the separation_range ({0}) can not be "
-                "smaller than the upper range ({1})".format(
-                    separation_range[0], separation_range[0]))
+            "The lower range of the separation_range ({0}) can not be "
+            "smaller than the upper range ({1})".format(
+                separation_range[0], separation_range[0]
+            )
+        )
     if separation_range[0] < 1:
         raise ValueError(
-                "The lower range of the separation_range can not be below 1. "
-                "Current value: {0}".format(separation_range[0]))
+            "The lower range of the separation_range can not be below 1. "
+            "Current value: {0}".format(separation_range[0])
+        )
 
-    if signal.data.dtype is np.dtype('float16'):
+    if signal.data.dtype is np.dtype("float16"):
         raise ValueError(
-                "signal has dtype float16, which is not supported "
-                "use signal.change_dtype('float32') to change it")
+            "signal has dtype float16, which is not supported "
+            "use signal.change_dtype('float32') to change it"
+        )
 
     separation_list, peak_list = find_features_by_separation(
-            signal=signal,
-            separation_range=separation_range,
-            separation_step=separation_step,
-            threshold_rel=threshold_rel,
-            pca=pca,
-            normalize_intensity=normalize_intensity,
-            subtract_background=subtract_background)
+        signal=signal,
+        separation_range=separation_range,
+        separation_step=separation_step,
+        threshold_rel=threshold_rel,
+        pca=pca,
+        normalize_intensity=normalize_intensity,
+        subtract_background=subtract_background,
+    )
 
     scale_x = signal.axes_manager[0].scale
     scale_y = signal.axes_manager[1].scale
     offset_x = signal.axes_manager[0].offset
     offset_y = signal.axes_manager[1].offset
 
-    s = hs.stack([signal]*len(separation_list))
+    s = hs.stack([signal] * len(separation_list))
     s.axes_manager.navigation_axes[0].offset = separation_list[0]
     s.axes_manager.navigation_axes[0].scale = separation_step
     s.axes_manager.navigation_axes[0].name = "Feature separation, [Pixels]"
@@ -255,34 +257,34 @@ def get_feature_separation(
             max_peaks = len(peaks)
     if max_peaks == 0:
         raise ValueError(
-                "No peaks found, try either reducing separation_range, or "
-                "using a better image")
+            "No peaks found, try either reducing separation_range, or "
+            "using a better image"
+        )
 
-    marker_list_x = np.ones((len(peak_list), max_peaks))*-100
-    marker_list_y = np.ones((len(peak_list), max_peaks))*-100
+    marker_list_x = np.ones((len(peak_list), max_peaks)) * -100
+    marker_list_y = np.ones((len(peak_list), max_peaks)) * -100
 
     for index, peaks in enumerate(peak_list):
         if len(peaks) != 0:
-            marker_list_x[index, 0:len(peaks)] = (peaks[:, 0]*scale_x)+offset_x
-            marker_list_y[index, 0:len(peaks)] = (peaks[:, 1]*scale_y)+offset_y
+            marker_list_x[index, 0 : len(peaks)] = (peaks[:, 0] * scale_x) + offset_x
+            marker_list_y[index, 0 : len(peaks)] = (peaks[:, 1] * scale_y) + offset_y
 
     marker_list = []
-    for i in progressbar(range(marker_list_x.shape[1]),
-                         disable=not show_progressbar):
-        m = hs.markers.point(
-                x=marker_list_x[:, i], y=marker_list_y[:, i], color='red')
+    for i in progressbar(range(marker_list_x.shape[1]), disable=not show_progressbar):
+        m = hs.markers.point(x=marker_list_x[:, i], y=marker_list_y[:, i], color="red")
         marker_list.append(m)
 
     s.add_marker(marker_list, permanent=True, plot_marker=False)
-    return(s)
+    return s
 
 
 def find_feature_density(
-        image_data,
-        separation_range=None,
-        separation_step=1,
-        plot_figure=False,
-        plot_debug_figures=False):
+    image_data,
+    separation_range=None,
+    separation_step=1,
+    plot_figure=False,
+    plot_debug_figures=False,
+):
     """
     Do peak finding with a varying amount of peak separation
     constrained. Gives a measure of feature density, and
@@ -293,19 +295,20 @@ def find_feature_density(
     """
 
     separation_list, peak_list = find_features_by_separation(
-            image_data=image_data,
-            separation_range=separation_range,
-            separation_step=separation_step)
+        image_data=image_data,
+        separation_range=separation_range,
+        separation_step=separation_step,
+    )
     peakN_list = []
     for peaks in peak_list:
         peakN_list.append(len(peaks))
 
-    return(separation_list, peakN_list)
+    return (separation_list, peakN_list)
 
 
 def construct_zone_axes_from_sublattice(
-        sublattice, atom_plane_tolerance=0.5,
-        zone_axis_para_list=False):
+    sublattice, atom_plane_tolerance=0.5, zone_axis_para_list=False
+):
     """Constructs zone axes for a sublattice.
 
     The zone axes are constructed by finding the 15 nearest neighbors for
@@ -353,18 +356,14 @@ def construct_zone_axes_from_sublattice(
         zone_axes = []
         zone_axes_names = []
         for zone_axis_para in zone_axis_para_list:
-            if zone_axis_para['number'] < len(
-                    sublattice.zones_axis_average_distances):
-                index = zone_axis_para['number']
-                zone_axes.append(
-                        sublattice.zones_axis_average_distances[index])
-                zone_axes_names.append(
-                        zone_axis_para['name'])
+            if zone_axis_para["number"] < len(sublattice.zones_axis_average_distances):
+                index = zone_axis_para["number"]
+                zone_axes.append(sublattice.zones_axis_average_distances[index])
+                zone_axes_names.append(zone_axis_para["name"])
         sublattice.zones_axis_average_distances = zone_axes
         sublattice.zones_axis_average_distances_names = zone_axes_names
 
-    sublattice._generate_all_atom_plane_list(
-            atom_plane_tolerance=atom_plane_tolerance)
+    sublattice._generate_all_atom_plane_list(atom_plane_tolerance=atom_plane_tolerance)
     sublattice._sort_atom_planes_by_zone_vector()
     sublattice._remove_bad_zone_vectors()
 
@@ -401,9 +400,9 @@ def _make_circular_mask(centerX, centerY, imageSizeX, imageSizeY, radius):
     >>> import matplotlib.pyplot as plt
     >>> cax = plt.imshow(image_masked)
     """
-    y, x = np.ogrid[-centerX:imageSizeX-centerX, -centerY:imageSizeY-centerY]
-    mask = x*x + y*y <= radius*radius
-    return(mask)
+    y, x = np.ogrid[-centerX : imageSizeX - centerX, -centerY : imageSizeY - centerY]
+    mask = x * x + y * y <= radius * radius
+    return mask
 
 
 def _make_mask_circle_centre(arr, radius):
@@ -439,12 +438,12 @@ def _make_mask_circle_centre(arr, radius):
     if len(arr.shape) != 2:
         raise ValueError("arr must be 2D, not {0}".format(len(arr.shape)))
     imageSizeX, imageSizeY = arr.shape
-    centerX = (arr.shape[0]-1)/2
-    centerY = (arr.shape[1]-1)/2
+    centerX = (arr.shape[0] - 1) / 2
+    centerY = (arr.shape[1] - 1) / 2
 
-    x = np.expand_dims(np.arange(-centerX, imageSizeX-centerX), axis=1)
-    y = np.arange(-centerY, imageSizeY-centerY)
-    mask = x*x + y*y > radius*radius
+    x = np.expand_dims(np.arange(-centerX, imageSizeX - centerX), axis=1)
+    y = np.arange(-centerY, imageSizeY - centerY)
+    mask = x * x + y * y > radius * radius
     return mask
 
 
@@ -506,13 +505,18 @@ def _crop_array(arr, center_x, center_y, radius):
     >>> data = afr._crop_array(arr, 25, 10, 5)
 
     """
-    radius_left = radius-1
+    radius_left = radius - 1
     radius_right = radius
 
     # Reversed first two indices so we can subtract the edges
     edges_of_crop = np.array(
-            [radius_left - center_x, radius_left - center_y,
-             center_x + radius_right, center_y + radius_right])
+        [
+            radius_left - center_x,
+            radius_left - center_y,
+            center_x + radius_right,
+            center_y + radius_right,
+        ]
+    )
     ymax, xmax = arr.shape
     edges_of_arr = np.array([0, 0, xmax - 1, ymax - 1])
     edge_difference_max = np.max(edges_of_crop - edges_of_arr)
@@ -594,15 +598,12 @@ def _pad_array(arr, padding=1):
 
     """
     x, y = arr.shape
-    arr2 = np.zeros((x+padding*2, y+padding*2))
+    arr2 = np.zeros((x + padding * 2, y + padding * 2))
     arr2[padding:-padding, padding:-padding] = arr.copy()
     return arr2
 
 
-def _make_mask_from_positions(
-        position_list,
-        radius_list,
-        data_shape):
+def _make_mask_from_positions(position_list, radius_list, data_shape):
     """
     Parameters
     ----------
@@ -619,15 +620,13 @@ def _make_mask_from_positions(
     >>> mask = _make_mask_from_positions(pos, radius, (40, 40))
     """
     if len(position_list) != len(radius_list):
-        raise ValueError(
-                "position_list and radius_list must be the same length")
+        raise ValueError("position_list and radius_list must be the same length")
     mask = np.zeros(data_shape, dtype=np.bool)
     for position, radius in zip(position_list, radius_list):
         mask += _make_circular_mask(
-                position[0], position[1],
-                data_shape[0], data_shape[1],
-                radius)
-    return(mask)
+            position[0], position[1], data_shape[0], data_shape[1], radius
+        )
+    return mask
 
 
 def _crop_mask_slice_indices(mask):
@@ -643,13 +642,13 @@ def _crop_mask_slice_indices(mask):
     >>> mask_crop = mask[x0:x1, y0:y1]
     """
     x0 = np.nonzero(mask)[0].min()
-    x1 = np.nonzero(mask)[0].max()+1
+    x1 = np.nonzero(mask)[0].max() + 1
     y0 = np.nonzero(mask)[1].min()
-    y1 = np.nonzero(mask)[1].max()+1
-    return(x0, x1, y0, y1)
+    y1 = np.nonzero(mask)[1].max() + 1
+    return (x0, x1, y0, y1)
 
 
-def _find_background_value(data, method='median', lowest_percentile=0.1):
+def _find_background_value(data, method="median", lowest_percentile=0.1):
     """
     Get background value for image data. Intended for Gaussian
     shaped image, with the intensity peak in the middle.
@@ -677,21 +676,20 @@ def _find_background_value(data, method='median', lowest_percentile=0.1):
     """
     if not ((lowest_percentile >= 0.01) and (lowest_percentile <= 1.0)):
         raise ValueError("lowest_percentile must be between 0.01 and 1.0")
-    if method == 'minimum':
+    if method == "minimum":
         background_value = data.min()
     else:
-        amount = int(lowest_percentile*data.size)
+        amount = int(lowest_percentile * data.size)
         if amount == 0:
             amount = 1
         lowest_values = np.sort(data.flatten())[:amount]
-        if method == 'median':
+        if method == "median":
             background_value = np.median(lowest_values)
-        elif method == 'mean':
+        elif method == "mean":
             background_value = np.mean(lowest_values)
         else:
-            raise ValueError(
-                    "method must be 'minimum', 'median' or 'mean'")
-    return(background_value)
+            raise ValueError("method must be 'minimum', 'median' or 'mean'")
+    return background_value
 
 
 def _find_median_upper_percentile(data, upper_percentile=0.1):
@@ -715,11 +713,11 @@ def _find_median_upper_percentile(data, upper_percentile=0.1):
     """
     if not ((upper_percentile >= 0.01) and (upper_percentile <= 1.0)):
         raise ValueError("lowest_percentile must be between 0.01 and 1.0")
-    amount = int(upper_percentile*data.size)
+    amount = int(upper_percentile * data.size)
     if amount == 0:
         amount = 1
     high_value = np.median(np.sort(data.flatten())[-amount:])
-    return(high_value)
+    return high_value
 
 
 def _atom_to_gaussian_component(atom):
@@ -742,19 +740,18 @@ def _atom_to_gaussian_component(atom):
     >>> gaussian = _atom_to_gaussian_component(atom)
     """
     g = Gaussian2D(
-            centre_x=atom.pixel_x,
-            centre_y=atom.pixel_y,
-            sigma_x=atom.sigma_x,
-            sigma_y=atom.sigma_y,
-            rotation=atom.rotation)
-    return(g)
+        centre_x=atom.pixel_x,
+        centre_y=atom.pixel_y,
+        sigma_x=atom.sigma_x,
+        sigma_y=atom.sigma_y,
+        rotation=atom.rotation,
+    )
+    return g
 
 
 def _make_model_from_atom_list(
-        atom_list,
-        image_data,
-        percent_to_nn=0.40,
-        mask_radius=None):
+    atom_list, image_data, percent_to_nn=0.40, mask_radius=None
+):
     """
     Make a HyperSpy model from a list of Atom_Position objects and
     an image.
@@ -794,7 +791,7 @@ def _make_model_from_atom_list(
     >>> m.fit(print_info=False, return_info=False)
 
     """
-    image_data = image_data.astype('float64')
+    image_data = image_data.astype("float64")
     mask = np.zeros_like(image_data)
 
     position_list, radius_list = [], []
@@ -803,18 +800,19 @@ def _make_model_from_atom_list(
         if mask_radius is None:
             mask_radius = atom.get_closest_neighbor() * percent_to_nn
         radius_list.append(mask_radius)
-    mask = _make_mask_from_positions(
-            position_list, radius_list, image_data.shape)
+    mask = _make_mask_from_positions(position_list, radius_list, image_data.shape)
     x0, x1, y0, y1 = _crop_mask_slice_indices(mask)
-    mask_crop = mask[x0:x1, y0:y1].astype('bool')
-    data_mask_crop = (image_data*mask)[x0:x1, y0:y1]
+    mask_crop = mask[x0:x1, y0:y1].astype("bool")
+    data_mask_crop = (image_data * mask)[x0:x1, y0:y1]
 
     upper_value = _find_median_upper_percentile(
-            data_mask_crop[mask_crop], upper_percentile=0.03)
+        data_mask_crop[mask_crop], upper_percentile=0.03
+    )
     lower_value = _find_background_value(
-            data_mask_crop[mask_crop], lowest_percentile=0.03)
+        data_mask_crop[mask_crop], lowest_percentile=0.03
+    )
     data_mask_crop -= lower_value
-    data_mask_crop[data_mask_crop < 0] = 0.
+    data_mask_crop[data_mask_crop < 0] = 0.0
 
     s = Signal2D(data_mask_crop)
     gaussian_list = []
@@ -823,23 +821,24 @@ def _make_model_from_atom_list(
         if atom._gaussian_fitted:
             gaussian.A.value = atom.amplitude_gaussian
         else:
-            gaussian.A.value = upper_value*10
+            gaussian.A.value = upper_value * 10
         gaussian_list.append(gaussian)
 
     s.axes_manager[0].offset = y0
     s.axes_manager[1].offset = x0
     m = s.create_model()
     m.extend(gaussian_list)
-    return(m, mask)
+    return (m, mask)
 
 
 def _fit_atom_positions_with_gaussian_model(
-        atom_list,
-        image_data,
-        rotation_enabled=True,
-        percent_to_nn=0.40,
-        mask_radius=None,
-        centre_free=True):
+    atom_list,
+    image_data,
+    rotation_enabled=True,
+    percent_to_nn=0.40,
+    mask_radius=None,
+    centre_free=True,
+):
     """
     Fit a list of Atom_Positions to an image using 2D gaussians.
     This type of fitting is prone to errors, especially where the atoms are
@@ -886,15 +885,12 @@ def _fit_atom_positions_with_gaussian_model(
     ...     atom_list=atom_list, image_data=image, mask_radius=2)
 
     """
-    if (not hasattr(atom_list[0], 'pixel_x')) or hasattr(atom_list, 'pixel_x'):
-        raise TypeError(
-            "atom_list argument must be a list of Atom_Position objects")
+    if (not hasattr(atom_list[0], "pixel_x")) or hasattr(atom_list, "pixel_x"):
+        raise TypeError("atom_list argument must be a list of Atom_Position objects")
 
     model, mask = _make_model_from_atom_list(
-                                atom_list,
-                                image_data,
-                                mask_radius=mask_radius,
-                                percent_to_nn=percent_to_nn)
+        atom_list, image_data, mask_radius=mask_radius, percent_to_nn=percent_to_nn
+    )
     x0, x1, y0, y1 = model.axes_manager.signal_extent
 
     if centre_free is False:
@@ -922,28 +918,29 @@ def _fit_atom_positions_with_gaussian_model(
             return False
         inside_mask = mask[int(centre_y)][int(centre_x)]
         if not inside_mask:
-            return(False)
+            return False
         if g.A.value < 0.0:
-            return(False)
+            return False
 
         # If sigma aspect ratio is too large, assume the fitting is bad
         max_sigma = max((abs(g.sigma_x.value), abs(g.sigma_y.value)))
         min_sigma = min((abs(g.sigma_x.value), abs(g.sigma_y.value)))
-        sigma_ratio = max_sigma/min_sigma
+        sigma_ratio = max_sigma / min_sigma
         if sigma_ratio > 4:
-            return(False)
+            return False
         gaussian_list.append(g)
 
-    return(gaussian_list)
+    return gaussian_list
 
 
 def fit_atom_positions_gaussian(
-        atom_list,
-        image_data,
-        rotation_enabled=True,
-        percent_to_nn=0.40,
-        mask_radius=None,
-        centre_free=True):
+    atom_list,
+    image_data,
+    rotation_enabled=True,
+    percent_to_nn=0.40,
+    mask_radius=None,
+    centre_free=True,
+):
     """Fit a list of Atom_Positions to an image using 2D Gaussians.
 
     The results of the fitting will be saved in the Atom_Position objects
@@ -1025,31 +1022,32 @@ def fit_atom_positions_gaussian(
     """
     if (mask_radius is None) and (percent_to_nn is None):
         raise ValueError(
-                "Both mask_radius and percent_to_nn is None, one of them must "
-                "be set")
-    if (not hasattr(atom_list[0], 'pixel_x')) or hasattr(atom_list, 'pixel_x'):
-        raise TypeError(
-            "atom_list argument must be a list of Atom_Position objects")
+            "Both mask_radius and percent_to_nn is None, one of them must " "be set"
+        )
+    if (not hasattr(atom_list[0], "pixel_x")) or hasattr(atom_list, "pixel_x"):
+        raise TypeError("atom_list argument must be a list of Atom_Position objects")
 
     for i in range(10):
         temp_mask_radius = mask_radius
         temp_percent_to_nn = percent_to_nn
         g_list = _fit_atom_positions_with_gaussian_model(
-                atom_list,
-                image_data,
-                rotation_enabled=rotation_enabled,
-                mask_radius=temp_mask_radius,
-                percent_to_nn=temp_percent_to_nn,
-                centre_free=centre_free)
+            atom_list,
+            image_data,
+            rotation_enabled=rotation_enabled,
+            mask_radius=temp_mask_radius,
+            percent_to_nn=temp_percent_to_nn,
+            centre_free=centre_free,
+        )
         if g_list is False:
             if i == 9:
                 for atom in atom_list:
                     atom.old_pixel_x_list.append(atom.pixel_x)
                     atom.old_pixel_y_list.append(atom.pixel_y)
                     atom.pixel_x, atom.pixel_y = atom._get_center_position_com(
-                            image_data,
-                            percent_to_nn=temp_percent_to_nn,
-                            mask_radius=temp_mask_radius)
+                        image_data,
+                        percent_to_nn=temp_percent_to_nn,
+                        mask_radius=temp_mask_radius,
+                    )
                     atom.amplitude_gaussian = 0.0
                 break
             else:
@@ -1071,10 +1069,7 @@ def fit_atom_positions_gaussian(
             break
 
 
-def refine_sublattice(
-        sublattice,
-        refinement_config_list,
-        percent_to_nn):
+def refine_sublattice(sublattice, refinement_config_list, percent_to_nn):
 
     total_number_of_refinements = 0
     for refinement_config in refinement_config_list:
@@ -1087,59 +1082,56 @@ def refine_sublattice(
         image = refinement_config[0]
         number_of_refinements = refinement_config[1]
         refinement_type = refinement_config[2]
-        for index in range(1, number_of_refinements+1):
-            print(
-                    str(current_counts) + "/" + str(
-                        total_number_of_refinements))
-            if refinement_type == 'gaussian':
+        for index in range(1, number_of_refinements + 1):
+            print(str(current_counts) + "/" + str(total_number_of_refinements))
+            if refinement_type == "gaussian":
                 sublattice.refine_atom_positions_using_2d_gaussian(
-                        image,
-                        rotation_enabled=False,
-                        percent_to_nn=percent_to_nn)
+                    image, rotation_enabled=False, percent_to_nn=percent_to_nn
+                )
                 sublattice.refine_atom_positions_using_2d_gaussian(
-                        image,
-                        rotation_enabled=True,
-                        percent_to_nn=percent_to_nn)
-            elif refinement_type == 'center_of_mass':
+                    image, rotation_enabled=True, percent_to_nn=percent_to_nn
+                )
+            elif refinement_type == "center_of_mass":
                 sublattice.refine_atom_positions_using_center_of_mass(
-                        image,
-                        percent_to_nn=percent_to_nn)
+                    image, percent_to_nn=percent_to_nn
+                )
             current_counts += 1
 
 
 def do_pca_on_signal(signal, pca_components=22):
-    signal.change_dtype('float64')
+    signal.change_dtype("float64")
     temp_signal = hs.signals.Signal1D(signal.data)
     temp_signal.decomposition(print_info=False)
     temp_signal = temp_signal.get_decomposition_model(pca_components)
     temp_signal = Signal2D(temp_signal.data)
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
-    return(temp_signal)
+    return temp_signal
 
 
 def subtract_average_background(signal, gaussian_blur=30):
-    signal.change_dtype('float64')
+    signal.change_dtype("float64")
     temp_signal = signal.deepcopy()
     average_background_data = gaussian_filter(
-            temp_signal.data, gaussian_blur, mode='nearest')
-    background_subtracted = signal.deepcopy().data -\
-        average_background_data
+        temp_signal.data, gaussian_blur, mode="nearest"
+    )
+    background_subtracted = signal.deepcopy().data - average_background_data
     temp_signal = hs.signals.Signal1D(
-            background_subtracted-background_subtracted.min())
+        background_subtracted - background_subtracted.min()
+    )
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
-    return(temp_signal)
+    return temp_signal
 
 
 def normalize_signal(signal, invert_signal=False):
     temp_signal = signal.deepcopy()
     if invert_signal:
-        temp_signal_data = 1./temp_signal.data
+        temp_signal_data = 1.0 / temp_signal.data
     else:
         temp_signal_data = temp_signal.data
-    temp_signal_data = temp_signal_data/temp_signal_data.max()
+    temp_signal_data = temp_signal_data / temp_signal_data.max()
     temp_signal = Signal2D(temp_signal_data)
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
-    return(temp_signal)
+    return temp_signal

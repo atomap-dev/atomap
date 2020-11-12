@@ -33,7 +33,7 @@ def centered_distance_matrix(centre, det_image):
     """
     # makes a matrix centred around 'centre' the same size as the det_image.
     x, y = np.meshgrid(range(det_image.shape[0]), range(det_image.shape[0]))
-    return np.sqrt((x - (centre[1]) + 1)**2 + (y - (centre[0]))**2)
+    return np.sqrt((x - (centre[1]) + 1) ** 2 + (y - (centre[0])) ** 2)
 
 
 def _detector_threshold(det_image):
@@ -59,12 +59,12 @@ def _detector_threshold(det_image):
     """
     det_min, det_max = np.min(det_image), np.max(det_image)
     threshold_image = (det_image - det_min) / (det_max - det_min)
-    threshold_image = (threshold_image >= 0.25)
+    threshold_image = threshold_image >= 0.25
     return threshold_image
 
 
 def _func(x, a, b, c):
-    return a * (x**-b) + c
+    return a * (x ** -b) + c
 
 
 def _radial_profile(data, centre):
@@ -89,7 +89,7 @@ def _radial_profile(data, centre):
     """
 
     y, x = np.indices((data.shape))
-    r = np.sqrt((x - centre[0])**2 + (y - centre[1])**2)
+    r = np.sqrt((x - centre[0]) ** 2 + (y - centre[1]) ** 2)
     r = r.astype(np.int)
 
     tbin = np.bincount(r.ravel(), data.ravel())
@@ -99,7 +99,6 @@ def _radial_profile(data, centre):
 
 
 class InteractiveFluxAnalyser:
-
     def __init__(self, profile, radius, flux_profile, limits=None):
         if limits is None:
             self.profile = profile[0]
@@ -108,20 +107,24 @@ class InteractiveFluxAnalyser:
             self.left = np.int(min(self.profile.get_xdata()))
             self.right = np.int(max(self.profile.get_xdata()))
             self.l_line = self.profile.axes.axvline(
-                    self.left, color='firebrick', linestyle='--')
+                self.left, color="firebrick", linestyle="--"
+            )
             self.r_line = self.profile.axes.axvline(
-                    self.right, color='seagreen', linestyle='--')
+                self.right, color="seagreen", linestyle="--"
+            )
             self.cid = self.profile.figure.canvas.mpl_connect(
-                    'button_press_event', self.onclick)
+                "button_press_event", self.onclick
+            )
             self.key = self.profile.figure.canvas.mpl_connect(
-                    'key_press_event', self.onkey)
+                "key_press_event", self.onkey
+            )
         else:
             self.left, self.right = limits
             self._set_coords()
 
     def __call__(self):
         self._set_coords()
-        print('Final coordinates are: {}, {}!'.format(self.left, self.right))
+        print("Final coordinates are: {}, {}!".format(self.left, self.right))
 
     def _set_coords(self):
         self.coords = [self.left, self.right]
@@ -142,12 +145,12 @@ class InteractiveFluxAnalyser:
                 self.right = right
             self.r_line.set_xdata(self.right)
             self.profile.figure.canvas.draw_idle()
-        print('Coordinates selected', self.left, self.right)
+        print("Coordinates selected", self.left, self.right)
 
     def onkey(self, event):
         if event.inaxes != self.profile.axes:
             return
-        if event.key == 'enter':  # Enter key
+        if event.key == "enter":  # Enter key
             event.canvas.mpl_disconnect(self.cid)
             event.canvas.mpl_disconnect(self.key)
             self()
@@ -178,11 +181,14 @@ def find_flux_limits(flux_pattern, conv_angle, limits=None):
     """
     if (limits is not None) and (len(limits) != 2):
         raise ValueError(
-                "limits must either be None to get an interactive window, "
-                "or tuple with two values. Currently it is {0}".format(limits))
+            "limits must either be None to get an interactive window, "
+            "or tuple with two values. Currently it is {0}".format(limits)
+        )
     elif (limits is not None) and (limits[0] > limits[1]):
-        raise ValueError("limits[1] must be larger than limits[0], currently "
-                         " limits is {0}".format(limits))
+        raise ValueError(
+            "limits[1] must be larger than limits[0], currently "
+            " limits is {0}".format(limits)
+        )
     # normalise flux image to be scaled 0-1.
     low_values_indices = flux_pattern < 0
     flux_pattern[low_values_indices] = 0
@@ -200,26 +206,27 @@ def find_flux_limits(flux_pattern, conv_angle, limits=None):
     # power-law fitting.
     if limits is None:
         fig = plt.figure()
-        fig.suptitle('Radial Flux Profile: select power-law region with left '
-                     'and right mouse button.\n'
-                     'Press the Enter key to confirm selection.',
-                     fontsize=10)
+        fig.suptitle(
+            "Radial Flux Profile: select power-law region with left "
+            "and right mouse button.\n"
+            "Press the Enter key to confirm selection.",
+            fontsize=10,
+        )
         ax1 = fig.add_subplot(2, 1, 1)
         ax1.plot(radius, flux_profile)
-        ax1.set_title('Radial Profile')
+        ax1.set_title("Radial Profile")
         ax2 = fig.add_subplot(2, 1, 2)
-        ax2.set_title('Logarithmic Profile')
+        ax2.set_title("Logarithmic Profile")
         profile = ax2.plot(radius, flux_profile)
-        ax2.set_yscale('log')
+        ax2.set_yscale("log")
         fig.subplots_adjust(hspace=0.3)
         fig.show()
     else:
         profile = None
 
-    profiler = InteractiveFluxAnalyser(profile, radius, flux_profile,
-                                       limits=limits)
+    profiler = InteractiveFluxAnalyser(profile, radius, flux_profile, limits=limits)
 
-    return(profiler, flux_profile)
+    return (profiler, flux_profile)
 
 
 def analyse_flux(coords, flux_profile, conv_angle):
@@ -259,19 +266,20 @@ def analyse_flux(coords, flux_profile, conv_angle):
     popt, pcov = scipy.optimize.curve_fit(_func, xdata, ydata, p0=([1, 1, 1]))
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 1, 1)
-    ax1.plot(xdata, ydata, 'b-', label='data')
-    ax1.plot(xdata, _func(xdata, *popt), 'r-', label='fit')
-    ax1.set_yscale('log')
+    ax1.plot(xdata, ydata, "b-", label="data")
+    ax1.plot(xdata, _func(xdata, *popt), "r-", label="fit")
+    ax1.set_yscale("log")
     ax1.legend()
-    fig.suptitle('Resulting fitted profile, fontsize=10')
+    fig.suptitle("Resulting fitted profile, fontsize=10")
 
     outer_cutoff = radius[np.argmin(grad[upper:]) + upper]
 
-    return(popt[1], outer_cutoff)
+    return (popt[1], outer_cutoff)
 
 
 def detector_normalisation(
-        image, det_image, inner_angle, outer_angle=None, flux_expo=None):
+    image, det_image, inner_angle, outer_angle=None, flux_expo=None
+):
     """Using an input detector image and flux exponent (if provided) a detector
     normalisation is carried out on the experimental image.
 
@@ -313,7 +321,8 @@ def detector_normalisation(
     # fill at least half the image.t
 
     m = centered_distance_matrix(
-            (det_image.shape[0] / 2, det_image.shape[1] / 2), det_image)
+        (det_image.shape[0] / 2, det_image.shape[1] / 2), det_image
+    )
     centre_image = np.multiply((m < 512), (1 - threshold_image))
     centre = scipy.ndimage.measurements.center_of_mass(centre_image)
 
@@ -331,8 +340,7 @@ def detector_normalisation(
         # This limits the detector average value to only the region being,
         # illuminated by the beam.
         active_layer = np.multiply(active_layer, ((d * ratio) < outer_angle))
-        threshold_image = np.multiply(
-            threshold_image, ((d * ratio) < outer_angle))
+        threshold_image = np.multiply(threshold_image, ((d * ratio) < outer_angle))
 
     if flux_expo is None:
         # If no flux exponent is provided the detector sensitivity is simply
@@ -359,8 +367,9 @@ def detector_normalisation(
 
         detector_intensity = new_det[new_det.nonzero()].mean()
 
-    normalised_image = (image.data - vacuum_intensity) / \
-        (detector_intensity - vacuum_intensity)
+    normalised_image = (image.data - vacuum_intensity) / (
+        detector_intensity - vacuum_intensity
+    )
 
     return image._deepcopy_with_new_data(normalised_image, copy_variance=True)
 
@@ -397,8 +406,12 @@ def get_statistical_quant_criteria(sublattice_list, max_atom_nums):
     # Get array of intensities of Gaussians of each atom
     intensities = []
     for sublattice in sublattice_list:
-        intensities.append([2 * np.pi * atom.amplitude_gaussian * atom.sigma_x
-                            * atom.sigma_y for atom in sublattice.atom_list])
+        intensities.append(
+            [
+                2 * np.pi * atom.amplitude_gaussian * atom.sigma_x * atom.sigma_y
+                for atom in sublattice.atom_list
+            ]
+        )
     int_array = np.asarray(intensities)
     int_array = int_array.reshape(-1, 1)
 
@@ -407,8 +420,7 @@ def get_statistical_quant_criteria(sublattice_list, max_atom_nums):
     models = [None for i in range(len(N))]
 
     for i in range(len(N)):
-        models[i] = mixture.GaussianMixture(N[i], covariance_type='tied').fit(
-                int_array)
+        models[i] = mixture.GaussianMixture(N[i], covariance_type="tied").fit(int_array)
 
     # compute the AIC and the BIC
     AIC = [m.aic(int_array) for m in models]
@@ -416,18 +428,17 @@ def get_statistical_quant_criteria(sublattice_list, max_atom_nums):
 
     # plot 2: AIC and BIC
     fig = plt.figure()
-    plt.plot(N, AIC, '-k', label='AIC')
-    plt.plot(N, BIC, '--k', label='BIC')
-    plt.xlabel('Number of components')
-    plt.ylabel('Information criterion')
+    plt.plot(N, AIC, "-k", label="AIC")
+    plt.plot(N, BIC, "--k", label="BIC")
+    plt.xlabel("Number of components")
+    plt.ylabel("Information criterion")
     plt.legend(loc=2)
     fig.show()
 
-    return(models)
+    return models
 
 
-def _plot_fitted_hist(intensities, model, truncated_cmap,
-                      sort_indices, bins=50):
+def _plot_fitted_hist(intensities, model, truncated_cmap, sort_indices, bins=50):
     """Plot the atomic column intensity histogram with the best Gaussian
     mixture model superimposed.
 
@@ -443,7 +454,7 @@ def _plot_fitted_hist(intensities, model, truncated_cmap,
     bins : int
 
     """
-    x = np.linspace(0, intensities.max()*1.2, 1000)
+    x = np.linspace(0, intensities.max() * 1.2, 1000)
     x = x.reshape(-1, 1)
     logprob = model.score_samples(x)
     responsibilities = model.predict_proba(x)
@@ -452,17 +463,25 @@ def _plot_fitted_hist(intensities, model, truncated_cmap,
 
     fig = plt.figure()
     plt.hist(intensities, bins, density=True, alpha=0.4)
-    plt.plot(x, pdf, '-k')
+    plt.plot(x, pdf, "-k")
     for j, i in enumerate(sort_indices.ravel()):
         plt.plot(x, pdf_individual[:, i], color=truncated_cmap[0][j])
-    plt.xlabel('$x$')
-    plt.ylabel('$p(x)$')
+    plt.xlabel("$x$")
+    plt.ylabel("$p(x)$")
     fig.show()
 
 
-def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
-                      z_ordering="bottom", image=None, plot=True,
-                      cmap='viridis'):
+def statistical_quant(
+    sublattice,
+    model,
+    max_atom_nums,
+    element,
+    z_spacing,
+    z_ordering="bottom",
+    image=None,
+    plot=True,
+    cmap="viridis",
+):
     """Use the statistical quantification technique to estimate the number of
     atoms within each atomic column in an ADF-STEM image.
 
@@ -532,8 +551,10 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
 
     """
     # Get array of intensities of Gaussians of each atom
-    intensities = [2*np.pi*atom.amplitude_gaussian*atom.sigma_x*atom.sigma_y
-                   for atom in sublattice.atom_list]
+    intensities = [
+        2 * np.pi * atom.amplitude_gaussian * atom.sigma_x * atom.sigma_y
+        for atom in sublattice.atom_list
+    ]
     int_array = np.asarray(intensities)
     int_array = int_array.reshape(-1, 1)
 
@@ -551,7 +572,7 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
 
     x = np.linspace(0.0, 1.0, max_atom_nums)
     truncated_cmap = cm.get_cmap(cmap)(x)[np.newaxis, :, :3].tolist()
-    truncated_cmap[0] = truncated_cmap[0][-model.n_components:]
+    truncated_cmap[0] = truncated_cmap[0][-model.n_components :]
 
     if image is None:
         image = sublattice.signal
@@ -559,45 +580,47 @@ def statistical_quant(sublattice, model, max_atom_nums, element, z_spacing,
     atom_positions = sublattice.atom_positions
     for num in sort_indices.ravel():
         sub_lattices[num] = Sublattice(
-                atom_positions[np.where(sorted_labels == num)],
-                image=np.array(image.data), color=truncated_cmap[0][num])
+            atom_positions[np.where(sorted_labels == num)],
+            image=np.array(image.data),
+            color=truncated_cmap[0][num],
+        )
 
     sublattice_list = []
     for i in range(model.n_components):
         sublattice_list.append(sub_lattices[i])
 
-    atom_lattice = Atom_Lattice(image=np.array(image.data), name='quant',
-                                sublattice_list=sublattice_list)
+    atom_lattice = Atom_Lattice(
+        image=np.array(image.data), name="quant", sublattice_list=sublattice_list
+    )
 
     if plot:
         atom_lattice.plot()
         _plot_fitted_hist(int_array, model, truncated_cmap, sort_indices)
 
     if z_spacing is None:
-        list_of_z = np.arange((1/max_atom_nums)/2, 1, 1/max_atom_nums).tolist()
+        list_of_z = np.arange((1 / max_atom_nums) / 2, 1, 1 / max_atom_nums).tolist()
     else:
         list_of_z = np.arange(0, max_atom_nums).tolist()
-        list_of_z = [i*z_spacing for i in list_of_z]
-        list_of_z = [i+(z_spacing/2) for i in list_of_z]
+        list_of_z = [i * z_spacing for i in list_of_z]
+        list_of_z = [i + (z_spacing / 2) for i in list_of_z]
     list_of_z = [round(i, 6) for i in list_of_z]
 
-    atom_count = (sorted_labels+1) + (max_atom_nums-model.n_components)
+    atom_count = (sorted_labels + 1) + (max_atom_nums - model.n_components)
     for atom, count in zip(sublattice.atom_list, atom_count):
         if "bottom" in z_ordering.lower():
             atom.set_element_info(element, list_of_z[0:count])
         elif "top" in z_ordering.lower():
-            atom.set_element_info(element, list_of_z[
-                max_atom_nums-count:])
+            atom.set_element_info(element, list_of_z[max_atom_nums - count :])
         elif "center" in z_ordering.lower():
-            unit_cell_height = list_of_z[-1] + (z_spacing/2)
+            unit_cell_height = list_of_z[-1] + (z_spacing / 2)
             cen_list_of_z = np.asarray(list_of_z)
             # adds half the distance from the top atom to the top of the
             # unit cell to each atom coordinate.
-            cen_list_of_z = cen_list_of_z + (
-                unit_cell_height - np.max(cen_list_of_z[0:count])) / 2
+            cen_list_of_z = (
+                cen_list_of_z + (unit_cell_height - np.max(cen_list_of_z[0:count])) / 2
+            )
             atom.set_element_info(element, list(cen_list_of_z)[0:count])
         else:
-            raise ValueError(
-                "z_ordering must be either 'bottom', 'top' or 'center'.")
+            raise ValueError("z_ordering must be either 'bottom', 'top' or 'center'.")
 
-    return(atom_lattice)
+    return atom_lattice

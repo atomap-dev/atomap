@@ -8,7 +8,6 @@ import atomap.dummy_data as dd
 
 
 class TestCreateAtomPositionObject:
-
     def test_position(self):
         atom_x, atom_y = 10, 20
         atom_position = Atom_Position(atom_x, atom_y)
@@ -36,7 +35,7 @@ class TestCreateAtomPositionObject:
         atom_position = Atom_Position(1, 2, rotation=rotation0)
         assert atom_position.rotation == rotation0
 
-        rotation1 = math.pi/2
+        rotation1 = math.pi / 2
         atom_position = Atom_Position(1, 2, rotation=rotation1)
         assert atom_position.rotation == rotation1
 
@@ -44,17 +43,16 @@ class TestCreateAtomPositionObject:
         atom_position = Atom_Position(1, 2, rotation=rotation2)
         assert atom_position.rotation == 0
 
-        rotation3 = math.pi*3/2
+        rotation3 = math.pi * 3 / 2
         atom_position = Atom_Position(1, 2, rotation=rotation3)
-        assert atom_position.rotation == math.pi/2
+        assert atom_position.rotation == math.pi / 2
 
-        rotation4 = math.pi*2
+        rotation4 = math.pi * 2
         atom_position = Atom_Position(1, 2, rotation=rotation4)
         assert atom_position.rotation == 0
 
 
 class TestAtomPositionObjectTools:
-
     def setup_method(self):
         self.atom_position = Atom_Position(1, 1)
 
@@ -66,23 +64,28 @@ class TestAtomPositionObjectTools:
         atom_position4 = Atom_Position(2, 2)
 
         angle90 = self.atom_position.get_angle_between_atoms(
-            atom_position0, atom_position1)
+            atom_position0, atom_position1
+        )
         angle180 = self.atom_position.get_angle_between_atoms(
-            atom_position0, atom_position2)
+            atom_position0, atom_position2
+        )
         angle0 = self.atom_position.get_angle_between_atoms(
-            atom_position1, atom_position3)
+            atom_position1, atom_position3
+        )
         angle45 = self.atom_position.get_angle_between_atoms(
-            atom_position1, atom_position4)
+            atom_position1, atom_position4
+        )
 
-        assert approx(angle90) == pi/2
+        assert approx(angle90) == pi / 2
         assert approx(angle180) == pi
         assert approx(angle0) == 0
-        assert approx(angle45) == pi/4
+        assert approx(angle45) == pi / 4
 
     def test_as_gaussian(self):
-        x, y, sx, sy, A, r = 10., 5., 2., 3.5, 9.9, 1.5
+        x, y, sx, sy, A, r = 10.0, 5.0, 2.0, 3.5, 9.9, 1.5
         atom_position = Atom_Position(
-            x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
+            x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r
+        )
         g = atom_position.as_gaussian()
         assert g.centre_x.value == x
         assert g.centre_y.value == y
@@ -93,7 +96,6 @@ class TestAtomPositionObjectTools:
 
 
 class TestGetCenterPositionCom:
-
     def test_mask_radius(self):
         atom_position0 = Atom_Position(15, 20)
         atom_position1 = Atom_Position(15, 20)
@@ -105,7 +107,6 @@ class TestGetCenterPositionCom:
 
 
 class TestAtomPositionRefine:
-
     def test_center_of_mass_mask_radius(self):
         x, y, sx, sy = 15, 20, 2, 2
         test_data = tt.MakeTestData(50, 50)
@@ -113,8 +114,7 @@ class TestAtomPositionRefine:
         sublattice = test_data.sublattice
         atom = sublattice.atom_list[0]
         image_data = test_data.signal.data
-        atom.refine_position_using_center_of_mass(
-            image_data, mask_radius=5)
+        atom.refine_position_using_center_of_mass(image_data, mask_radius=5)
         assert atom.pixel_x == approx(x)
         assert atom.pixel_y == approx(y)
 
@@ -133,7 +133,6 @@ class TestAtomPositionRefine:
 
 
 class TestAtomPositionRefinePositionFlag:
-
     def test_one_atom_center_of_mass(self):
         test_data = tt.MakeTestData(20, 20)
         x, y = 10, 15
@@ -167,8 +166,7 @@ class TestAtomPositionRefinePositionFlag:
         assert approx(atom.pixel_y) == y
 
     def test_many_atoms(self):
-        sublattice = dd.get_simple_cubic_sublattice(
-            image_noise=True)
+        sublattice = dd.get_simple_cubic_sublattice(image_noise=True)
         atom = sublattice.atom_list[0]
         atom.refine_position = False
         x_pos_orig = np.array(sublattice.x_position)
@@ -187,13 +185,13 @@ class TestAtomPositionRefinePositionFlag:
 
 
 class TestAtomPositionGetAtomSlice:
-
     @mark.parametrize("quantile", [1, 2, 3, 4])
     def test_sigma_quantile(self, quantile):
         x, y, sx, sy, sigma_quantile = 25, 30, 2, 4, quantile
         atom_position = Atom_Position(x=x, y=y, sigma_x=sx, sigma_y=sy)
         slice_y, slice_x = atom_position._get_atom_slice(
-            100, 100, sigma_quantile=sigma_quantile)
+            100, 100, sigma_quantile=sigma_quantile
+        )
         smax = max(sx, sy)
         assert slice_x.start == x - smax * sigma_quantile
         assert slice_x.stop == x + smax * sigma_quantile
@@ -204,7 +202,8 @@ class TestAtomPositionGetAtomSlice:
         x, y, sigma, sigma_quantile = 5, 50, 3, 3
         atom_position = Atom_Position(x, y, sigma_x=sigma, sigma_y=sigma)
         slice_y, slice_x = atom_position._get_atom_slice(
-            100, 100, sigma_quantile=sigma_quantile)
+            100, 100, sigma_quantile=sigma_quantile
+        )
         assert slice_x.start == 0
         assert slice_x.stop == x + sigma * sigma_quantile
         assert slice_y.start == y - sigma * sigma_quantile
@@ -214,7 +213,8 @@ class TestAtomPositionGetAtomSlice:
         x, y, sigma, sigma_quantile = 50, 0, 3, 3
         atom_position = Atom_Position(x, y, sigma_x=sigma, sigma_y=sigma)
         slice_y, slice_x = atom_position._get_atom_slice(
-            100, 100, sigma_quantile=sigma_quantile)
+            100, 100, sigma_quantile=sigma_quantile
+        )
         assert slice_x.start == x - sigma * sigma_quantile
         assert slice_x.stop == x + sigma * sigma_quantile
         assert slice_y.start == 0
@@ -225,7 +225,8 @@ class TestAtomPositionGetAtomSlice:
         x, y, sigma, sigma_quantile = 95, 50, 3, 3
         atom_position = Atom_Position(x, y, sigma_x=sigma, sigma_y=sigma)
         slice_y, slice_x = atom_position._get_atom_slice(
-            im_x, 100, sigma_quantile=sigma_quantile)
+            im_x, 100, sigma_quantile=sigma_quantile
+        )
         assert slice_x.start == x - sigma * sigma_quantile
         assert slice_x.stop == im_x
         assert slice_y.start == y - sigma * sigma_quantile
@@ -236,7 +237,8 @@ class TestAtomPositionGetAtomSlice:
         x, y, sigma, sigma_quantile = 50, 95, 3, 3
         atom_position = Atom_Position(x, y, sigma_x=sigma, sigma_y=sigma)
         slice_y, slice_x = atom_position._get_atom_slice(
-            100, im_y, sigma_quantile=sigma_quantile)
+            100, im_y, sigma_quantile=sigma_quantile
+        )
         assert slice_x.start == x - sigma * sigma_quantile
         assert slice_x.stop == x + sigma * sigma_quantile
         assert slice_y.start == y - sigma * sigma_quantile
@@ -244,7 +246,6 @@ class TestAtomPositionGetAtomSlice:
 
 
 class TestCalculateAtomPositionIntensity:
-
     def test_calculate_max_intensity(self):
         test_data = tt.MakeTestData(110, 110)
         x, y = np.mgrid[5:105:5j, 5:105:5j]
@@ -257,8 +258,7 @@ class TestCalculateAtomPositionIntensity:
 
         max_intensities = []
         for atom in sublattice.atom_list:
-            max_intensities.append(
-                atom.calculate_max_intensity(sublattice.image))
+            max_intensities.append(atom.calculate_max_intensity(sublattice.image))
 
         assert approx(max_intensities) == A
 
@@ -275,21 +275,18 @@ class TestCalculateAtomPositionIntensity:
 
         min_intensities = []
         for atom in sublattice.atom_list:
-            min_intensities.append(
-                atom.calculate_min_intensity(sublattice.image))
+            min_intensities.append(atom.calculate_min_intensity(sublattice.image))
 
         assert approx(min_intensities) == A_min
 
 
 class TestGetImageSliceAroundAtom:
-
     def test_simple(self):
         image_data = np.random.random((50, 50))
         x, y, distance = 10, 15, 4
         atom = Atom_Position(x, y)
         distance = 4
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (9, 9)
         assert x0 == (x - distance)
         assert y0 == (y - distance)
@@ -298,8 +295,7 @@ class TestGetImageSliceAroundAtom:
         image_data = np.random.random((50, 50))
         x, y, distance = 1, 15, 4
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (9, 6)
         assert x0 == 0
         assert y0 == (y - distance)
@@ -308,8 +304,7 @@ class TestGetImageSliceAroundAtom:
         image_data = np.random.random((50, 50))
         x, y, distance = 20, 1, 5
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (7, 11)
         assert x0 == (x - distance)
         assert y0 == 0
@@ -318,8 +313,7 @@ class TestGetImageSliceAroundAtom:
         image_data = np.random.random((50, 50))
         x, y, distance = 48, 15, 4
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (9, 6)
         assert x0 == (x - distance)
         assert y0 == (y - distance)
@@ -328,8 +322,7 @@ class TestGetImageSliceAroundAtom:
         image_data = np.random.random((50, 50))
         x, y, distance = 20, 49, 4
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (5, 9)
         assert x0 == (x - distance)
         assert y0 == (y - distance)
@@ -338,8 +331,7 @@ class TestGetImageSliceAroundAtom:
         image_data = np.random.random((50, 60))
         x, y, distance = 0, 0, 9
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice.shape == (10, 10)
         assert x0 == 0
         assert y0 == 0
@@ -349,18 +341,17 @@ class TestGetImageSliceAroundAtom:
         x, y, distance, value = 20, 49, 4, 10
         image_data[y, x] = value
         atom = Atom_Position(x, y)
-        image_slice, x0, y0 = atom._get_image_slice_around_atom(
-                image_data, distance)
+        image_slice, x0, y0 = atom._get_image_slice_around_atom(image_data, distance)
         assert image_slice[distance, distance] == value
 
 
 class TestEstimateLocalScanningDistortion:
-
     def test_flat_image(self):
         image_data = np.ones((100, 100)) * 10
         atom = Atom_Position(20, 10)
         distortion_x, distortion_y = atom.estimate_local_scanning_distortion(
-                image_data, radius=6, edge_skip=2)
+            image_data, radius=6, edge_skip=2
+        )
         assert approx(distortion_x, 0)
         assert approx(distortion_y, 0)
 
@@ -373,7 +364,8 @@ class TestEstimateLocalScanningDistortion:
         image_data[73, 20] = 10
         atom = Atom_Position(20.5, 75)
         distortion_x, distortion_y = atom.estimate_local_scanning_distortion(
-                image_data, radius=4, edge_skip=2)
+            image_data, radius=4, edge_skip=2
+        )
         assert approx(distortion_y, np.std((20, 21, 20, 21, 20)))
 
     def test_elliptical_atom(self):
@@ -385,7 +377,8 @@ class TestEstimateLocalScanningDistortion:
         image[74, 18] = 10
         image[73, 19] = 10
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=2)
+            image, radius=4, edge_skip=2
+        )
         assert approx(scanning_distortions) == (0.0, 0.0)
 
     def test_radius(self):
@@ -398,13 +391,16 @@ class TestEstimateLocalScanningDistortion:
         image[73, 19] = 10
         atom = Atom_Position(17, 75)
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=2, edge_skip=0)
+            image, radius=2, edge_skip=0
+        )
         assert approx(scanning_distortions) == (0.0, 0.0)
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=3, edge_skip=0)
+            image, radius=3, edge_skip=0
+        )
         assert approx(scanning_distortions) == (0.0, 0.0)
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=0)
+            image, radius=4, edge_skip=0
+        )
         assert approx(scanning_distortions) != (0.0, 0.0)
 
     def test_edge_skip_y(self):
@@ -417,11 +413,13 @@ class TestEstimateLocalScanningDistortion:
         image[73, 19] = 10
         atom = Atom_Position(17, 75)
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=0)
+            image, radius=4, edge_skip=0
+        )
         assert approx(scanning_distortions[0]) != 0.0
         assert approx(scanning_distortions[1]) != 0.0
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=1)
+            image, radius=4, edge_skip=1
+        )
         assert approx(scanning_distortions[0]) != 0.0
         assert approx(scanning_distortions[1]) == 0.0
 
@@ -435,22 +433,23 @@ class TestEstimateLocalScanningDistortion:
         image[73, 19] = 10
         atom = Atom_Position(17, 75)
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=0)
+            image, radius=4, edge_skip=0
+        )
         assert approx(scanning_distortions[0]) != 0.0
         assert approx(scanning_distortions[1]) != 0.0
         scanning_distortions = atom.estimate_local_scanning_distortion(
-                image, radius=4, edge_skip=1)
+            image, radius=4, edge_skip=1
+        )
         assert approx(scanning_distortions[0]) == 0.0
         assert approx(scanning_distortions[1]) != 0.0
 
 
 class TestAtomPositionElementInfo:
-
     def test_simple(self):
         atom = Atom_Position(20, 10)
-        atom.set_element_info("C", [0., 0.5])
-        assert atom.element_info[0.] == "C"
+        atom.set_element_info("C", [0.0, 0.5])
+        assert atom.element_info[0.0] == "C"
 
-        atom.set_element_info(["C", "O"], [0., 0.5])
-        assert atom.element_info[0.] == "C"
+        atom.set_element_info(["C", "O"], [0.0, 0.5])
+        assert atom.element_info[0.0] == "C"
         assert atom.element_info[0.5] == "O"

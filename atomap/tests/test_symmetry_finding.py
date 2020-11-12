@@ -2,7 +2,6 @@ import atomap.symmetry_finding as sf
 
 
 class TestSortVectorsByLength:
-
     def test_y_direction(self):
         vector_list = [(0, 3), (0, 1), (0, 2), (0, 100)]
         new_vector_list = sf._sort_vectors_by_length(vector_list)
@@ -45,7 +44,6 @@ class TestSortVectorsByLength:
 
 
 class TestRemoveDuplicateVectors:
-
     def test_two_identical_vectors(self):
         vector_list = [(10, 0), (10, 0)]
         new_vector_list = sf._remove_duplicate_vectors(vector_list, 1)
@@ -75,7 +73,6 @@ class TestRemoveDuplicateVectors:
 
 
 class TestRemoveParallelVectors:
-
     def test_parallel_x(self):
         vector_list = [(10, 0), (20, 0)]
         new_vector_list = sf._remove_parallel_vectors(vector_list, 2)

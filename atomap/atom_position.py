@@ -17,10 +17,7 @@ from atomap.atom_finding_refining import _atom_to_gaussian_component
 
 
 class Atom_Position:
-
-    def __init__(
-            self, x, y, sigma_x=1., sigma_y=1., rotation=0.01,
-            amplitude=1.):
+    def __init__(self, x, y, sigma_x=1.0, sigma_y=1.0, rotation=0.01, amplitude=1.0):
         """
         The Atom_Position class contain information about a single atom column.
 
@@ -81,28 +78,31 @@ class Atom_Position:
         self._start_atom = []
         self._end_atom = []
         self.atom_planes = []
-        self._tag = ''
+        self._tag = ""
         self.old_pixel_x_list = []
         self.old_pixel_y_list = []
         self.amplitude_gaussian = amplitude
         self._gaussian_fitted = False
         self.amplitude_max_intensity = 1.0
         self.amplitude_min_intensity = 0.0
-        self.intensity_mask = 0.
+        self.intensity_mask = 0.0
         self.refine_position = True
 
     def __repr__(self):
-        return '<%s, %s (x:%s,y:%s,sx:%s,sy:%s,r:%s,e:%s)>' % (
+        return "<%s, %s (x:%s,y:%s,sx:%s,sy:%s,r:%s,e:%s)>" % (
             self.__class__.__name__,
             self._tag,
-            round(self.pixel_x, 1), round(self.pixel_y, 1),
-            round(self.sigma_x, 1), round(self.sigma_y, 1),
-            round(self.rotation, 1), round(self.ellipticity, 1),
+            round(self.pixel_x, 1),
+            round(self.pixel_y, 1),
+            round(self.sigma_x, 1),
+            round(self.sigma_y, 1),
+            round(self.rotation, 1),
+            round(self.ellipticity, 1),
         )
 
     @property
     def sigma_x(self):
-        return(self.__sigma_x)
+        return self.__sigma_x
 
     @sigma_x.setter
     def sigma_x(self, new_sigma_x):
@@ -110,7 +110,7 @@ class Atom_Position:
 
     @property
     def sigma_y(self):
-        return(self.__sigma_y)
+        return self.__sigma_y
 
     @sigma_y.setter
     def sigma_y(self, new_sigma_y):
@@ -118,8 +118,8 @@ class Atom_Position:
 
     @property
     def sigma_average(self):
-        sigma = (abs(self.sigma_x)+abs(self.sigma_y))*0.5
-        return(sigma)
+        sigma = (abs(self.sigma_x) + abs(self.sigma_y)) * 0.5
+        return sigma
 
     @property
     def rotation(self):
@@ -128,7 +128,7 @@ class Atom_Position:
         Given in radians.
         For the rotation of the ellipticity, see rotation_ellipticity.
         """
-        return(self.__rotation)
+        return self.__rotation
 
     @rotation.setter
     def rotation(self, new_rotation):
@@ -145,30 +145,30 @@ class Atom_Position:
         if self.sigma_x > self.sigma_y:
             temp_rotation = self.__rotation % math.pi
         else:
-            temp_rotation = (self.__rotation+(math.pi/2)) % math.pi
-        return(temp_rotation)
+            temp_rotation = (self.__rotation + (math.pi / 2)) % math.pi
+        return temp_rotation
 
     @property
     def ellipticity(self):
         """Largest sigma divided by the shortest"""
         if self.sigma_x > self.sigma_y:
-            return(self.sigma_x/self.sigma_y)
+            return self.sigma_x / self.sigma_y
         else:
-            return(self.sigma_y/self.sigma_x)
+            return self.sigma_y / self.sigma_x
 
     def as_gaussian(self):
         g = _atom_to_gaussian_component(self)
         g.A.value = self.amplitude_gaussian
-        return(g)
+        return g
 
     def get_pixel_position(self):
-        return((self.pixel_x, self.pixel_y))
+        return (self.pixel_x, self.pixel_y)
 
     def get_pixel_difference(self, atom):
         """Vector between self and given atom"""
         x_distance = self.pixel_x - atom.pixel_x
         y_distance = self.pixel_y - atom.pixel_y
-        return((x_distance, y_distance))
+        return (x_distance, y_distance)
 
     def get_angle_between_atoms(self, atom0, atom1=None):
         """
@@ -201,25 +201,18 @@ class Atom_Position:
         >>> angle1 = atom0.get_angle_between_atoms(atom1)
 
         """
-        vector0 = np.array([
-            atom0.pixel_x - self.pixel_x,
-            atom0.pixel_y - self.pixel_y])
+        vector0 = np.array([atom0.pixel_x - self.pixel_x, atom0.pixel_y - self.pixel_y])
         if atom1 is None:
-            vector1 = np.array([
-                self.pixel_x+1000,
-                0])
+            vector1 = np.array([self.pixel_x + 1000, 0])
         else:
-            vector1 = np.array([
-                atom1.pixel_x - self.pixel_x,
-                atom1.pixel_y - self.pixel_y])
+            vector1 = np.array(
+                [atom1.pixel_x - self.pixel_x, atom1.pixel_y - self.pixel_y]
+            )
         cosang = np.dot(vector0, vector1)
         sinang = np.linalg.norm(np.cross(vector0, vector1))
-        return(np.arctan2(sinang, cosang))
+        return np.arctan2(sinang, cosang)
 
-    def get_angle_between_zone_vectors(
-            self,
-            zone_vector0,
-            zone_vector1):
+    def get_angle_between_zone_vectors(self, zone_vector0, zone_vector1):
         """
         Return the angle between itself and the next atoms in
         the atom planes belonging to zone_vector0 and zone_vector1
@@ -227,16 +220,13 @@ class Atom_Position:
         atom0 = self.get_next_atom_in_zone_vector(zone_vector0)
         atom1 = self.get_next_atom_in_zone_vector(zone_vector1)
         if atom0 is False:
-            return(False)
+            return False
         if atom1 is False:
-            return(False)
+            return False
         angle = self.get_angle_between_atoms(atom0, atom1)
-        return(angle)
+        return angle
 
-    def _get_image_slice_around_atom(
-            self,
-            image_data,
-            distance_to_edge):
+    def _get_image_slice_around_atom(self, image_data, distance_to_edge):
         """Return a square slice of the image data.
 
         The atom is in the center of this slice, with the size of the image
@@ -297,15 +287,12 @@ class Atom_Position:
         image_slice = copy.deepcopy(image_data[y0:y1, x0:x1])
         return image_slice, x0, y0
 
-    def _plot_gaussian2d_debug(
-            self,
-            slice_radius,
-            gaussian,
-            data_slice):
+    def _plot_gaussian2d_debug(self, slice_radius, gaussian, data_slice):
 
         X, Y = np.meshgrid(
             np.arange(-slice_radius, slice_radius, 1),
-            np.arange(-slice_radius, slice_radius, 1))
+            np.arange(-slice_radius, slice_radius, 1),
+        )
         s_m = gaussian.function(X, Y)
 
         fig, axarr = plt.subplots(2, 2)
@@ -323,9 +310,10 @@ class Atom_Position:
 
         fig.tight_layout()
         fig.savefig(
-            "debug_plot_2d_gaussian_" +
-            str(np.random.randint(1000, 10000)) + ".jpg", dpi=400)
-        plt.close('all')
+            "debug_plot_2d_gaussian_" + str(np.random.randint(1000, 10000)) + ".jpg",
+            dpi=400,
+        )
+        plt.close("all")
 
     def get_closest_neighbor(self):
         """
@@ -338,16 +326,12 @@ class Atom_Position:
         """
         closest_neighbor = 100000000000000000
         for neighbor_atom in self.nearest_neighbor_list:
-            distance = self.get_pixel_distance_from_another_atom(
-                neighbor_atom)
+            distance = self.get_pixel_distance_from_another_atom(neighbor_atom)
             if distance < closest_neighbor:
                 closest_neighbor = distance
-        return(closest_neighbor)
+        return closest_neighbor
 
-    def calculate_max_intensity(
-            self,
-            image_data,
-            percent_to_nn=0.40):
+    def calculate_max_intensity(self, image_data, percent_to_nn=0.40):
         """
         Find the maximum intensity of the atom.
         See get_atom_column_amplitude_max_intensity() for further
@@ -379,18 +363,14 @@ class Atom_Position:
         closest_neighbor = self.get_closest_neighbor()
 
         slice_size = closest_neighbor * percent_to_nn
-        data_slice, x0, y0 = self._get_image_slice_around_atom(
-            image_data, slice_size)
+        data_slice, x0, y0 = self._get_image_slice_around_atom(image_data, slice_size)
 
         data_slice_max = data_slice.max()
         self.amplitude_max_intensity = data_slice_max
 
-        return(data_slice_max)
+        return data_slice_max
 
-    def calculate_min_intensity(
-            self,
-            image_data,
-            percent_to_nn=0.40):
+    def calculate_min_intensity(self, image_data, percent_to_nn=0.40):
         """
         Find the minimum intensity of the atom.
         See get_atom_column_amplitude_min_intensity() for further
@@ -422,21 +402,21 @@ class Atom_Position:
         closest_neighbor = self.get_closest_neighbor()
 
         slice_size = closest_neighbor * percent_to_nn
-        data_slice, _, _ = self._get_image_slice_around_atom(
-            image_data, slice_size)
+        data_slice, _, _ = self._get_image_slice_around_atom(image_data, slice_size)
 
         data_slice_min = data_slice.min()
         self.amplitude_min_intensity = data_slice_min
 
-        return(data_slice_min)
+        return data_slice_min
 
     def refine_position_using_2d_gaussian(
-            self,
-            image_data,
-            rotation_enabled=True,
-            percent_to_nn=0.40,
-            mask_radius=None,
-            centre_free=True):
+        self,
+        image_data,
+        rotation_enabled=True,
+        percent_to_nn=0.40,
+        mask_radius=None,
+        centre_free=True,
+    ):
         """
         Use 2D Gaussian to refine the parameters of the atom position.
 
@@ -472,13 +452,12 @@ class Atom_Position:
             rotation_enabled=rotation_enabled,
             percent_to_nn=percent_to_nn,
             mask_radius=mask_radius,
-            centre_free=centre_free)
+            centre_free=centre_free,
+        )
 
     def refine_position_using_center_of_mass(
-            self,
-            image_data,
-            percent_to_nn=0.40,
-            mask_radius=None):
+        self, image_data, percent_to_nn=0.40, mask_radius=None
+    ):
         """Refine the position of the atom position using center of mass
 
         The position is stored in atom_position.pixel_x and
@@ -513,20 +492,17 @@ class Atom_Position:
 
         """
         new_x, new_y = self._get_center_position_com(
-            image_data,
-            percent_to_nn=percent_to_nn,
-            mask_radius=mask_radius)
+            image_data, percent_to_nn=percent_to_nn, mask_radius=mask_radius
+        )
         self.old_pixel_x_list.append(self.pixel_x)
         self.old_pixel_y_list.append(self.pixel_y)
         self.pixel_x = new_x
         self.pixel_y = new_y
 
     def _get_center_position_com(
-            self,
-            image_data,
-            percent_to_nn=0.40,
-            mask_radius=None):
-        '''Get new atom position based on the center of mass approach
+        self, image_data, percent_to_nn=0.40, mask_radius=None
+    ):
+        """Get new atom position based on the center of mass approach
 
         Parameters
         ----------
@@ -551,19 +527,18 @@ class Atom_Position:
         new_position : tuple
             (new x, new y)
 
-        '''
+        """
         if mask_radius is None:
             closest_neighbor = 100000000000000000
             for neighbor_atom in self.nearest_neighbor_list:
-                distance = self.get_pixel_distance_from_another_atom(
-                    neighbor_atom)
+                distance = self.get_pixel_distance_from_another_atom(neighbor_atom)
                 if distance < closest_neighbor:
                     closest_neighbor = distance
             mask_radius = closest_neighbor * percent_to_nn
 
         cx, cy = int(round(self.pixel_x)), int(round(self.pixel_y))
         crop_radius = np.ceil(mask_radius).astype(int)
-        data = _crop_array(image_data, cx, cy, crop_radius+1)
+        data = _crop_array(image_data, cx, cy, crop_radius + 1)
         edgeX, edgeY = cx - crop_radius, cy - crop_radius
         data2 = zero_array_outside_circle(data, mask_radius)
         new_y, new_x = calculate_center_of_mass(data2)
@@ -575,102 +550,96 @@ class Atom_Position:
         for atomic_plane in self.in_atomic_plane:
             if atomic_plane.zone_vector[0] == zone_vector[0]:
                 if atomic_plane.zone_vector[1] == zone_vector[1]:
-                    return(atomic_plane)
-        return(False)
+                    return atomic_plane
+        return False
 
-    def get_neighbor_atoms_in_atomic_plane_from_zone_vector(
-            self, zone_vector):
+    def get_neighbor_atoms_in_atomic_plane_from_zone_vector(self, zone_vector):
         atom_plane = self.get_atomic_plane_from_zone_vector(zone_vector)
         atom_plane_atom_neighbor_list = []
         for atom in self.nearest_neighbor_list:
             if atom in atom_plane.atom_list:
                 atom_plane_atom_neighbor_list.append(atom)
-        return(atom_plane_atom_neighbor_list)
+        return atom_plane_atom_neighbor_list
 
     def is_in_atomic_plane(self, zone_direction):
         for atomic_plane in self.in_atomic_plane:
             if atomic_plane.zone_vector[0] == zone_direction[0]:
                 if atomic_plane.zone_vector[1] == zone_direction[1]:
-                    return(True)
-        return(False)
+                    return True
+        return False
 
     def get_ellipticity_vector(self):
         elli = self.ellipticity - 1
         rot = self.get_ellipticity_rotation_vector()
-        vector = (elli*rot[0], elli*rot[1])
-        return(vector)
+        vector = (elli * rot[0], elli * rot[1])
+        return vector
 
     def get_rotation_vector(self):
         rot = self.rotation
-        vector = (
-            math.cos(rot),
-            math.sin(rot))
-        return(vector)
+        vector = (math.cos(rot), math.sin(rot))
+        return vector
 
     def get_ellipticity_rotation_vector(self):
         rot = self.rotation_ellipticity
         vector = (math.cos(rot), math.sin(rot))
-        return(vector)
+        return vector
 
     def get_pixel_distance_from_another_atom(self, atom):
         x_distance = self.pixel_x - atom.pixel_x
         y_distance = self.pixel_y - atom.pixel_y
         total_distance = math.hypot(x_distance, y_distance)
-        return(total_distance)
+        return total_distance
 
     def pixel_distance_from_point(self, point=(0, 0)):
-        dist = math.hypot(
-            self.pixel_x - point[0], self.pixel_y - point[1])
-        return(dist)
+        dist = math.hypot(self.pixel_x - point[0], self.pixel_y - point[1])
+        return dist
 
     def get_index_in_atom_plane(self, atom_plane):
         for atom_index, atom in enumerate(atom_plane.atom_list):
             if atom == self:
-                return(atom_index)
+                return atom_index
 
     def get_next_atom_in_atom_plane(self, atom_plane):
         current_index = self.get_index_in_atom_plane(atom_plane)
         if self == atom_plane.end_atom:
-            return(False)
+            return False
         else:
-            next_atom = atom_plane.atom_list[current_index+1]
-            return(next_atom)
+            next_atom = atom_plane.atom_list[current_index + 1]
+            return next_atom
 
     def get_previous_atom_in_atom_plane(self, atom_plane):
         current_index = self.get_index_in_atom_plane(atom_plane)
         if self == atom_plane.start_atom:
-            return(False)
+            return False
         else:
-            previous_atom = atom_plane.atom_list[current_index-1]
-            return(previous_atom)
+            previous_atom = atom_plane.atom_list[current_index - 1]
+            return previous_atom
 
     def get_next_atom_in_zone_vector(self, zone_vector):
         """Get the next atom in the atom plane belonging to zone vector."""
         atom_plane = self.get_atomic_plane_from_zone_vector(zone_vector)
         if atom_plane is False:
-            return(False)
+            return False
         next_atom = self.get_next_atom_in_atom_plane(atom_plane)
-        return(next_atom)
+        return next_atom
 
     def get_previous_atom_in_zone_vector(self, zone_vector):
         atom_plane = self.get_atomic_plane_from_zone_vector(zone_vector)
         if atom_plane is False:
-            return(False)
+            return False
         previous_atom = self.get_previous_atom_in_atom_plane(atom_plane)
-        return(previous_atom)
+        return previous_atom
 
-    def can_atom_plane_be_reached_through_zone_vector(
-            self, atom_plane, zone_vector):
+    def can_atom_plane_be_reached_through_zone_vector(self, atom_plane, zone_vector):
         for test_atom_plane in self.atom_planes:
             if test_atom_plane.zone_vector == zone_vector:
                 for temp_atom in test_atom_plane.atom_list:
                     for temp_atom_plane in temp_atom.atom_planes:
                         if temp_atom_plane == atom_plane:
-                            return(test_atom_plane)
-        return(False)
+                            return test_atom_plane
+        return False
 
-    def get_position_convergence(
-            self, distance_to_first_position=False):
+    def get_position_convergence(self, distance_to_first_position=False):
         x_list = self.old_pixel_x_list
         y_list = self.old_pixel_y_list
         distance_list = []
@@ -683,7 +652,7 @@ class Atom_Position:
                 previous_y = y_list[index]
             dist = math.hypot(x - previous_x, y - previous_y)
             distance_list.append(dist)
-        return(distance_list)
+        return distance_list
 
     def find_atom_intensity_inside_mask(self, image_data, radius):
         """Find the average intensity inside a circle.
@@ -697,13 +666,12 @@ class Atom_Position:
             radius = 1
         centerX, centerY = self.pixel_x, self.pixel_y
         mask = _make_circular_mask(
-            centerY, centerX,
-            image_data.shape[0], image_data.shape[1], radius)
-        data_mask = image_data*mask
+            centerY, centerX, image_data.shape[0], image_data.shape[1], radius
+        )
+        data_mask = image_data * mask
         self.intensity_mask = np.mean(data_mask[np.nonzero(mask)])
 
-    def estimate_local_scanning_distortion(
-            self, image_data, radius=6, edge_skip=2):
+    def estimate_local_scanning_distortion(self, image_data, radius=6, edge_skip=2):
         """Get the amount of local scanning distortion from an atomic column.
 
         This is done by assuming the atomic column has a symmetrical shape,
@@ -757,7 +725,7 @@ class Atom_Position:
         line_x_com_list = []
         for ix in range(edge_skip, atom_image.shape[1] - edge_skip):
             line_mask_x = atom_mask[:, ix]
-            com_x_offset = line_mask_x[:round(len(line_mask_x)/2)].sum()
+            com_x_offset = line_mask_x[: round(len(line_mask_x) / 2)].sum()
             line_x = atom_image[:, ix][np.invert(line_mask_x)]
             if np.any(line_x):
                 line_x_com = center_of_mass(line_x)[0] + com_x_offset
@@ -771,7 +739,7 @@ class Atom_Position:
         line_y_com_list = []
         for iy in range(edge_skip, atom_image.shape[0] - edge_skip):
             line_mask_y = atom_mask[iy]
-            com_y_offset = line_mask_y[:round(len(line_mask_y)/2)].sum()
+            com_y_offset = line_mask_y[: round(len(line_mask_y) / 2)].sum()
             line_y = atom_image[iy][np.invert(line_mask_y)]
             if np.any(line_y):
                 line_y_com = center_of_mass(line_y)[0] + com_y_offset
@@ -849,5 +817,4 @@ class Atom_Position:
             for i, zc in enumerate(z):
                 self.element_info[zc] = element[i]
         else:
-            raise TypeError(
-                "element must be either a str or list of str")
+            raise TypeError("element must be either a str or list of str")

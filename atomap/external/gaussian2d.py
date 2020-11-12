@@ -58,23 +58,28 @@ class Gaussian2D(Component):
     horizontal axis.
     """
 
-    def __init__(self,
-                 A=1.,
-                 sigma_x=1.,
-                 sigma_y=1.,
-                 centre_x=0.,
-                 centre_y=0.,
-                 rotation=0.01,
-                 ):
+    def __init__(
+        self,
+        A=1.0,
+        sigma_x=1.0,
+        sigma_y=1.0,
+        centre_x=0.0,
+        centre_y=0.0,
+        rotation=0.01,
+    ):
         """Note: the rotation value is given in
         radians."""
-        Component.__init__(self, ['A',
-                                  'sigma_x',
-                                  'sigma_y',
-                                  'centre_x',
-                                  'centre_y',
-                                  'rotation',
-                                  ])
+        Component.__init__(
+            self,
+            [
+                "A",
+                "sigma_x",
+                "sigma_y",
+                "centre_x",
+                "centre_y",
+                "rotation",
+            ],
+        )
         self.A.value = A
         self.sigma_x.value = sigma_x
         self.sigma_y.value = sigma_y
@@ -90,23 +95,27 @@ class Gaussian2D(Component):
         y0 = self.centre_y.value
         theta = self.rotation.value
 
-        sx2 = sx**2
-        sy2 = sy**2
-        cos_theta2 = math.cos(theta)**2
-        sin_theta2 = math.sin(theta)**2
-        sin_2theta = math.sin(2*theta)
+        sx2 = sx ** 2
+        sy2 = sy ** 2
+        cos_theta2 = math.cos(theta) ** 2
+        sin_theta2 = math.sin(theta) ** 2
+        sin_2theta = math.sin(2 * theta)
 
-        a = cos_theta2/(2*sx2) + sin_theta2/(2*sy2)
-        b = -sin_2theta/(4*sx2) + sin_2theta/(4*sy2)
-        c = sin_theta2/(2*sx2) + cos_theta2/(2*sy2)
+        a = cos_theta2 / (2 * sx2) + sin_theta2 / (2 * sy2)
+        b = -sin_2theta / (4 * sx2) + sin_2theta / (4 * sy2)
+        c = sin_theta2 / (2 * sx2) + cos_theta2 / (2 * sy2)
 
-        return A * (1 / (sx * sy * pi2)) * np.exp(-(a*(x - x0) ** 2 +
-                                                  2*b*(x - x0) * (y - y0) +
-                                                  c*(y - y0) ** 2))
+        return (
+            A
+            * (1 / (sx * sy * pi2))
+            * np.exp(
+                -(a * (x - x0) ** 2 + 2 * b * (x - x0) * (y - y0) + c * (y - y0) ** 2)
+            )
+        )
 
     @property
     def ellipticity(self):
-        return self.sigma_x.value/self.sigma_y.value
+        return self.sigma_x.value / self.sigma_y.value
 
     @property
     def fwhm_x(self):
@@ -131,4 +140,4 @@ class Gaussian2D(Component):
         if self.sigma_x.value > self.sigma_y.value:
             return math.degrees(rotation)
         else:
-            return math.degrees(rotation-pi2/4)
+            return math.degrees(rotation - pi2 / 4)

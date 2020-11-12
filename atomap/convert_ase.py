@@ -54,52 +54,58 @@ def ase_to_atom_lattice(atoms, image_size=None, gaussian_blur=3):
         composition_str = str(composition)
 
         if composition_str in sublattice_dict:
-            sublattice_dict[composition_str]['xy'].append(list(xy))
-            sublattice_dict[composition_str]['el_info'].append(column)
+            sublattice_dict[composition_str]["xy"].append(list(xy))
+            sublattice_dict[composition_str]["el_info"].append(column)
         else:
             sublattice_dict[composition_str] = {}
-            sublattice_dict[composition_str]['xy'] = [list(xy)]
-            sublattice_dict[composition_str]['el_info'] = [column]
+            sublattice_dict[composition_str]["xy"] = [list(xy)]
+            sublattice_dict[composition_str]["el_info"] = [column]
 
-    image_array, axes_dict = _generate_image_from_ase(atoms,
-                                                      image_size,
-                                                      gaussian_blur)
+    image_array, axes_dict = _generate_image_from_ase(atoms, image_size, gaussian_blur)
     image = hs.signals.Signal2D(image_array)
 
-    sublattice_colors = ['green', 'blue', 'red']
+    sublattice_colors = ["green", "blue", "red"]
     sublattice_list = []
     i = -1
     for composition, sublattice_items in sublattice_dict.items():
-        xy = np.asarray(sublattice_items['xy'])
-        xy[:, 0] = xy[:, 0]/axes_dict[0]['scale']
-        xy[:, 1] = xy[:, 1]/axes_dict[1]['scale']
-        sublattice_list.append(sublattice.Sublattice(xy,
-                                                     image,
-                                                     pixel_size=axes_dict[0][
-                                                         'scale']/10,
-                                                     color=sublattice_colors[
-                                                         i]))
+        xy = np.asarray(sublattice_items["xy"])
+        xy[:, 0] = xy[:, 0] / axes_dict[0]["scale"]
+        xy[:, 1] = xy[:, 1] / axes_dict[1]["scale"]
+        sublattice_list.append(
+            sublattice.Sublattice(
+                xy,
+                image,
+                pixel_size=axes_dict[0]["scale"] / 10,
+                color=sublattice_colors[i],
+            )
+        )
         i -= 1
 
     for lattice in sublattice_list:
         for atom in lattice.atom_list:
-            atom.set_element_info(columns[(atom.pixel_x*axes_dict[0]['scale'],
-                                           atom.pixel_y*axes_dict[1][
-                                               'scale'])][1],
-                                  columns[(atom.pixel_x*axes_dict[0]['scale'],
-                                           atom.pixel_y*axes_dict[1][
-                                               'scale'])][0])
+            atom.set_element_info(
+                columns[
+                    (
+                        atom.pixel_x * axes_dict[0]["scale"],
+                        atom.pixel_y * axes_dict[1]["scale"],
+                    )
+                ][1],
+                columns[
+                    (
+                        atom.pixel_x * axes_dict[0]["scale"],
+                        atom.pixel_y * axes_dict[1]["scale"],
+                    )
+                ][0],
+            )
 
-    atomlattice = atom_lattice.Atom_Lattice(image=image,
-                                            sublattice_list=sublattice_list)
+    atomlattice = atom_lattice.Atom_Lattice(
+        image=image, sublattice_list=sublattice_list
+    )
 
-    return(atomlattice)
+    return atomlattice
 
 
-def _generate_image_from_ase(
-        atoms,
-        image_size=None,
-        gaussian_blur=3):
+def _generate_image_from_ase(atoms, image_size=None, gaussian_blur=3):
     image_array = np.zeros(image_size)
 
     if image_size is None:
@@ -109,27 +115,23 @@ def _generate_image_from_ase(
     offset_axis1 = atoms.positions[:, 1].min()
 
     if offset_axis0 == 0.0 or offset_axis1 == 0.0:
-        offset_axis = atoms.positions[:, 0].max()/10
+        offset_axis = atoms.positions[:, 0].max() / 10
 
-    scale_axis0 = (atoms.positions[:, 0].max() + offset_axis)/image_size[0]
-    scale_axis1 = (atoms.positions[:, 1].max() + offset_axis)/image_size[1]
+    scale_axis0 = (atoms.positions[:, 0].max() + offset_axis) / image_size[0]
+    scale_axis1 = (atoms.positions[:, 1].max() + offset_axis) / image_size[1]
 
     for atom in atoms:
-        atom_Z = elements[atom.symbol]['General_properties']['Z']
+        atom_Z = elements[atom.symbol]["General_properties"]["Z"]
 
-        index_axis0 = int(round(atom.x/scale_axis0))
-        index_axis1 = int(round(atom.y/scale_axis1))
+        index_axis0 = int(round(atom.x / scale_axis0))
+        index_axis1 = int(round(atom.y / scale_axis1))
 
         image_array[index_axis0, index_axis1] += atom_Z
 
     gaussian_filter(image_array, gaussian_blur, output=image_array)
 
-    axisx_dict = {
-            'scale': scale_axis0,
-            'offset': offset_axis0}
-    axisy_dict = {
-            'scale': scale_axis1,
-            'offset': offset_axis1}
+    axisx_dict = {"scale": scale_axis0, "offset": offset_axis0}
+    axisy_dict = {"scale": scale_axis1, "offset": offset_axis1}
 
     axes_dict = [axisx_dict, axisy_dict]
-    return(image_array, axes_dict)
+    return (image_array, axes_dict)

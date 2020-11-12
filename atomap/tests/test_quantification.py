@@ -9,11 +9,10 @@ import atomap.testing_tools as tt
 
 
 class TestDetectorNormalisation:
-
     def test_centered_distance_matrix(self):
         s = quant.centered_distance_matrix((32, 32), np.zeros((64, 64)))
         assert s[32, 32] == 1
-        assert s[63, 63] == np.sqrt((63-31)**2 + (63-32)**2)
+        assert s[63, 63] == np.sqrt((63 - 31) ** 2 + (63 - 32) ** 2)
 
     def test_detector_threshold(self):
         det_image = get_detector_image_signal()
@@ -42,28 +41,28 @@ class TestDetectorNormalisation:
     def test_find_flux_limits_running(self):
         flux1 = quant.centered_distance_matrix((63, 63), np.zeros((128, 128)))
         (profiler, flux_profile) = quant.find_flux_limits(100 - flux1, 25)
-        assert len(flux_profile) == math.ceil((64**2 + 64**2)**0.5)
+        assert len(flux_profile) == math.ceil((64 ** 2 + 64 ** 2) ** 0.5)
 
 
 class TestStatisticalQuant:
-
     def setup_method(self):
         self.tdata = tt.MakeTestData(200, 200)
 
         for i in range(4):
-            x, y = np.mgrid[60*i:(i+1)*60:15, 10:200:15]
+            x, y = np.mgrid[60 * i : (i + 1) * 60 : 15, 10:200:15]
             x, y = x.flatten(), y.flatten()
-            self.tdata.add_atom_list(x, y, sigma_x=2, sigma_y=2,
-                                     amplitude=(i+1)*20, rotation=0.4)
+            self.tdata.add_atom_list(
+                x, y, sigma_x=2, sigma_y=2, amplitude=(i + 1) * 20, rotation=0.4
+            )
         self.tdata.add_image_noise(sigma=0.02)
 
-        atom_positions = atom_finding.get_atom_positions(self.tdata.signal, 8,
-                                                         threshold_rel=0.1)
+        atom_positions = atom_finding.get_atom_positions(
+            self.tdata.signal, 8, threshold_rel=0.1
+        )
 
         self.sublattice = Sublattice(atom_positions, self.tdata.signal.data)
         self.sublattice.construct_zone_axes()
-        self.sublattice.refine_atom_positions_using_2d_gaussian(
-            self.sublattice.image)
+        self.sublattice.refine_atom_positions_using_2d_gaussian(self.sublattice.image)
 
     def test_quant_criteria(self):
         quant.get_statistical_quant_criteria([self.sublattice], 10)
@@ -73,8 +72,9 @@ class TestStatisticalQuant:
         model = models[3]
 
         intensities = [
-                2*np.pi*atom.amplitude_gaussian*atom.sigma_x*atom.sigma_y
-                for atom in self.sublattice.atom_list]
+            2 * np.pi * atom.amplitude_gaussian * atom.sigma_x * atom.sigma_y
+            for atom in self.sublattice.atom_list
+        ]
         int_array = np.asarray(intensities)
         int_array = int_array.reshape(-1, 1)
 
@@ -91,15 +91,17 @@ class TestStatisticalQuant:
             sorted_labels[labels == k] = v
 
         from matplotlib import cm
+
         x = np.linspace(0.0, 1.0, 4)
-        rgb = cm.get_cmap('viridis')(x)[np.newaxis, :, :3].tolist()
+        rgb = cm.get_cmap("viridis")(x)[np.newaxis, :, :3].tolist()
 
         quant._plot_fitted_hist(int_array, model, rgb, sort_indices)
 
     def test_statistical_method(self):
         models = quant.get_statistical_quant_criteria([self.sublattice], 10)
-        atom_lattice = quant.statistical_quant(self.sublattice, models[3], 4,
-                                               'C', 3.5, plot=False)
+        atom_lattice = quant.statistical_quant(
+            self.sublattice, models[3], 4, "C", 3.5, plot=False
+        )
 
         assert len(atom_lattice.sublattice_list[0].atom_list) == 39
         assert len(atom_lattice.sublattice_list[1].atom_list) == 52
@@ -107,30 +109,34 @@ class TestStatisticalQuant:
         assert len(atom_lattice.sublattice_list[3].atom_list) == 13
 
         # confirm sublattice.element_info has been assigned correctly
-        assert(self.sublattice.atom_list[0].element_info ==
-               {1.75: 'C', 5.25: 'C', 8.75: 'C', 12.25: 'C'})
+        assert self.sublattice.atom_list[0].element_info == {
+            1.75: "C",
+            5.25: "C",
+            8.75: "C",
+            12.25: "C",
+        }
         assert len(self.sublattice.atom_list[0].element_info) == 4
-        assert self.sublattice.atom_list[0].element_info[5.25] == 'C'
+        assert self.sublattice.atom_list[0].element_info[5.25] == "C"
 
     def test_z_ordering(self):
         sublattice = self.sublattice
         models = quant.get_statistical_quant_criteria([sublattice], 10)
 
         kwargs = {
-            'sublattice': sublattice,
-            'model': models[3],
-            'max_atom_nums': 44,
-            'element': 'C',
-            'z_spacing': 3.5,
-            'plot': False,
+            "sublattice": sublattice,
+            "model": models[3],
+            "max_atom_nums": 44,
+            "element": "C",
+            "z_spacing": 3.5,
+            "plot": False,
         }
-        quant.statistical_quant(**kwargs, z_ordering='top')
+        quant.statistical_quant(**kwargs, z_ordering="top")
         pos_top = list(sublattice.atom_list[-1].element_info)[0]
 
-        quant.statistical_quant(**kwargs, z_ordering='center')
+        quant.statistical_quant(**kwargs, z_ordering="center")
         pos_center = list(sublattice.atom_list[-1].element_info)[0]
 
-        quant.statistical_quant(**kwargs, z_ordering='bottom')
+        quant.statistical_quant(**kwargs, z_ordering="bottom")
         pos_bottom = list(sublattice.atom_list[-1].element_info)[0]
 
         assert pos_top > pos_center

@@ -3,7 +3,8 @@ from tempfile import TemporaryDirectory
 import pytest
 import numpy
 import matplotlib
-matplotlib.use('Qt5Agg')
+
+matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import hyperspy.api as hs
 import atomap.api as am
@@ -18,11 +19,11 @@ def doctest_setup_teardown(request):
     yield
     os.chdir(org_dir)
     tmp_dir.cleanup()
-    plt.close('all')
+    plt.close("all")
 
 
 @pytest.fixture(autouse=True)
 def add_np_am(doctest_namespace):
     hs.preferences.General.nb_progressbar = False
-    doctest_namespace['np'] = numpy
-    doctest_namespace['am'] = am
+    doctest_namespace["np"] = numpy
+    doctest_namespace["am"] = am

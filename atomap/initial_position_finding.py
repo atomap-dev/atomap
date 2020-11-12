@@ -39,22 +39,20 @@ def find_dumbbell_vector(atom_positions):
     fp = Fingerprinter()
     fp.fit(test)
     clusters = fp.cluster_centers_
-    clusters_dist = (clusters[:, 0]**2+clusters[:, 1]**2)**0.5
+    clusters_dist = (clusters[:, 0] ** 2 + clusters[:, 1] ** 2) ** 0.5
     sort_zip = zip(list(clusters_dist), clusters[:, 0], clusters[:, 1])
-    cluster_dist, cluster_x, cluster_y = zip(
-            *sorted(sort_zip, key=itemgetter(0)))
+    cluster_dist, cluster_x, cluster_y = zip(*sorted(sort_zip, key=itemgetter(0)))
     vec0 = cluster_x[0], cluster_y[0]
     vec1 = cluster_x[1], cluster_y[1]
 
-    if (abs(vec0[0]+vec1[0]) > 0.1) or (abs(vec0[1]+vec1[1]) > 0.1):
+    if (abs(vec0[0] + vec1[0]) > 0.1) or (abs(vec0[1] + vec1[1]) > 0.1):
         raise ValueError(
-                "Dumbbell vectors should be antiparallel, but are %r and %r"
-                % (vec0, vec1))
-    return(vec0)
+            "Dumbbell vectors should be antiparallel, but are %r and %r" % (vec0, vec1)
+        )
+    return vec0
 
 
-def _get_dumbbell_arrays(
-        s, dumbbell_positions, dumbbell_vector, show_progressbar=True):
+def _get_dumbbell_arrays(s, dumbbell_positions, dumbbell_vector, show_progressbar=True):
     """
     Parameters
     ----------
@@ -82,31 +80,35 @@ def _get_dumbbell_arrays(
     next_pos_list0 = []
     next_pos_list1 = []
     for x, y in zip(dumbbell_positions[:, 0], dumbbell_positions[:, 1]):
-        next_pos_list0.append([dumbbell_vector[0]+x, dumbbell_vector[1]+y])
-        next_pos_list1.append([-dumbbell_vector[0]+x, -dumbbell_vector[1]+y])
+        next_pos_list0.append([dumbbell_vector[0] + x, dumbbell_vector[1] + y])
+        next_pos_list1.append([-dumbbell_vector[0] + x, -dumbbell_vector[1] + y])
     next_pos_list0 = np.array(next_pos_list0)
     next_pos_list1 = np.array(next_pos_list1)
 
-    mask_radius = 0.5*(dumbbell_vector[0]**2+dumbbell_vector[1]**2)**0.5
+    mask_radius = 0.5 * (dumbbell_vector[0] ** 2 + dumbbell_vector[1] ** 2) ** 0.5
 
     iterator = zip(
-            dumbbell_positions[:, 0], dumbbell_positions[:, 1],
-            next_pos_list0, next_pos_list1)
+        dumbbell_positions[:, 0],
+        dumbbell_positions[:, 1],
+        next_pos_list0,
+        next_pos_list1,
+    )
     total_num = len(next_pos_list0)
     dumbbell_list0, dumbbell_list1 = [], []
     for x, y, next_pos0, next_pos1 in progressbar(
-            iterator, total=total_num, desc="Finding dumbbells",
-            disable=not show_progressbar):
+        iterator,
+        total=total_num,
+        desc="Finding dumbbells",
+        disable=not show_progressbar,
+    ):
         mask1 = _make_circular_mask(
-                next_pos0[1], next_pos0[0],
-                s.data.shape[0], s.data.shape[1],
-                mask_radius)
+            next_pos0[1], next_pos0[0], s.data.shape[0], s.data.shape[1], mask_radius
+        )
         mask2 = _make_circular_mask(
-                next_pos1[1], next_pos1[0],
-                s.data.shape[0], s.data.shape[1],
-                mask_radius)
-        pos1_sum = (s.data*mask1).sum()
-        pos2_sum = (s.data*mask2).sum()
+            next_pos1[1], next_pos1[0], s.data.shape[0], s.data.shape[1], mask_radius
+        )
+        pos1_sum = (s.data * mask1).sum()
+        pos2_sum = (s.data * mask2).sum()
         if pos1_sum > pos2_sum:
             dumbbell_list0.append([x, y])
             dumbbell_list1.append(next_pos0)
@@ -115,11 +117,12 @@ def _get_dumbbell_arrays(
             dumbbell_list1.append([x, y])
     dumbbell_list0 = np.array(dumbbell_list0)
     dumbbell_list1 = np.array(dumbbell_list1)
-    return(dumbbell_list0, dumbbell_list1)
+    return (dumbbell_list0, dumbbell_list1)
 
 
 def make_atom_lattice_dumbbell_structure(
-        s, dumbbell_positions, dumbbell_vector, show_progressbar=True):
+    s, dumbbell_positions, dumbbell_vector, show_progressbar=True
+):
     """Make Atom_Lattice object from image of dumbbell structure.
 
     Parameters
@@ -147,54 +150,53 @@ def make_atom_lattice_dumbbell_structure(
 
     """
     dumbbell_list0, dumbbell_list1 = _get_dumbbell_arrays(
-            s, dumbbell_positions, dumbbell_vector,
-            show_progressbar=show_progressbar)
+        s, dumbbell_positions, dumbbell_vector, show_progressbar=show_progressbar
+    )
     s_modified = do_pca_on_signal(s)
     sublattice0 = Sublattice(
-            atom_position_list=dumbbell_list0,
-            original_image=s.data,
-            image=s_modified.data,
-            color='blue')
+        atom_position_list=dumbbell_list0,
+        original_image=s.data,
+        image=s_modified.data,
+        color="blue",
+    )
     sublattice1 = Sublattice(
-            atom_position_list=dumbbell_list1,
-            original_image=s.data,
-            image=s_modified.data,
-            color='red')
+        atom_position_list=dumbbell_list1,
+        original_image=s.data,
+        image=s_modified.data,
+        color="red",
+    )
     sublattice0.find_nearest_neighbors()
     sublattice1.find_nearest_neighbors()
     atom_lattice = Dumbbell_Lattice(
-            image=sublattice0.image,
-            original_image=s.data,
-            name="Dumbbell structure",
-            sublattice_list=[sublattice0, sublattice1])
-    return(atom_lattice)
+        image=sublattice0.image,
+        original_image=s.data,
+        name="Dumbbell structure",
+        sublattice_list=[sublattice0, sublattice1],
+    )
+    return atom_lattice
 
 
 class AtomAdderRemover:
-
-    def __init__(self, image, atom_positions=None, distance_threshold=4,
-                 norm='linear'):
+    def __init__(self, image, atom_positions=None, distance_threshold=4, norm="linear"):
         self.image = image
         self.distance_threshold = distance_threshold
         self.fig, self.ax = plt.subplots()
         self.ax.set_title("Use the left mouse button to add or remove atoms")
-        if norm == 'linear':
+        if norm == "linear":
             self.cax = self.ax.imshow(self.image)
-        elif norm == 'log':
+        elif norm == "log":
             value_min = np.min(self.image.__array__())
-            log_norm = LogNorm(
-                    1e-20, vmax=np.max(self.image.__array__()) - value_min)
+            log_norm = LogNorm(1e-20, vmax=np.max(self.image.__array__()) - value_min)
             self.cax = self.ax.imshow(self.image.__array__(), norm=log_norm)
         if atom_positions is None:
             self.atom_positions = []
         else:
-            if hasattr(atom_positions, 'tolist'):
+            if hasattr(atom_positions, "tolist"):
                 atom_positions = atom_positions.tolist()
             self.atom_positions = copy.deepcopy(atom_positions)
         x_pos, y_pos = self.get_xy_pos_lists()
-        self.line, = self.ax.plot(x_pos, y_pos, 'o', color='red')
-        self.cid = self.fig.canvas.mpl_connect(
-                'button_press_event', self.onclick)
+        (self.line,) = self.ax.plot(x_pos, y_pos, "o", color="red")
+        self.cid = self.fig.canvas.mpl_connect("button_press_event", self.onclick)
         self.fig.tight_layout()
 
     def onclick(self, event):
@@ -230,7 +232,7 @@ class AtomAdderRemover:
         else:
             x_pos_list = []
             y_pos_list = []
-        return(x_pos_list, y_pos_list)
+        return (x_pos_list, y_pos_list)
 
     def replot(self):
         x_pos, y_pos = self.get_xy_pos_lists()
@@ -240,8 +242,7 @@ class AtomAdderRemover:
         self.fig.canvas.flush_events()
 
 
-def add_atoms_with_gui(image, atom_positions=None, distance_threshold=4,
-                       norm='linear'):
+def add_atoms_with_gui(image, atom_positions=None, distance_threshold=4, norm="linear"):
     """Add or remove atoms from a list of atom positions.
 
     Will open a matplotlib figure, where atoms can be added or
@@ -280,14 +281,13 @@ def add_atoms_with_gui(image, atom_positions=None, distance_threshold=4,
     """
     global atom_adder_remover
     atom_adder_remover = AtomAdderRemover(
-            image, atom_positions, distance_threshold=distance_threshold,
-            norm=norm)
+        image, atom_positions, distance_threshold=distance_threshold, norm=norm
+    )
     atom_positions_new = atom_adder_remover.atom_positions
     return atom_positions_new
 
 
-def select_atoms_with_gui(image, atom_positions, verts=None,
-                          invert_selection=False):
+def select_atoms_with_gui(image, atom_positions, verts=None, invert_selection=False):
     """Get a subset of a list of atom positions.
 
     Will open a matplotlib figure, where a polygon is drawn interactively.
@@ -334,10 +334,12 @@ def select_atoms_with_gui(image, atom_positions, verts=None,
     """
     if verts is None:
         global atom_selector
-        atom_selector = gc.GetAtomSelection(image, atom_positions,
-                                            invert_selection=invert_selection)
+        atom_selector = gc.GetAtomSelection(
+            image, atom_positions, invert_selection=invert_selection
+        )
         atom_positions_selected = atom_selector.atom_positions_selected
     else:
         atom_positions_selected = to._get_atom_selection_from_verts(
-                atom_positions, verts, invert_selection=invert_selection)
+            atom_positions, verts, invert_selection=invert_selection
+        )
     return atom_positions_selected

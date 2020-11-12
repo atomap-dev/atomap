@@ -4,7 +4,6 @@ import atomap.fitting_tools as ft
 
 
 class TestODRFitter:
-
     def test_simple(self):
         x = np.arange(0, 10, 1)
         y = np.arange(0, 20, 2)
@@ -30,25 +29,24 @@ class TestODRFitter:
 
 
 class TestFindDistancePointLine:
-
     def test_simple(self):
         x_list, y_list = [0], [0]
         line = [0, 1]
         d = ft.get_shortest_distance_point_to_line(x_list, y_list, line)
-        assert d[0] == 1.
+        assert d[0] == 1.0
 
     def test_negative(self):
         x_list, y_list = [0], [0]
         line = [0, -1]
         d = ft.get_shortest_distance_point_to_line(x_list, y_list, line)
-        assert d == -1.
+        assert d == -1.0
 
     def test_vertical_line(self):
         x_list, y_list = [0, 2], [1, 1]
         line = [400000, -400000]
         d = ft.get_shortest_distance_point_to_line(x_list, y_list, line)
-        assert approx(d[0], rel=1e-5) == -1.
-        assert approx(d[1], rel=1e-5) == 1.
+        assert approx(d[0], rel=1e-5) == -1.0
+        assert approx(d[1], rel=1e-5) == 1.0
 
     def test_60_degreees(self):
         x_list, y_list = [0], [0]
@@ -60,7 +58,7 @@ class TestFindDistancePointLine:
         x_list, y_list = [0], [0]
         line = [1, -3]
         d = ft.get_shortest_distance_point_to_line(x_list, y_list, line)
-        assert approx(d[0], rel=1e-12) == -3*np.sin(np.radians(45))
+        assert approx(d[0], rel=1e-12) == -3 * np.sin(np.radians(45))
 
     def test_on_line(self):
         x_list, y_list = [1], [1]

@@ -16,11 +16,10 @@ import hyperspy as hs
 
 
 class TestArray2Signal:
-
     def test_array2signal2d(self):
         array = np.arange(100).reshape(10, 10)
         scale = 0.2
-        units = 'nm'
+        units = "nm"
         s = array2signal2d(array, scale=scale, units=units)
         assert s.axes_manager[0].scale == scale
         assert s.axes_manager[1].scale == scale
@@ -37,42 +36,39 @@ class TestArray2Signal:
 
 
 class TestGetPointBetweenFourAtoms:
-
     def test_simple(self):
         atom0, atom1 = ap.Atom_Position(10, 30), ap.Atom_Position(20, 30)
         atom2, atom3 = ap.Atom_Position(10, 40), ap.Atom_Position(20, 40)
         mid_pos = to.get_point_between_four_atoms((atom0, atom1, atom2, atom3))
-        assert mid_pos == (15., 35.)
+        assert mid_pos == (15.0, 35.0)
 
     def test_negative(self):
         atom0, atom1 = ap.Atom_Position(-15, 30), ap.Atom_Position(-10, 30)
         atom2, atom3 = ap.Atom_Position(-15, 40), ap.Atom_Position(-10, 40)
         mid_pos = to.get_point_between_four_atoms((atom0, atom1, atom2, atom3))
-        assert mid_pos == (-12.5, 35.)
+        assert mid_pos == (-12.5, 35.0)
 
     def test_diagonal(self):
         atom0, atom1 = ap.Atom_Position(5, 0), ap.Atom_Position(0, 5)
         atom2, atom3 = ap.Atom_Position(5, 10), ap.Atom_Position(10, 5)
         mid_pos = to.get_point_between_four_atoms((atom0, atom1, atom2, atom3))
-        assert mid_pos == (5., 5.)
+        assert mid_pos == (5.0, 5.0)
 
     def test_wrong_size(self):
         atom0, atom1 = ap.Atom_Position(5, 0), ap.Atom_Position(0, 5)
         atom2, atom3 = ap.Atom_Position(5, 10), ap.Atom_Position(10, 5)
         atom4 = ap.Atom_Position(10, 10)
         with pytest.raises(ValueError):
-            to.get_point_between_four_atoms(
-                    (atom0, atom1, atom2, atom3, atom4))
+            to.get_point_between_four_atoms((atom0, atom1, atom2, atom3, atom4))
 
 
 class TestFingerprinter:
-
     def test_running_simple(self):
         xN, yN, n = 3, 3, 60
         point_list = tt.make_nn_test_dataset(xN=xN, yN=yN, n=n)
         fp = Fingerprinter()
         fp.fit(point_list)
-        clusters = (xN*2+1)*(yN*2+1)-1
+        clusters = (xN * 2 + 1) * (yN * 2 + 1) - 1
         assert fp.cluster_centers_.shape[0] == clusters
 
     def test_running_advanced(self):
@@ -93,18 +89,18 @@ class TestFingerprinter:
                         if (xD < tolerance) and (yD < tolerance):
                             bool_list.append(True)
                             break
-        clusters = (xN*2+1)*(yN*2+1)-1
+        clusters = (xN * 2 + 1) * (yN * 2 + 1) - 1
         assert len(bool_list) == clusters
 
 
 class TestAddZeroPositionToDataList:
-
     def test_simple(self):
         x_array, y_array = np.arange(10), np.arange(10, 20)
         z_array = np.arange(30, 40)
         x_array_extra, y_array_extra = np.arange(5), np.arange(5)
         x_new, y_new, z_new = to._add_zero_position_to_data_list(
-                x_array, y_array, z_array, x_array_extra, y_array_extra)
+            x_array, y_array, z_array, x_array_extra, y_array_extra
+        )
         assert len(x_array) + len(x_array_extra) == len(x_new)
         assert len(y_array) + len(y_array_extra) == len(y_new)
         assert len(z_array) + len(x_array_extra) == len(z_new)
@@ -112,7 +108,6 @@ class TestAddZeroPositionToDataList:
 
 
 class TestRemoveAtomsFromImageUsing2dGaussian:
-
     def setup_method(self):
         test_data = tt.MakeTestData(520, 520)
         x, y = np.mgrid[10:510:8j, 10:510:8j]
@@ -125,19 +120,16 @@ class TestRemoveAtomsFromImageUsing2dGaussian:
         sublattice = self.sublattice
         sublattice.find_nearest_neighbors()
         remove_atoms_from_image_using_2d_gaussian(
-            sublattice.image,
-            sublattice,
-            percent_to_nn=0.40)
+            sublattice.image, sublattice, percent_to_nn=0.40
+        )
 
     def test_no_nearest_neighbors(self):
         sublattice = self.sublattice
         with pytest.raises(ValueError):
-            remove_atoms_from_image_using_2d_gaussian(sublattice.image,
-                                                      sublattice)
+            remove_atoms_from_image_using_2d_gaussian(sublattice.image, sublattice)
 
 
 class TestFindAverageDistanceBetweenAtoms:
-
     def test_simple(self):
         position_list = []
         for i in range(0, 100, 9):
@@ -151,10 +143,10 @@ class TestFindAverageDistanceBetweenAtoms:
         output = to.find_average_distance_between_atoms(input_data_list)
         first_peak, monolayer_sep, mean_separation = output
 
-        assert first_peak == 9.
+        assert first_peak == 9.0
         assert len(monolayer_sep) == 11
-        assert (monolayer_sep.flatten() == 9.).all()
-        assert mean_separation == 9.
+        assert (monolayer_sep.flatten() == 9.0).all()
+        assert mean_separation == 9.0
 
     def test_crop(self):
         position_list = []
@@ -167,13 +159,14 @@ class TestFindAverageDistanceBetweenAtoms:
         input_data_list = np.stack((position_list, property_list), axis=1)
 
         output = to.find_average_distance_between_atoms(
-                input_data_list, crop_start=10, crop_end=10)
+            input_data_list, crop_start=10, crop_end=10
+        )
         first_peak, monolayer_sep, mean_separation = output
 
-        assert first_peak == 9.
+        assert first_peak == 9.0
         assert len(monolayer_sep) == 9
-        assert (monolayer_sep.flatten() == 9.).all()
-        assert mean_separation == 9.
+        assert (monolayer_sep.flatten() == 9.0).all()
+        assert mean_separation == 9.0
 
     def test_with_random(self):
         position_list = []
@@ -188,14 +181,13 @@ class TestFindAverageDistanceBetweenAtoms:
         output = to.find_average_distance_between_atoms(input_data_list)
         first_peak, monolayer_sep, mean_separation = output
 
-        assert approx(first_peak, abs=0.1) == 8.
+        assert approx(first_peak, abs=0.1) == 8.0
         assert len(monolayer_sep) == 11
         assert monolayer_sep == approx(8, abs=0.1)
         assert mean_separation == approx(8, abs=0.1)
 
 
 class TestSortPositionsIntoLayers:
-
     def test_simple(self):
         position_list = []
         for i in range(0, 100, 9):
@@ -214,7 +206,6 @@ class TestSortPositionsIntoLayers:
 
 
 class TestSortProjectedPositionsIntoLayers:
-
     def test_simple(self):
         position_list = []
         for i in range(0, 100, 9):
@@ -224,8 +215,7 @@ class TestSortProjectedPositionsIntoLayers:
         position_list = np.array(position_list)
         property_list = np.ones(len(position_list))
         data_list = np.stack((position_list, property_list), axis=1)
-        layer_list = to.sort_projected_positions_into_layers(
-                data_list)
+        layer_list = to.sort_projected_positions_into_layers(data_list)
         assert len(layer_list) == 12
         for layer, i in zip(layer_list, range(0, 100, 9)):
             assert len(layer) == 10
@@ -234,7 +224,6 @@ class TestSortProjectedPositionsIntoLayers:
 
 
 class TestCombineProjectedPositionsLayers:
-
     def test_simple(self):
         position_list = []
         for i in range(0, 100, 9):
@@ -244,8 +233,7 @@ class TestCombineProjectedPositionsLayers:
         position_list = np.array(position_list)
         property_list = np.ones(len(position_list))
         data_list = np.stack((position_list, property_list), axis=1)
-        layer_list = to.sort_projected_positions_into_layers(
-                data_list)
+        layer_list = to.sort_projected_positions_into_layers(data_list)
         combined_layer_list = to.combine_projected_positions_layers(layer_list)
         assert len(layer_list) == 12
         for layer, i in zip(combined_layer_list, range(0, 100, 9)):
@@ -260,8 +248,8 @@ class TestCombineProjectedPositionsLayers:
         for i in range(0, 100, 9):
             positions = np.ones(n) * i
             position_list.extend(positions)
-            property_list.extend(np.ones(int(n/2)))
-            property_list.extend(np.ones(int(n/2))*2)
+            property_list.extend(np.ones(int(n / 2)))
+            property_list.extend(np.ones(int(n / 2)) * 2)
 
         data_list = np.stack((position_list, property_list), axis=1)
         layer_list = to.sort_projected_positions_into_layers(data_list)
@@ -273,10 +261,16 @@ class TestCombineProjectedPositionsLayers:
 
 
 @pytest.mark.parametrize(
-    "x,y,sx,sy,ox,oy", [
-        (20, 20, 1, 1, 0, 0), (50, 20, 1, 1, 0, 0),
-        (20, 20, 0.5, 2, 0, 0), (20, 20, 0.5, 2, 10, 5),
-        (50, 20, 0.5, 4, -10, 20), (15, 50, 0.7, 2.3, -10, -5)])
+    "x,y,sx,sy,ox,oy",
+    [
+        (20, 20, 1, 1, 0, 0),
+        (50, 20, 1, 1, 0, 0),
+        (20, 20, 0.5, 2, 0, 0),
+        (20, 20, 0.5, 2, 10, 5),
+        (50, 20, 0.5, 4, -10, 20),
+        (15, 50, 0.7, 2.3, -10, -5),
+    ],
+)
 def test_get_signal_centre(x, y, sx, sy, ox, oy):
     s = Signal2D(np.zeros((y, x)))
     print(s)
@@ -289,7 +283,6 @@ def test_get_signal_centre(x, y, sx, sy, ox, oy):
 
 
 class TestRotatePointsAroundSignalCentre:
-
     def setup_method(self):
         sublattice = dd.get_simple_cubic_sublattice()
         self.x, self.y = sublattice.x_position, sublattice.y_position
@@ -298,62 +291,59 @@ class TestRotatePointsAroundSignalCentre:
     @pytest.mark.parametrize("rot", [10, 30, 60, 90, 180, 250])
     def test_simple_rotation(self, rot):
         x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, self.x, self.y, rot)
+            self.s, self.x, self.y, rot
+        )
         assert len(self.x) == len(x_rot)
         assert len(self.y) == len(y_rot)
 
     @pytest.mark.parametrize("rot", [0, 360])
     def test_zero_rotation(self, rot):
         x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, self.x, self.y, rot)
+            self.s, self.x, self.y, rot
+        )
         np.testing.assert_allclose(self.x, x_rot)
         np.testing.assert_allclose(self.y, y_rot)
 
     def test_180_double_rotation(self):
         x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, self.x, self.y, 180)
-        x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, x_rot, y_rot, 180)
+            self.s, self.x, self.y, 180
+        )
+        x_rot, y_rot = to.rotate_points_around_signal_centre(self.s, x_rot, y_rot, 180)
         np.testing.assert_allclose(self.x, x_rot)
         np.testing.assert_allclose(self.y, y_rot)
 
     def test_90_double_rotation(self):
-        x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, self.x, self.y, 90)
-        x_rot, y_rot = to.rotate_points_around_signal_centre(
-            self.s, x_rot, y_rot, -90)
+        x_rot, y_rot = to.rotate_points_around_signal_centre(self.s, self.x, self.y, 90)
+        x_rot, y_rot = to.rotate_points_around_signal_centre(self.s, x_rot, y_rot, -90)
         np.testing.assert_allclose(self.x, x_rot)
         np.testing.assert_allclose(self.y, y_rot)
 
 
 class TestRotatePointsAndSignal:
-
     def setup_method(self):
         sublattice = dd.get_simple_cubic_sublattice()
         self.x, self.y = sublattice.x_position, sublattice.y_position
         self.s = sublattice.get_atom_list_on_image()
 
     def test_simple_rotation(self):
-        s_rot, x_rot, y_rot = to.rotate_points_and_signal(
-            self.s, self.x, self.y, 180)
+        s_rot, x_rot, y_rot = to.rotate_points_and_signal(self.s, self.x, self.y, 180)
         assert self.s.axes_manager.shape == s_rot.axes_manager.shape
         assert len(self.x) == len(x_rot)
         assert len(self.y) == len(y_rot)
 
     def test_double_180_rotation(self):
-        s_rot, x_rot, y_rot = to.rotate_points_and_signal(
-            self.s, self.x, self.y, 180)
-        s_rot, x_rot, y_rot = to.rotate_points_and_signal(
-            s_rot, x_rot, y_rot, 180)
+        s_rot, x_rot, y_rot = to.rotate_points_and_signal(self.s, self.x, self.y, 180)
+        s_rot, x_rot, y_rot = to.rotate_points_and_signal(s_rot, x_rot, y_rot, 180)
         np.testing.assert_allclose(self.x, x_rot)
         np.testing.assert_allclose(self.y, y_rot)
 
 
 class TestRotatePointsAroundPosition:
-
     def test_degrees_centre_0(self):
         xc, yc = 0, 0
-        x, y = [5, ], [0, ]
+        x, y = [5,], [
+            0,
+        ]
         x_rot, y_rot = to._rotate_points_around_position(xc, yc, x, y, 90)
         assert len(x_rot)
         assert len(y_rot)
@@ -371,7 +361,9 @@ class TestRotatePointsAroundPosition:
 
     def test_degrees_centre_10(self):
         xc, yc = 10, 10
-        x, y = [5, ], [0, ]
+        x, y = [5,], [
+            0,
+        ]
         x_rot, y_rot = to._rotate_points_around_position(xc, yc, x, y, 90)
         assert approx(x_rot[0]) == 0
         assert approx(y_rot[0]) == 15
@@ -393,46 +385,38 @@ class TestRotatePointsAroundPosition:
 
 
 class TestFliplrPointsAroundSignalCentre:
-
     def setup_method(self):
         sublattice = dd.get_simple_cubic_sublattice()
         self.x, self.y = sublattice.x_position, sublattice.y_position
         self.s = sublattice.get_atom_list_on_image()
 
     def test_simple_flip(self):
-        x_flip, y_flip = to.fliplr_points_around_signal_centre(
-            self.s, self.x, self.y)
+        x_flip, y_flip = to.fliplr_points_around_signal_centre(self.s, self.x, self.y)
         assert len(self.x) == len(x_flip)
         assert len(self.y) == len(y_flip)
 
     def test_flip_double(self):
-        x_flip, y_flip = to.fliplr_points_around_signal_centre(
-            self.s, self.x, self.y)
-        x_flip, y_flip = to.fliplr_points_around_signal_centre(
-            self.s, x_flip, y_flip)
+        x_flip, y_flip = to.fliplr_points_around_signal_centre(self.s, self.x, self.y)
+        x_flip, y_flip = to.fliplr_points_around_signal_centre(self.s, x_flip, y_flip)
         np.testing.assert_allclose(self.x, x_flip)
         np.testing.assert_allclose(self.y, y_flip)
 
 
 class TestFliplrPointsAndSignal:
-
     def setup_method(self):
         sublattice = dd.get_simple_cubic_sublattice()
         self.x, self.y = sublattice.x_position, sublattice.y_position
         self.s = sublattice.get_atom_list_on_image()
 
     def test_simple_flip(self):
-        s_flip, x_flip, y_flip = to.fliplr_points_and_signal(
-            self.s, self.x, self.y)
-        s_flip, x_flip, y_flip = to.fliplr_points_and_signal(
-            s_flip, x_flip, y_flip)
+        s_flip, x_flip, y_flip = to.fliplr_points_and_signal(self.s, self.x, self.y)
+        s_flip, x_flip, y_flip = to.fliplr_points_and_signal(s_flip, x_flip, y_flip)
         np.testing.assert_allclose(self.s.data, s_flip.data)
         np.testing.assert_allclose(self.x, x_flip)
         np.testing.assert_allclose(self.y, y_flip)
 
 
 class TestIntegrate:
-
     def test_two_atoms(self):
         test_data = tt.MakeTestData(50, 100, sigma_quantile=8)
         x, y, A = [25, 25], [25, 75], [5, 10]
@@ -467,17 +451,25 @@ class TestIntegrate:
     def test_max_radius_bad_value(self):
         s = hs.signals.Signal2D(np.zeros((10, 10)))
         with pytest.raises(ValueError):
-            integrate(s, [5, ], [5, ], max_radius=-1)
+            integrate(
+                s,
+                [
+                    5,
+                ],
+                [
+                    5,
+                ],
+                max_radius=-1,
+            )
 
     def test_max_radius_1(self):
         test_data = tt.MakeTestData(60, 100)
         x, y, A = [30, 30], [25, 75], [5, 10]
-        test_data.add_atom_list(
-                x=x, y=y, amplitude=A, sigma_x=0.1, sigma_y=0.1)
+        test_data.add_atom_list(x=x, y=y, amplitude=A, sigma_x=0.1, sigma_y=0.1)
         s = test_data.signal
         i_points, i_record, p_record = integrate(s, x, y, max_radius=1)
 
-        assert (i_points[1] / i_points[0]) == 2.
+        assert (i_points[1] / i_points[0]) == 2.0
         assert i_record.data[y[0], x[0]] == i_points[0]
         assert i_record.data[y[1], x[1]] == i_points[1]
         i_record.data[y[0], x[0]] = 0
@@ -505,7 +497,8 @@ class TestIntegrate:
         s_eels = dd.get_eels_spectrum_map().T
         peaks = am.get_atom_positions(s, separation=4)
         i_points, i_record, p_record = integrate(
-                s_eels, peaks[:, 0], peaks[:, 1], max_radius=3)
+            s_eels, peaks[:, 0], peaks[:, 1], max_radius=3
+        )
         assert p_record.data.shape == (100, 100)
         assert s_eels.data.shape == i_record.data.shape
 
@@ -514,12 +507,21 @@ class TestIntegrate:
         x, y, A = [20, 20, 40, 40], [25, 75, 25, 75], [5, 10, 15, 20]
         test_data.add_atom_list(x=x, y=y, amplitude=A)
         s = test_data.signal
-        i_points, i_record, p_record = integrate(s, x, y, method='Watershed')
+        i_points, i_record, p_record = integrate(s, x, y, method="Watershed")
 
     def test_wrong_method(self):
         s = hs.signals.Signal2D(np.zeros((10, 10)))
         with pytest.raises(NotImplementedError):
-            integrate(s, [5, ], [5, ], method='bad_method')
+            integrate(
+                s,
+                [
+                    5,
+                ],
+                [
+                    5,
+                ],
+                method="bad_method",
+            )
 
     def test_array_input(self):
         sublattice = am.dummy_data.get_simple_cubic_sublattice()
@@ -536,7 +538,7 @@ class TestIntegrate:
         points = np.array([(2, 2), (1, 1), (0, 0), (3, 3)]).T
         minIndex, distMin = find_smallest_distance(6, 6, points)
         assert minIndex == 3
-        assert distMin == ((6-3)**2 + (6-3)**2)**0.5
+        assert distMin == ((6 - 3) ** 2 + (6 - 3) ** 2) ** 0.5
 
     def test_calculate_point_record(self):
         points = np.array([(2, 2), (1, 1), (0, 0), (3, 3)]).T
@@ -544,18 +546,14 @@ class TestIntegrate:
         max_radius = 2
         point_record = calculate_point_record(image, points, max_radius)
         np.testing.assert_almost_equal(
-            point_record,
-            np.array(
-                [[3., 2., 2.],
-                 [2., 2., 1.],
-                 [2., 1., 1.]]))
+            point_record, np.array([[3.0, 2.0, 2.0], [2.0, 2.0, 1.0], [2.0, 1.0, 1.0]])
+        )
 
     def test_border_elems(self):
         a = np.arange(5)[:, None] * np.arange(6)
         np.testing.assert_almost_equal(
             _border_elems(a, 1),
-            np.array([0, 0, 0, 0, 0, 0, 0, 5, 0,
-                     10, 0, 15, 0, 4, 8, 12, 16, 20])
+            np.array([0, 0, 0, 0, 0, 0, 0, 5, 0, 10, 0, 15, 0, 4, 8, 12, 16, 20]),
         )
 
 
@@ -566,17 +564,34 @@ class TestVoronoi:
         self.s = s.isig[:64, :64]
         self.points = am.get_atom_positions(self.s, separation=3).T
 
-        self.i_true = np.array([
-            47.04196098, np.nan, np.nan, 52.47312043, np.nan,
-            np.nan, np.nan, 52.85817517, np.nan, np.nan,
-            np.nan, np.nan, np.nan, 42.53379219, np.nan,
-            38.09332358, np.nan, 37.73917033])
+        self.i_true = np.array(
+            [
+                47.04196098,
+                np.nan,
+                np.nan,
+                52.47312043,
+                np.nan,
+                np.nan,
+                np.nan,
+                52.85817517,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                np.nan,
+                42.53379219,
+                np.nan,
+                38.09332358,
+                np.nan,
+                37.73917033,
+            ]
+        )
 
     def test_integrate_voronoi(self):
         i, ir, pr = am.integrate(
             self.s,
             *self.points,
-            method='Voronoi',
+            method="Voronoi",
             remove_edge_cells=True,
             edge_pixels=3,
         )
@@ -586,7 +601,7 @@ class TestVoronoi:
         i, ir, pr = am.integrate(
             self.s,
             *self.points,
-            method='Voronoi',
+            method="Voronoi",
             remove_edge_cells=False,
         )
         i, ir, pr = remove_integrated_edge_cells(i, ir, pr, 3)
@@ -594,7 +609,6 @@ class TestVoronoi:
 
 
 class TestGetAtomSelectionFromVerts:
-
     def test_simple(self):
         pos = [[10, 10], [15, 15]]
         verts = [[0, 0], [0, 20], [20, 20], [20, 0]]

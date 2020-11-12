@@ -4,20 +4,17 @@ import atomap.stats as st
 
 
 class TestStats:
-
     def setup_method(self):
         self.atoms_N = 10
         image_data = np.arange(10000).reshape(100, 100)
         peaks = np.arange(20).reshape(self.atoms_N, 2)
-        sublattice = Sublattice(
-                peaks,
-                image_data)
+        sublattice = Sublattice(peaks, image_data)
         sublattice.original_image = image_data
         for atom in sublattice.atom_list:
-            atom.sigma_x = 2.
-            atom.sigma_y = 2.
-            atom.amplitude_gaussian = 10.
-            atom.amplitude_max_intensity = 10.
+            atom.sigma_x = 2.0
+            atom.sigma_y = 2.0
+            atom.amplitude_gaussian = 10.0
+            atom.amplitude_max_intensity = 10.0
         self.sublattice = sublattice
 
     def test_plot_amplitude_sigma_hist2d(self):
@@ -39,6 +36,5 @@ class TestStats:
         st.plot_amplitude_sigma_scatter(self.sublattice)
 
     def test_get_atom_list_atom_sigma_range(self):
-        atom_list = st.get_atom_list_atom_sigma_range(
-                self.sublattice, (1., 3.))
+        atom_list = st.get_atom_list_atom_sigma_range(self.sublattice, (1.0, 3.0))
         assert len(atom_list) == self.atoms_N

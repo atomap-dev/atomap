@@ -5,7 +5,6 @@ import atomap.analysis_tools as an
 
 
 class TestGetNeighborMiddlePosition:
-
     def test_simple(self):
         sublattice = am.dummy_data.get_simple_cubic_sublattice()
         sublattice.construct_zone_axes()
@@ -19,7 +18,6 @@ class TestGetNeighborMiddlePosition:
 
 
 class TestGetMiddlePositionList:
-
     def test_simple(self):
         sublattice = am.dummy_data.get_simple_cubic_sublattice()
         sublattice.construct_zone_axes()
@@ -30,12 +28,18 @@ class TestGetMiddlePositionList:
 
 
 class TestGetVectorShiftList:
-
     def test_simple(self):
-        sublattice = am.Sublattice([[10., 10.], ], image=np.zeros((20, 20)))
-        position_list = [[5., 5.], ]
+        sublattice = am.Sublattice(
+            [
+                [10.0, 10.0],
+            ],
+            image=np.zeros((20, 20)),
+        )
+        position_list = [
+            [5.0, 5.0],
+        ]
         vector_list = an.get_vector_shift_list(sublattice, position_list)
-        assert vector_list[0] == (5., 5., -5., -5.)
+        assert vector_list[0] == (5.0, 5.0, -5.0, -5.0)
 
     def test_multiple(self):
         atom_list = np.arange(0, 100, 10).reshape(5, 2)
@@ -43,11 +47,10 @@ class TestGetVectorShiftList:
         position_list = np.arange(1, 101, 10).reshape(5, 2)
         vector_list = an.get_vector_shift_list(sublattice, position_list)
         for vector in vector_list:
-            assert vector[2:] == (1., 1.)
+            assert vector[2:] == (1.0, 1.0)
 
 
 class TestPDF:
-
     def test_simple(self):
         s = am.dummy_data.get_simple_cubic_signal()
         sublattice = am.dummy_data.get_simple_cubic_sublattice()
@@ -56,8 +59,7 @@ class TestPDF:
         assert s_pdf.axes_manager[0].scale == 0.75
         assert approx(s_pdf.data[19], 0.01) == 4.12
 
-        s_pdf2 = sublattice.pair_distribution_function(
-                s, n_bins=250, rel_range=0.4)
+        s_pdf2 = sublattice.pair_distribution_function(s, n_bins=250, rel_range=0.4)
         assert s_pdf2.axes_manager[0].size == 250
         assert s_pdf2.axes_manager[0].scale == 0.48
         assert approx(s_pdf2.data[30], 0.01) == 4.12

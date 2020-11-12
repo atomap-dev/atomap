@@ -7,16 +7,15 @@ import atomap.tools as at
 from ase import Atoms
 
 
-class Atom_Lattice():
-
+class Atom_Lattice:
     def __init__(
-            self,
-            image=None,
-            name="",
-            sublattice_list=None,
-            original_image=None,
-            image_extra=None,
-            ):
+        self,
+        image=None,
+        name="",
+        sublattice_list=None,
+        original_image=None,
+        image_extra=None,
+    ):
         """
         Parameters
         ----------
@@ -46,14 +45,14 @@ class Atom_Lattice():
         self.image_extra = image_extra
         self.name = name
         self._pixel_separation = 10
-        self._original_filename = ''
+        self._original_filename = ""
 
     def __repr__(self):
-        return '<%s, %s (sublattice(s): %s)>' % (
+        return "<%s, %s (sublattice(s): %s)>" % (
             self.__class__.__name__,
             self.name,
             len(self.sublattice_list),
-            )
+        )
 
     @property
     def x_position(self):
@@ -61,7 +60,7 @@ class Atom_Lattice():
         for subl in self.sublattice_list:
             x_list.append(subl.x_position)
         x_pos = np.concatenate(x_list)
-        return(x_pos)
+        return x_pos
 
     @property
     def y_position(self):
@@ -69,7 +68,7 @@ class Atom_Lattice():
         for subl in self.sublattice_list:
             y_list.append(subl.y_position)
         y_pos = np.concatenate(y_list)
-        return(y_pos)
+        return y_pos
 
     @property
     def signal(self):
@@ -90,10 +89,10 @@ class Atom_Lattice():
         if isinstance(sublattice_id, str):
             for sublattice in self.sublattice_list:
                 if sublattice.name == sublattice_id:
-                    return(sublattice)
+                    return sublattice
         elif isinstance(sublattice_id, int):
-            return(self.sublattice_list[sublattice_id])
-        raise ValueError('Could not find sublattice ' + str(sublattice_id))
+            return self.sublattice_list[sublattice_id]
+        raise ValueError("Could not find sublattice " + str(sublattice_id))
 
     def _construct_zone_axes_for_sublattices(self, sublattice_list=None):
         if sublattice_list is None:
@@ -102,12 +101,13 @@ class Atom_Lattice():
             afr.construct_zone_axes_from_sublattice(sublattice)
 
     def integrate_column_intensity(
-            self,
-            method='Voronoi',
-            max_radius='Auto',
-            data_to_integrate=None,
-            remove_edge_cells=False,
-            edge_pixels=1):
+        self,
+        method="Voronoi",
+        max_radius="Auto",
+        data_to_integrate=None,
+        remove_edge_cells=False,
+        edge_pixels=1,
+    ):
         """Integrate signal around the atoms in the atom lattice.
 
         See atomap.tools.integrate for more information about the parameters.
@@ -153,13 +153,11 @@ class Atom_Lattice():
             remove_edge_cells=remove_edge_cells,
             edge_pixels=edge_pixels,
         )
-        return(i_points, i_record, p_record)
+        return (i_points, i_record, p_record)
 
     def get_sublattice_atom_list_on_image(
-            self,
-            image=None,
-            add_numbers=False,
-            markersize=20):
+        self, image=None, add_numbers=False, markersize=20
+    ):
         if image is None:
             if self.original_image is None:
                 image = self.image
@@ -168,12 +166,15 @@ class Atom_Lattice():
         marker_list = []
         scale = self.sublattice_list[0].pixel_size
         for sublattice in self.sublattice_list:
-            marker_list.extend(pl._make_atom_position_marker_list(
+            marker_list.extend(
+                pl._make_atom_position_marker_list(
                     sublattice.atom_list,
                     scale=scale,
                     color=sublattice._plot_color,
                     markersize=markersize,
-                    add_numbers=add_numbers))
+                    add_numbers=add_numbers,
+                )
+            )
         signal = at.array2signal2d(image, scale)
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
@@ -197,25 +198,28 @@ class Atom_Lattice():
         >>> atoms = al.convert_to_ase()
 
         """
-        if not hasattr(self.sublattice_list[0].atom_list[0], 'element_info'):
+        if not hasattr(self.sublattice_list[0].atom_list[0], "element_info"):
             raise AttributeError(
                 "Atom position is missing element_info, each sublattice need "
                 "to have run 'set_element_info'. For example: "
-                "atom_lattice.sublattice_list[0].set_element_info(\"C\", [0.])"
+                'atom_lattice.sublattice_list[0].set_element_info("C", [0.])'
             )
         atoms = Atoms()
         for sublattice in self.sublattice_list:
             for atom_column in sublattice.atom_list:
                 for atom in atom_column.element_info:
-                    new_atom = Atoms(atom_column.element_info[atom],
-                                     positions=[(
-                                         atom_column.pixel_x *
-                                         sublattice.pixel_size,
-                                         atom_column.pixel_y *
-                                         sublattice.pixel_size,
-                                         atom)])
+                    new_atom = Atoms(
+                        atom_column.element_info[atom],
+                        positions=[
+                            (
+                                atom_column.pixel_x * sublattice.pixel_size,
+                                atom_column.pixel_y * sublattice.pixel_size,
+                                atom,
+                            )
+                        ],
+                    )
                     atoms += new_atom
-        return(atoms)
+        return atoms
 
     def save(self, filename=None, overwrite=False):
         """
@@ -243,15 +247,12 @@ class Atom_Lattice():
 
         """
         from atomap.io import save_atom_lattice_to_hdf5
+
         if filename is None:
             filename = self.name + "_atom_lattice.hdf5"
         save_atom_lattice_to_hdf5(self, filename=filename, overwrite=overwrite)
 
-    def plot(self,
-             image=None,
-             add_numbers=False,
-             markersize=20,
-             **kwargs):
+    def plot(self, image=None, add_numbers=False, markersize=20, **kwargs):
         """
         Plot all atom positions for all sub lattices on the image data.
 
@@ -291,25 +292,23 @@ class Atom_Lattice():
             positions as markers. More customizability.
         """
         signal = self.get_sublattice_atom_list_on_image(
-            image=image,
-            add_numbers=add_numbers,
-            markersize=markersize)
+            image=image, add_numbers=add_numbers, markersize=markersize
+        )
         signal.plot(**kwargs, plot_markers=True)
 
 
 class Dumbbell_Lattice(Atom_Lattice):
-
     def __init__(self, sublattice_list=None, *args, **kwargs):
         if sublattice_list is not None:
             if len(sublattice_list) != 2:
                 raise ValueError(
-                        "sublattice_list must contain two sublattices,"
-                        " not {0}".format(len(sublattice_list)))
+                    "sublattice_list must contain two sublattices,"
+                    " not {0}".format(len(sublattice_list))
+                )
             n_atoms0 = len(sublattice_list[0].atom_list)
             n_atoms1 = len(sublattice_list[1].atom_list)
             if n_atoms0 != n_atoms1:
-                raise ValueError(
-                        "Both sublattices must have the same number of atoms")
+                raise ValueError("Both sublattices must have the same number of atoms")
 
         super().__init__(sublattice_list=sublattice_list, *args, **kwargs)
 
@@ -318,14 +317,14 @@ class Dumbbell_Lattice(Atom_Lattice):
         sub0 = self.sublattice_list[0]
         sub1 = self.sublattice_list[1]
         x_array = np.mean((sub0.x_position, sub1.x_position), axis=0)
-        return(x_array)
+        return x_array
 
     @property
     def dumbbell_y(self):
         sub0 = self.sublattice_list[0]
         sub1 = self.sublattice_list[1]
         y_array = np.mean((sub0.y_position, sub1.y_position), axis=0)
-        return(y_array)
+        return y_array
 
     @property
     def dumbbell_distance(self):
@@ -391,8 +390,9 @@ class Dumbbell_Lattice(Atom_Lattice):
             intensity_difference_list.append(intensity_difference)
         return np.array(intensity_difference_list)
 
-    def refine_position_gaussian(self, image=None, show_progressbar=True,
-                                 percent_to_nn=0.40, mask_radius=None):
+    def refine_position_gaussian(
+        self, image=None, show_progressbar=True, percent_to_nn=0.40, mask_radius=None
+    ):
         """Fit several atoms at the same time.
 
         For datasets where the atoms are too close together to do the fitting
@@ -424,17 +424,17 @@ class Dumbbell_Lattice(Atom_Lattice):
             else:
                 image = self.original_image
         n_tot = len(self.sublattice_list[0].atom_list)
-        for i_atom in progressbar(range(n_tot), desc="Gaussian fitting",
-                                  disable=not show_progressbar):
+        for i_atom in progressbar(
+            range(n_tot), desc="Gaussian fitting", disable=not show_progressbar
+        ):
             atom_list = []
             for sublattice in self.sublattice_list:
                 atom_list.append(sublattice.atom_list[i_atom])
             afr.fit_atom_positions_gaussian(
-                    atom_list, image, percent_to_nn=percent_to_nn,
-                    mask_radius=mask_radius)
+                atom_list, image, percent_to_nn=percent_to_nn, mask_radius=mask_radius
+            )
 
-    def plot_dumbbell_distance(self, image=None, cmap=None,
-                               vmin=None, vmax=None):
+    def plot_dumbbell_distance(self, image=None, cmap=None, vmin=None, vmax=None):
         """Plot the dumbbell distances as points on an image.
 
         Parameters
@@ -463,11 +463,11 @@ class Dumbbell_Lattice(Atom_Lattice):
         x, y = self.dumbbell_x, self.dumbbell_y
         z = self.dumbbell_distance
         fig = pl._make_figure_scatter_point_on_image(
-                image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax)
+            image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax
+        )
         return fig
 
-    def plot_dumbbell_angle(self, image=None, cmap=None,
-                            vmin=None, vmax=None):
+    def plot_dumbbell_angle(self, image=None, cmap=None, vmin=None, vmax=None):
         """Plot the dumbbell angles as points on an image.
 
         Parameters
@@ -496,11 +496,13 @@ class Dumbbell_Lattice(Atom_Lattice):
         x, y = self.dumbbell_x, self.dumbbell_y
         z = self.dumbbell_angle
         fig = pl._make_figure_scatter_point_on_image(
-                image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax)
+            image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax
+        )
         return fig
 
     def plot_dumbbell_intensity_difference(
-            self, radius=4, image=None, cmap=None, vmin=None, vmax=None):
+        self, radius=4, image=None, cmap=None, vmin=None, vmax=None
+    ):
         """Plot the dumbbell intensity difference as points on an image.
 
         Parameters
@@ -535,5 +537,6 @@ class Dumbbell_Lattice(Atom_Lattice):
         x, y = self.dumbbell_x, self.dumbbell_y
         z = self.get_dumbbell_intensity_difference(radius=radius, image=image)
         fig = pl._make_figure_scatter_point_on_image(
-                image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax)
+            image, x, y, z, cmap=cmap, vmin=vmin, vmax=vmax
+        )
         return fig

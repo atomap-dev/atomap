@@ -8,11 +8,15 @@ from atomap.atom_lattice import Atom_Lattice
 
 
 class MakeTestData(object):
-
     def __init__(
-            self, image_x, image_y, sublattice_generate_image=True,
-            sigma_quantile=5, add_row_scan_distortion=None,
-            show_progressbar=False):
+        self,
+        image_x,
+        image_y,
+        sublattice_generate_image=True,
+        sigma_quantile=5,
+        add_row_scan_distortion=None,
+        show_progressbar=False,
+    ):
         """Class for generating test datasets of atomic resolution STEM images.
 
         Parameters
@@ -122,9 +126,10 @@ class MakeTestData(object):
     @property
     def signal(self):
         signal = self.__sublattice.get_model_image(
-                image_shape=self.data_extent,
-                sigma_quantile=self._sigma_quantile,
-                show_progressbar=self._show_progressbar)
+            image_shape=self.data_extent,
+            sigma_quantile=self._sigma_quantile,
+            show_progressbar=self._show_progressbar,
+        )
         if self._image_noise is not False:
             signal.data += self._image_noise
         if self._add_row_scan_distortion is not None:
@@ -143,9 +148,13 @@ class MakeTestData(object):
         atom_list = []
         for atom in self.__sublattice.atom_list:
             new_atom = Atom_Position(
-                    x=atom.pixel_x, y=atom.pixel_y,
-                    sigma_x=atom.sigma_x, sigma_y=atom.sigma_y,
-                    rotation=atom.rotation, amplitude=atom.amplitude_gaussian)
+                x=atom.pixel_x,
+                y=atom.pixel_y,
+                sigma_x=atom.sigma_x,
+                sigma_y=atom.sigma_y,
+                rotation=atom.rotation,
+                amplitude=atom.amplitude_gaussian,
+            )
             atom_list.append(new_atom)
 
         if self._sublattice_generate_image:
@@ -159,8 +168,9 @@ class MakeTestData(object):
     @property
     def atom_lattice(self):
         sublattice = self.sublattice
-        atom_lattice = Atom_Lattice(image=sublattice.image,
-                                    sublattice_list=[sublattice])
+        atom_lattice = Atom_Lattice(
+            image=sublattice.image, sublattice_list=[sublattice]
+        )
         return atom_lattice
 
     def _shift_vertical_rows(self, signal):
@@ -190,12 +200,16 @@ class MakeTestData(object):
         >>> test_data.signal.plot()
         """
         atom = Atom_Position(
-                x=x, y=y, sigma_x=sigma_x, sigma_y=sigma_y,
-                rotation=rotation, amplitude=amplitude)
+            x=x,
+            y=y,
+            sigma_x=sigma_x,
+            sigma_y=sigma_y,
+            rotation=rotation,
+            amplitude=amplitude,
+        )
         self.__sublattice.atom_list.append(atom)
 
-    def add_atom_list(
-            self, x, y, sigma_x=1, sigma_y=1, amplitude=1, rotation=0):
+    def add_atom_list(self, x, y, sigma_x=1, sigma_y=1, amplitude=1, rotation=0):
         """
         Add several atoms to the test data.
 
@@ -234,33 +248,30 @@ class MakeTestData(object):
             if len(sigma_x) != len(x):
                 raise ValueError("sigma_x and x needs to have the same length")
         else:
-            sigma_x = [sigma_x]*len(x)
+            sigma_x = [sigma_x] * len(x)
 
         if isiterable(sigma_y):
             if len(sigma_y) != len(y):
                 raise ValueError("sigma_y and x needs to have the same length")
         else:
-            sigma_y = [sigma_y]*len(x)
+            sigma_y = [sigma_y] * len(x)
 
         if isiterable(amplitude):
             if len(amplitude) != len(x):
-                raise ValueError(
-                        "amplitude and x needs to have the same length")
+                raise ValueError("amplitude and x needs to have the same length")
         else:
-            amplitude = [amplitude]*len(x)
+            amplitude = [amplitude] * len(x)
 
         if isiterable(rotation):
             if len(rotation) != len(x):
-                raise ValueError(
-                        "rotation and x needs to have the same length")
+                raise ValueError("rotation and x needs to have the same length")
         else:
-            rotation = [rotation]*len(x)
+            rotation = [rotation] * len(x)
         iterator = zip(x, y, sigma_x, sigma_y, amplitude, rotation)
         for tx, ty, tsigma_x, tsigma_y, tamplitude, trotation in iterator:
             self.add_atom(tx, ty, tsigma_x, tsigma_y, tamplitude, trotation)
 
-    def add_image_noise(
-            self, mu=0, sigma=0.005, only_positive=False, random_seed=None):
+    def add_image_noise(self, mu=0, sigma=0.005, only_positive=False, random_seed=None):
         """
         Add white noise to the image signal. The noise component is Gaussian
         distributed, with a default expectation value at 0, and a sigma of
@@ -315,28 +326,29 @@ def make_vector_test_gaussian(x, y, standard_deviation=1, n=30):
         g_y = normal(y, scale=standard_deviation)
         point_list.append([g_x, g_y])
     point_list = np.array(point_list)
-    return(point_list)
+    return point_list
 
 
 def make_nn_test_dataset(xN=3, yN=3, xS=9, yS=9, std=0.3, n=50):
     point_list = np.array([[], []]).T
-    for ix in range(-xN, xN+1):
-        for iy in range(-yN, yN+1):
+    for ix in range(-xN, xN + 1):
+        for iy in range(-yN, yN + 1):
             if (ix == 0) and (iy == 0):
                 pass
             else:
                 gaussian_list = make_vector_test_gaussian(
-                        ix*xS, iy*yS, standard_deviation=std, n=n)
+                    ix * xS, iy * yS, standard_deviation=std, n=n
+                )
                 point_list = np.vstack((point_list, gaussian_list))
-    return(point_list)
+    return point_list
 
 
-def find_atom_position_match(component_list, atom_list, delta=3, scale=1.):
+def find_atom_position_match(component_list, atom_list, delta=3, scale=1.0):
     match_list = []
     for atom in atom_list:
         for component in component_list:
-            x = atom.pixel_x*scale - component.centre_x.value
-            y = atom.pixel_y*scale - component.centre_y.value
+            x = atom.pixel_x * scale - component.centre_x.value
+            y = atom.pixel_y * scale - component.centre_y.value
             d = math.hypot(x, y)
             if d < delta:
                 match_list.append([component, atom])
