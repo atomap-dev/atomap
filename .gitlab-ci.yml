@@ -7,10 +7,10 @@ default:
     before_script:
         - apt-get update -q
 
-style_checks_flake8:
+style_checks_black:
     script:
-    - apt-get install -qy python3-flake8
-    - python3 -m flake8 atomap/
+    - pip3 install black
+    - python3 -m black atomap/ --diff --check --quiet
 
 pip_install_unittest_docstring_documentation_coverage:
     coverage: '/TOTAL.*\s+(\d+%)$/'
