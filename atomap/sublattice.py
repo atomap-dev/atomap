@@ -105,7 +105,8 @@ class Sublattice():
         >>> x, y = x.flatten(), y.flatten()
         >>> atom_positions = np.dstack((x, y))[0]
         >>> image_data = np.random.random((100, 100))
-        >>> sublattice = am.Sublattice(atom_positions, image_data, color='yellow',
+        >>> sublattice = am.Sublattice(
+        ...     atom_positions, image_data, color='yellow',
         ...     name='the sublattice')
         >>> sublattice.get_atom_list_on_image(markersize=50).plot()
 
