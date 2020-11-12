@@ -8,7 +8,9 @@ from hyperspy.signals import Signal2D
 from atomap.tools import array2signal1d, array2signal2d, Fingerprinter
 from atomap.tools import remove_atoms_from_image_using_2d_gaussian
 import atomap.dummy_data as dd
-from atomap.tools import integrate
+from atomap.tools import integrate, calculate_point_record
+from atomap.tools import find_smallest_distance, remove_integrated_edge_cells
+from atomap.tools import _border_elems
 import atomap.testing_tools as tt
 import hyperspy as hs
 
@@ -439,8 +441,8 @@ class TestIntegrate:
         assert i_record.axes_manager.signal_shape == (50, 100)
         assert (i_record.isig[:, :51].data == i_points[0]).all()
         assert (i_record.isig[:, 51:].data == i_points[1]).all()
-        assert (p_record[:51] == 0).all()
-        assert (p_record[51:] == 1).all()
+        assert (p_record.data[:, 51:] == 0).all()
+        assert (p_record.data[:, 51:] == 1).all()
 
     def test_four_atoms(self):
         test_data = tt.MakeTestData(60, 100, sigma_quantile=8)
@@ -454,10 +456,10 @@ class TestIntegrate:
         assert (i_record.isig[:31, 51:].data == i_points[1]).all()
         assert (i_record.isig[31:, :51].data == i_points[2]).all()
         assert (i_record.isig[31:, 51:].data == i_points[3]).all()
-        assert (p_record[:51, :31] == 0).all()
-        assert (p_record[51:, :31] == 1).all()
-        assert (p_record[:51, 31:] == 2).all()
-        assert (p_record[51:, 31:] == 3).all()
+        assert (p_record.data[:51, :31] == 0).all()
+        assert (p_record.data[51:, :31] == 1).all()
+        assert (p_record.data[:51, 31:] == 2).all()
+        assert (p_record.data[51:, 31:] == 3).all()
 
     def test_max_radius_bad_value(self):
         s = hs.signals.Signal2D(np.zeros((10, 10)))
@@ -477,6 +479,7 @@ class TestIntegrate:
         assert i_record.data[y[1], x[1]] == i_points[1]
         i_record.data[y[0], x[0]] = 0
         i_record.data[y[1], x[1]] = 0
+        i_record.data[np.isnan(i_record.data)] = 0
         assert not i_record.data.any()
 
     def test_too_few_dimensions(self):
@@ -492,15 +495,15 @@ class TestIntegrate:
         x, y = x.flatten(), y.flatten()
         result = integrate(s, x, y)
         assert approx(np.sum(result[0])) == np.sum(s.data)
-        assert result[2].shape == s.data.shape
+        assert result[2].data.shape == s.data.shape
 
     def test_3d_data_running(self):
         s = dd.get_eels_spectrum_survey_image()
-        s_eels = dd.get_eels_spectrum_map()
+        s_eels = dd.get_eels_spectrum_map().T
         peaks = am.get_atom_positions(s, separation=4)
         i_points, i_record, p_record = integrate(
                 s_eels, peaks[:, 0], peaks[:, 1], max_radius=3)
-        assert p_record.shape == (100, 100)
+        assert p_record.data.shape == (100, 100)
         assert s_eels.data.shape == i_record.data.shape
 
     def test_watershed_method_running(self):
@@ -524,7 +527,67 @@ class TestIntegrate:
         i_points1, i_record1, p_record1 = integrate(signal, x, y)
         assert (i_points0 == i_points1).all()
         assert (i_record0.data == i_record1.data).all()
-        assert (p_record0 == p_record1).all()
+        assert (p_record0.data == p_record1.data).all()
+
+    def test_find_smallest_distance(self):
+        points = np.array([(2, 2), (1, 1), (0, 0), (3, 3)]).T
+        minIndex, distMin = find_smallest_distance(6, 6, points)
+        assert minIndex == 3
+        assert distMin == ((6-3)**2 + (6-3)**2)**0.5
+
+    def test_calculate_point_record(self):
+        points = np.array([(2, 2), (1, 1), (0, 0), (3, 3)]).T
+        image = np.zeros((3, 3))
+        max_radius = 2
+        point_record = calculate_point_record(image, points, max_radius)
+        np.testing.assert_almost_equal(
+            point_record,
+            np.array(
+                [[3., 2., 2.],
+                 [2., 2., 1.],
+                 [2., 1., 1.]]))
+
+    def test_border_elems(self):
+        a = np.arange(5)[:, None] * np.arange(6)
+        np.testing.assert_almost_equal(
+            _border_elems(a, 1),
+            np.array([0, 0, 0, 0, 0, 0, 0, 5, 0,
+                     10, 0, 15, 0, 4, 8, 12, 16, 20])
+        )
+
+
+class TestVoronoi:
+    def setup_method(self):
+        np.random.seed(1)
+        s = am.dummy_data.get_dumbbell_heterostructure_signal()
+        self.s = s.isig[:64, :64]
+        self.points = am.get_atom_positions(self.s, separation=3).T
+
+        self.i_true = np.array([
+            47.04196098, np.nan, np.nan, 52.47312043, np.nan,
+            np.nan, np.nan, 52.85817517, np.nan, np.nan,
+            np.nan, np.nan, np.nan, 42.53379219, np.nan,
+            38.09332358, np.nan, 37.73917033])
+
+    def test_integrate_voronoi(self):
+        i, ir, pr = am.integrate(
+            self.s,
+            *self.points,
+            method='Voronoi',
+            remove_edge_cells=True,
+            edge_pixels=3,
+        )
+        np.testing.assert_almost_equal(i, self.i_true)
+
+    def test_remove_edges(self):
+        i, ir, pr = am.integrate(
+            self.s,
+            *self.points,
+            method='Voronoi',
+            remove_edge_cells=False,
+        )
+        i, ir, pr = remove_integrated_edge_cells(i, ir, pr, 3)
+        np.testing.assert_almost_equal(i, self.i_true)
 
 
 class TestGetAtomSelectionFromVerts:

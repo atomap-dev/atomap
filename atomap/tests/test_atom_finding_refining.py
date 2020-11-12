@@ -236,12 +236,14 @@ class TestCenterOfMass:
     def test_find_center(self):
         center = np.zeros((5, 5))
         center[1, 1] = 1
-        assert afr.calculate_center_of_mass(center) == (1, 1)
+        assert tuple(afr.calculate_center_of_mass(center)) == (1, 1)
 
     def test_compare_center_of_mass(self):
         from scipy.ndimage import center_of_mass
         rand = np.random.random((5, 5))
-        center_of_mass(rand) == afr.calculate_center_of_mass(rand)
+        com0 = center_of_mass(rand)
+        com1 = tuple(afr.calculate_center_of_mass(rand))
+        assert pytest.approx(com0, rel=1e-12) == com1
 
     def test_non_square0(self):
         image = np.zeros((40, 20))
@@ -258,6 +260,32 @@ class TestCenterOfMass:
         cy, cx = afr.calculate_center_of_mass(image)
         assert cy == float(y)
         assert cx == float(x)
+
+    def test_nd_2D_array(self):
+        image = np.zeros((3, 4, 40, 80))
+        y, x = 38, 11
+        image[:, :, y, x] = 10.
+        com = afr.calculate_center_of_mass(image)
+        assert com.shape == (3, 4, 2)
+        cy, cx = com.T
+        assert (cy == float(y)).all()
+        assert (cx == float(x)).all()
+
+    def test_nd_2D_array_positions(self):
+        data = np.zeros((2, 3, 20, 10), dtype=np.uint16)
+        data[0, 0, 12, 5] = 2
+        data[0, 1, 9, 8] = 2
+        data[0, 2, 1, 1] = 2
+        data[1, 0, 3, 5] = 2
+        data[1, 1, 19, 2] = 2
+        data[1, 2, 11, 6] = 2
+        com = afr.calculate_center_of_mass(data)
+        assert list(com[0, 0]) == [12., 5.]
+        assert list(com[0, 1]) == [9., 8.]
+        assert list(com[0, 2]) == [1., 1.]
+        assert list(com[1, 0]) == [3., 5.]
+        assert list(com[1, 1]) == [19., 2.]
+        assert list(com[1, 2]) == [11., 6.]
 
     def test_center_of_mass_dummy_data(self):
         sub = dd.get_distorted_cubic_sublattice()

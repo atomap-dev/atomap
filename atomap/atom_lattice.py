@@ -102,7 +102,12 @@ class Atom_Lattice():
             afr.construct_zone_axes_from_sublattice(sublattice)
 
     def integrate_column_intensity(
-            self, method='Voronoi', max_radius='Auto', data_to_integrate=None):
+            self,
+            method='Voronoi',
+            max_radius='Auto',
+            data_to_integrate=None,
+            remove_edge_cells=False,
+            edge_pixels=1):
         """Integrate signal around the atoms in the atom lattice.
 
         See atomap.tools.integrate for more information about the parameters.
@@ -115,6 +120,13 @@ class Atom_Lattice():
         data_to_integrate : NumPy array, HyperSpy signal or array-like
             Works with 2D, 3D and 4D arrays, so for example an EEL spectrum
             image can be used.
+        remove_edge_cells : bool
+            Determine whether to replace the cells touching the signal edge
+            with np.nan values, which makes automatic contrast estimation
+            easier later.
+        edge_pixels : int
+            Only used if remove_edge_cells is True. Determines the number of
+            pixels from the border to remove.
 
         Returns
         -------
@@ -133,8 +145,14 @@ class Atom_Lattice():
         if data_to_integrate is None:
             data_to_integrate = self.image
         i_points, i_record, p_record = at.integrate(
-                data_to_integrate, self.x_position, self.y_position,
-                method=method, max_radius=max_radius)
+            data_to_integrate,
+            self.x_position,
+            self.y_position,
+            method=method,
+            max_radius=max_radius,
+            remove_edge_cells=remove_edge_cells,
+            edge_pixels=edge_pixels,
+        )
         return(i_points, i_record, p_record)
 
     def get_sublattice_atom_list_on_image(
@@ -179,6 +197,12 @@ class Atom_Lattice():
         >>> atoms = al.convert_to_ase()
 
         """
+        if not hasattr(self.sublattice_list[0].atom_list[0], 'element_info'):
+            raise AttributeError(
+                "Atom position is missing element_info, each sublattice need "
+                "to have run 'set_element_info'. For example: "
+                "atom_lattice.sublattice_list[0].set_element_info(\"C\", [0.])"
+            )
         atoms = Atoms()
         for sublattice in self.sublattice_list:
             for atom_column in sublattice.atom_list:

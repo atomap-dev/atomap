@@ -529,15 +529,19 @@ def _crop_array(arr, center_x, center_y, radius):
 
 
 def calculate_center_of_mass(arr):
-    """Find the center of mass of an array
+    """Find the center of mass of a NumPy array.
+
+    Find the center of mass of a single 2D array, or a
+    list (or multidimensional array) of 2D arrays.
 
     Parameters
     ----------
-    arr : Numpy 2D Array
+    arr : Numpy 2D Array (or list/nd-array of such)
 
     Returns
     -------
-    cy, cx: tuple of floats
+    cy, cx: array of floats (or nd-array of floats)
+        Giving centre coordinates with sub-pixel accuracy
 
     Examples
     --------
@@ -547,7 +551,7 @@ def calculate_center_of_mass(arr):
 
     Notes
     -----
-    This is a much simpler center of mass approach that the one from scipy.
+    This is a much simpler center of mass approach than the one from scipy.
     Gotten from stackoverflow:
     https://stackoverflow.com/questions/37519238/python-find-center-of-object-in-an-image
 
@@ -555,15 +559,18 @@ def calculate_center_of_mass(arr):
     # Can consider subtracting minimum value
     # this gives the center of mass higher "contrast"
     # arr -= arr.min()
-    arr = arr / np.sum(arr)
+    if len(arr.shape) > 2:
+        arr = (arr.T / np.sum(arr, axis=(-1, -2)).T).T
+    else:
+        arr = arr / np.sum(arr, axis=(-1, -2))
 
-    dy = np.sum(arr, 1)
-    dx = np.sum(arr, 0)
+    dy = np.sum(arr, -1)
+    dx = np.sum(arr, -2)
 
-    (Y, X) = arr.shape
-    cx = np.sum(dx * np.arange(X))
-    cy = np.sum(dy * np.arange(Y))
-    return cy, cx
+    (Y, X) = arr.shape[-2:]
+    cx = np.sum(dx * np.arange(X), axis=-1).T
+    cy = np.sum(dy * np.arange(Y), axis=-1).T
+    return np.array([cy, cx]).T
 
 
 def _pad_array(arr, padding=1):

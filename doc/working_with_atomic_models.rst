@@ -5,7 +5,7 @@ Working with atomic models
 ==========================
 
 Atomap provides functions to both export data to atomic models and to import data from atomic models.
-This functionality is realised through interaction with the Atoms object of the `Atomic Simulation Environment<https://wiki.fysik.dtu.dk/ase/>`_ (ASE) package.
+This functionality is realised through interaction with the Atoms object of the `Atomic Simulation Environment <https://wiki.fysik.dtu.dk/ase/>`_ (ASE) package.
 
 Exporting to atomic models
 ==========================

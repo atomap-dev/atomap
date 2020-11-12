@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import hyperspy.api as hs
 from hyperspy import components1d
@@ -1068,7 +1069,8 @@ def get_scanning_distortion_sublattice():
 
     Example
     -------
-    >>> sublattice = get_scanning_distortion_sublattice()
+    >>> import atomap.api as am
+    >>> sublattice = am.dummy_data.get_scanning_distortion_sublattice()
     >>> sublattice.plot()
 
     """
@@ -1078,3 +1080,23 @@ def get_scanning_distortion_sublattice():
     test_data.add_atom_list(x, y, sigma_x=4, sigma_y=4)
     sublattice = test_data.sublattice
     return sublattice
+
+
+def get_nanoparticle_signal():
+    """Get an simulated nanoparticle image.
+
+    Returns
+    -------
+    signal : HyperSpy Signal2D
+
+    Example
+    -------
+    >>> import atomap.api as am
+    >>> s = am.dummy_data.get_nanoparticle_signal()
+    >>> s.plot()
+
+    """
+    my_path = os.path.dirname(__file__)
+    path = os.path.join(my_path, 'example_data', 'simulated_nanoparticle.hspy')
+    s = hs.load(path)
+    return s
