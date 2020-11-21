@@ -165,6 +165,7 @@ class Atom_Lattice:
                 image = self.original_image
         marker_list = []
         scale = self.sublattice_list[0].pixel_size
+        units = self.sublattice_list[0].units
         for sublattice in self.sublattice_list:
             marker_list.extend(
                 pl._make_atom_position_marker_list(
@@ -175,7 +176,7 @@ class Atom_Lattice:
                     add_numbers=add_numbers,
                 )
             )
-        signal = at.array2signal2d(image, scale)
+        signal = at.array2signal2d(image, scale, units)
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
         return signal
@@ -285,6 +286,12 @@ class Atom_Lattice:
 
         >>> atom_lattice.sublattice_list[0]._plot_color = 'green'
         >>> atom_lattice.plot(cmap='viridis')
+
+        Change sublattice pixel_size and units
+
+        >>> atom_lattice.sublattice_list[0].pixel_size = 0.05
+        >>> atom_lattice.sublattice_list[0].units = 'nm'
+        >>> atom_lattice.plot()
 
         See also
         --------
