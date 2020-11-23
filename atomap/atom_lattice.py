@@ -79,6 +79,8 @@ class Atom_Lattice:
             sublattice = self.get_sublattice(0)
             s.axes_manager.signal_axes[0].scale = sublattice.pixel_size
             s.axes_manager.signal_axes[1].scale = sublattice.pixel_size
+            s.axes_manager.signal_axes[0].units = sublattice.units
+            s.axes_manager.signal_axes[1].units = sublattice.units
         return s
 
     def get_sublattice(self, sublattice_id):
