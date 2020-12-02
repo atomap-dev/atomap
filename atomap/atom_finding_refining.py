@@ -208,7 +208,7 @@ def get_feature_separation(
     >>> import hyperspy.api as hs
     >>> from atomap.atom_finding_refining import get_feature_separation
     >>> s = hs.signals.Signal2D(np.random.random((500, 500)))
-    >>> s1 = get_feature_separation(s)
+    >>> s1 = get_feature_separation(s, show_progressbar=False)
 
     """
     if separation_range[0] > separation_range[1]:
@@ -238,6 +238,7 @@ def get_feature_separation(
         pca=pca,
         normalize_intensity=normalize_intensity,
         subtract_background=subtract_background,
+        show_progressbar=show_progressbar,
     )
 
     scale_x = signal.axes_manager[0].scale
@@ -245,7 +246,7 @@ def get_feature_separation(
     offset_x = signal.axes_manager[0].offset
     offset_y = signal.axes_manager[1].offset
 
-    s = hs.stack([signal] * len(separation_list))
+    s = hs.stack([signal] * len(separation_list), show_progressbar=show_progressbar)
     s.axes_manager.navigation_axes[0].offset = separation_list[0]
     s.axes_manager.navigation_axes[0].scale = separation_step
     s.axes_manager.navigation_axes[0].name = "Feature separation, [Pixels]"

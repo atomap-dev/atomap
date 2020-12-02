@@ -1484,7 +1484,7 @@ class Sublattice:
             atom_plane_list, scale=self.pixel_size
         )
         signal = at.array2signal2d(image, self.pixel_size, self.units)
-        signal = hs.stack([signal] * len(zone_vector_list))
+        signal = hs.stack([signal] * len(zone_vector_list), show_progressbar=False)
         add_marker(signal, marker_list, permanent=True, plot_marker=False)
         signal.metadata.General.title = "Atom planes by zone vector"
         signal_ax0 = signal.axes_manager.signal_axes[0]
@@ -1992,7 +1992,7 @@ class Sublattice:
         if len(signal_list) == 1:
             signal = signal_list[0]
         else:
-            signal = hs.stack(signal_list)
+            signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
             marker_list = _make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
@@ -2042,7 +2042,7 @@ class Sublattice:
         if len(signal_list) == 1:
             signal = signal_list[0]
         else:
-            signal = hs.stack(signal_list)
+            signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
             marker_list = _make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
@@ -2106,7 +2106,7 @@ class Sublattice:
         if len(signal_list) == 1:
             signal = signal_list[0]
         else:
-            signal = hs.stack(signal_list)
+            signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
             marker_list = _make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
@@ -2419,7 +2419,7 @@ class Sublattice:
                 peak_list[-1, i, 1] = atom.pixel_y
 
         signal = Signal2D(image)
-        s = hs.stack([signal] * pos_num)
+        s = hs.stack([signal] * pos_num, show_progressbar=False)
 
         marker_list_x = np.ones((len(peak_list), atom_num)) * -100
         marker_list_y = np.ones((len(peak_list), atom_num)) * -100
