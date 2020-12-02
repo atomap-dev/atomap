@@ -61,7 +61,7 @@ You can find the optimal pixel separation by using the Atomap function :py:func:
 
 .. code-block:: python
 
-    >>> s_peaks = am.get_feature_separation(s, separation_range=(2, 20))
+    >>> s_peaks = am.get_feature_separation(s, separation_range=(2, 20), show_progressbar=False)
 
 This function uses the peak finding algorithm for a range of pixel separations.
 The default separation range is 5 to 30.
