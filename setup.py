@@ -27,7 +27,7 @@ setup(
             'microscopy',
             ],
         install_requires = [
-            'scipy',
+            'scipy>=1.4.0',
             'numpy>=1.13',
             'h5py',
             'matplotlib>=3.1.0',
