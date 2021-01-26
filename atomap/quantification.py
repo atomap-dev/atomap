@@ -547,7 +547,7 @@ def statistical_quant(
     >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
     >>> atoms = atom_lattice_1.convert_to_ase()
     >>> from ase.visualize import view
-    >>> view(atoms)
+    >>> view(atoms) # doctest:+SKIP
 
     """
     # Get array of intensities of Gaussians of each atom
