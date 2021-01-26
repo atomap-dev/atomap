@@ -76,7 +76,6 @@ def get_atom_positions(
         image=image_data,
         min_distance=int(separation),
         threshold_rel=threshold_rel,
-        indices=True,
     )
 
     # The X- and Y-axes are switched in HyperSpy compared to NumPy
