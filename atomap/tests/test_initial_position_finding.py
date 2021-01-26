@@ -34,7 +34,7 @@ class TestFindDumbbellVector:
         x1, y1 = np.mgrid[13:200:20, 13:200:20]
         x, y = np.vstack((x0, x1)).flatten(), np.vstack((y0, y1)).flatten()
         test_data.add_atom_list(x, y, sigma_x=1, sigma_y=1, amplitude=50)
-        atom_positions = am.get_atom_positions(test_data.signal, 4)
+        atom_positions = am.get_atom_positions(test_data.signal, 3)
         vector = ipf.find_dumbbell_vector(atom_positions)
         assert approx(abs(vector[0]), abs=1e-7) == 3.0
         assert approx(abs(vector[1]), abs=1e-7) == 3.0
