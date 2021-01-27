@@ -65,7 +65,6 @@ def ase_to_atom_lattice(atoms, image_size=None, gaussian_blur=3):
             sublattice_dict[composition_str]["xy"] = [list(xy)]
             sublattice_dict[composition_str]["el_info"] = [column]
 
-
     sublattice_colors = ["green", "blue", "red"]
     sublattice_list = []
     i = -1
