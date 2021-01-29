@@ -3,17 +3,29 @@ from atomap.atom_position import Atom_Position
 from atomap.atom_lattice import Atom_Lattice
 
 
-class TestCreateAtomPlaneObject:
-    def test_create_atom_plane_object(self):
+class TestAtomPlaneObject:
+    def setup_method(self):
         atom_list = [
             Atom_Position(1, 2),
             Atom_Position(2, 4),
+            Atom_Position(4, 6),
+            Atom_Position(6, 8),
         ]
         zone_vector = (1, 2)
         atom_list[0]._start_atom = [zone_vector]
         atom_list[1]._end_atom = [zone_vector]
         atom_lattice = Atom_Lattice()
-        Atom_Plane(atom_list, zone_vector, atom_lattice)
+        self.atom_plane = Atom_Plane(atom_list, zone_vector, atom_lattice)
+
+    def test_create_atom_plane_repr(self):
+        atom_plane = self.atom_plane
+        atom_plane.__repr__()
+
+    def test_get_atom_index(self):
+        atom_plane = self.atom_plane
+        i = 3
+        atom = atom_plane.atom_list[i]
+        assert i == atom_plane.get_atom_index(atom)
 
 
 class TestAtomPlaneProperties:
