@@ -38,7 +38,7 @@ class TestAdfAbfStoAutoprocess:
         b_sublattice = Sublattice(
             b_atom_list, np.rot90(np.fliplr(self.s_adf_modified.data))
         )
-        assert len(b_sublattice.atom_list) == 221
+        assert len(b_sublattice.atom_list) == 104
 
     def test_find_b_atom_planes(self):
         a_sublattice = Sublattice(

@@ -12,7 +12,7 @@ class TestMakeAtomLatticeFromImage:
     def setup_method(self):
         s_adf_filename = os.path.join(my_path, "datasets", "test_ADF_cropped.hdf5")
         self.s_adf = load(s_adf_filename)
-        self.s_adf.change_dtype("float64")
+        self.s_adf.change_dtype("uint16")
         self.pixel_separation = 19
         self.process_parameter = PerovskiteOxide110()
 
