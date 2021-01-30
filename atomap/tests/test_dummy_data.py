@@ -79,6 +79,26 @@ class TestDummyData:
         s = dd.get_nanoparticle_signal()
         s.plot()
 
+    def test_get_perovskite_001_signal(self):
+        signal = dd.get_perovskite_001_signal(image_noise=False)
+        signal.plot()
+        signal = dd.get_perovskite_001_signal(image_noise=True)
+        signal.plot()
+
+    def test_get_perovskite_001_atom_lattice(self):
+        atom_lattice = dd.get_perovskite_001_atom_lattice(
+            image_noise=False, set_element_info=False
+        )
+        atom_lattice.plot()
+        atom = atom_lattice.sublattice_list[0].atom_list[0]
+        assert not hasattr(atom, "element_info")
+        atom_lattice = dd.get_perovskite_001_atom_lattice(
+            image_noise=True, set_element_info=True
+        )
+        atom_lattice.plot()
+        atom = atom_lattice.sublattice_list[0].atom_list[0]
+        assert len(atom.element_info.items()) > 1
+
 
 class TestDummyDataFantasite:
     def test_signal(self):

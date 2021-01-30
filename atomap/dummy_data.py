@@ -139,6 +139,66 @@ def get_simple_cubic_with_vacancies_sublattice(image_noise=False):
     return test_data.sublattice
 
 
+def _make_perovskite_001_A(image_noise=False):
+    test_data = MakeTestData(252, 252)
+    x, y = np.mgrid[5:252:20, 5:252:20]
+    x_list = x.flatten()
+    y_list = y.flatten()
+    amplitude = np.ones(len(x_list)) * 20
+    test_data.add_atom_list(x_list, y_list, sigma_x=3, sigma_y=3, amplitude=amplitude)
+    if image_noise:
+        test_data.add_image_noise(mu=0, sigma=0.004)
+    return test_data
+
+
+def _make_perovskite_001_B(image_noise=False):
+    test_data = MakeTestData(252, 252)
+    x, y = np.mgrid[15:252:20, 15:252:20]
+    x_list = x.flatten()
+    y_list = y.flatten()
+    amplitude = np.ones(len(x_list)) * 8
+    test_data.add_atom_list(x_list, y_list, sigma_x=3, sigma_y=3, amplitude=amplitude)
+    if image_noise:
+        test_data.add_image_noise(mu=0, sigma=0.004)
+    return test_data
+
+
+def get_perovskite_001_signal(image_noise=False):
+    test_data_A = _make_perovskite_001_A(image_noise)
+    test_data_B = _make_perovskite_001_B(image_noise)
+    signal = test_data_A.signal + test_data_B.signal
+    signal.metadata.General.title = "Perovskite 001 dummy data"
+    signal.axes_manager[0].scale = 0.2
+    signal.axes_manager[1].scale = 0.2
+    signal.axes_manager[0].units = "Å"
+    signal.axes_manager[1].units = "Å"
+    return signal
+
+
+def get_perovskite_001_atom_lattice(image_noise=False, set_element_info=True):
+    test_data_A = _make_perovskite_001_A(image_noise)
+    test_data_B = _make_perovskite_001_B(image_noise)
+    sublattice_A = test_data_A.sublattice
+    sublattice_B = test_data_B.sublattice
+
+    image = test_data_A.signal.data + test_data_B.signal.data
+
+    sublattice_A.image = image
+    sublattice_B.image = image
+    sublattice_A.original_image = image
+    sublattice_B.original_image = image
+    sublattice_B._plot_color = "b"
+    atom_lattice = al.Atom_Lattice(
+        image=image, name="Perovskite 001", sublattice_list=[sublattice_A, sublattice_B]
+    )
+    atom_lattice.set_scale(scale=0.2, units="Å")
+
+    if set_element_info:
+        sublattice_A.set_element_info("Sr", [0, 4, 8, 12, 16, 20, 24, 28, 32])
+        sublattice_B.set_element_info("Ti", [2, 6, 10, 14, 18, 22, 26, 30])
+    return atom_lattice
+
+
 def _make_polarization_film_A(image_noise=False):
     test_data = MakeTestData(312, 312)
     x0, y0 = np.mgrid[5:312:20, 5:156:20]
