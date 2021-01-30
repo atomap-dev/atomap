@@ -59,7 +59,7 @@ For example, lets replace the Strontium column with Lanthanum.
     >>> view(atoms) # doctest: +SKIP
 
 
-.. image:: images/working_with_atomic_models/perovskite_001_with_la.jpg
+.. image:: images/working_with_atomic_models/perovskite_001_with_la.png
     :scale: 70 %
     :align: center
 
