@@ -38,21 +38,21 @@ class TestMakeTestData:
         mu0, sigma0 = 0, 0.005
         test_data0.add_image_noise(mu=mu0, sigma=sigma0, only_positive=False)
         s0 = test_data0.signal
-        assert approx(s0.data.mean(), abs=1e-5) == mu0
+        assert approx(s0.data.mean(), abs=1e-4) == mu0
         assert approx(s0.data.std(), abs=1e-2) == sigma0
 
         test_data1 = tt.MakeTestData(1000, 1000)
         mu1, sigma1 = 10, 0.5
         test_data1.add_image_noise(mu=mu1, sigma=sigma1, only_positive=False)
         s1 = test_data1.signal
-        assert approx(s1.data.mean(), rel=1e-4) == mu1
+        assert approx(s1.data.mean(), rel=1e-3) == mu1
         assert approx(s1.data.std(), abs=1e-2) == sigma1
 
         test_data2 = tt.MakeTestData(1000, 1000)
         mu2, sigma2 = 154.2, 1.98
         test_data2.add_image_noise(mu=mu2, sigma=sigma2, only_positive=False)
         s2 = test_data2.signal
-        assert approx(s2.data.mean(), rel=1e-4) == mu2
+        assert approx(s2.data.mean(), rel=1e-3) == mu2
         assert approx(s2.data.std(), rel=1e-2) == sigma2
 
     def test_add_image_noise_only_positive(self):
