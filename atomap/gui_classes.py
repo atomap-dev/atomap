@@ -6,7 +6,6 @@ import atomap.tools as to
 
 
 class AtomToggleRefine:
-
     def __init__(self, image, sublattice, distance_threshold=4):
         self.image = image
         self.distance_threshold = distance_threshold
@@ -15,13 +14,10 @@ class AtomToggleRefine:
         self.cax = self.ax.imshow(self.image)
         x_pos = self.sublattice.x_position
         y_pos = self.sublattice.y_position
-        refine_list = self._get_refine_position_list(
-                self.sublattice.atom_list)
-        color_list = self._refine_position_list_to_color_list(
-                refine_list)
+        refine_list = self._get_refine_position_list(self.sublattice.atom_list)
+        color_list = self._refine_position_list_to_color_list(refine_list)
         self.path = self.ax.scatter(x_pos, y_pos, c=color_list)
-        self.cid = self.fig.canvas.mpl_connect(
-                'button_press_event', self.onclick)
+        self.cid = self.fig.canvas.mpl_connect("button_press_event", self.onclick)
         self.fig.tight_layout()
 
     def _get_refine_position_list(self, atom_list):
@@ -31,8 +27,8 @@ class AtomToggleRefine:
         return refine_position_list
 
     def _refine_position_list_to_color_list(
-            self, refine_position_list,
-            color_true='green', color_false='red'):
+        self, refine_position_list, color_true="green", color_false="red"
+    ):
         color_list = []
         for refine_position in refine_position_list:
             if refine_position:
@@ -49,10 +45,10 @@ class AtomToggleRefine:
             y = np.float(event.ydata)
             atom_nearby = self.is_atom_nearby(x, y)
             if atom_nearby is not None:
-                ref_pos_current = self.sublattice.atom_list[
-                        atom_nearby].refine_position
+                ref_pos_current = self.sublattice.atom_list[atom_nearby].refine_position
                 self.sublattice.atom_list[
-                        atom_nearby].refine_position = not ref_pos_current
+                    atom_nearby
+                ].refine_position = not ref_pos_current
                 self.replot()
 
     def is_atom_nearby(self, x_press, y_press):
@@ -70,17 +66,14 @@ class AtomToggleRefine:
         return index
 
     def replot(self):
-        refine_list = self._get_refine_position_list(
-                self.sublattice.atom_list)
-        color_list = self._refine_position_list_to_color_list(
-                refine_list)
+        refine_list = self._get_refine_position_list(self.sublattice.atom_list)
+        color_list = self._refine_position_list_to_color_list(refine_list)
         self.path.set_color(color_list)
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
 
 class GetAtomSelection:
-
     def __init__(self, image, atom_positions, invert_selection=False):
         """Get a subset of atom positions using interactive tool.
 
@@ -107,39 +100,45 @@ class GetAtomSelection:
         self.atom_positions_selected = []
         self.fig, self.ax = plt.subplots(figsize=(6, 6))
         self.ax.set_title(
-                "Use the left mouse button to make the polygon.\n"
-                "Click the first position to finish the polygon.\n"
-                "Press ESC to reset the polygon, and hold SHIFT to\n"
-                "move the polygon.")
+            "Use the left mouse button to make the polygon.\n"
+            "Click the first position to finish the polygon.\n"
+            "Press ESC to reset the polygon, and hold SHIFT to\n"
+            "move the polygon."
+        )
         self.cax = self.ax.imshow(self.image)
         self.line_non_selected = self.ax.plot(
-                self.atom_positions[:, 0], self.atom_positions[:, 1],
-                'o', color='red')[0]
+            self.atom_positions[:, 0], self.atom_positions[:, 1], "o", color="red"
+        )[0]
         self.line_selected = None
-        markerprops = dict(color='blue')
-        lineprops = dict(color='blue')
-        self.poly = PolygonSelector(self.ax, self.onselect,
-                                    markerprops=markerprops,
-                                    lineprops=lineprops)
+        markerprops = dict(color="blue")
+        lineprops = dict(color="blue")
+        self.poly = PolygonSelector(
+            self.ax, self.onselect, markerprops=markerprops, lineprops=lineprops
+        )
         self.fig.tight_layout()
 
     def onselect(self, verts):
         atom_positions_selected = to._get_atom_selection_from_verts(
-                self.atom_positions, verts,
-                invert_selection=self.invert_selection)
+            self.atom_positions, verts, invert_selection=self.invert_selection
+        )
         atom_positions_not_selected = to._get_atom_selection_from_verts(
-                self.atom_positions, verts,
-                invert_selection=not self.invert_selection)
+            self.atom_positions, verts, invert_selection=not self.invert_selection
+        )
         if len(atom_positions_selected) != 0:
             if self.line_selected is None:
                 self.line_selected = self.ax.plot(
-                        atom_positions_selected[:, 0],
-                        atom_positions_selected[:, 1], 'o', color='green')[0]
+                    atom_positions_selected[:, 0],
+                    atom_positions_selected[:, 1],
+                    "o",
+                    color="green",
+                )[0]
             else:
-                self.line_selected.set_data(atom_positions_not_selected[:, 0],
-                                            atom_positions_not_selected[:, 1])
-            self.line_selected.set_data(atom_positions_selected[:, 0],
-                                        atom_positions_selected[:, 1])
+                self.line_selected.set_data(
+                    atom_positions_not_selected[:, 0], atom_positions_not_selected[:, 1]
+                )
+            self.line_selected.set_data(
+                atom_positions_selected[:, 0], atom_positions_selected[:, 1]
+            )
 
         for atom_positions in atom_positions_selected:
             self.atom_positions_selected.append(atom_positions.tolist())

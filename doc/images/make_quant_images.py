@@ -17,7 +17,7 @@ sublattice.refine_atom_positions_using_2d_gaussian()
 models = am.quant.get_statistical_quant_criteria([sublattice], 10)
 plt.savefig(os.path.join(my_path, 'criteria_plot.png'), overwrite=True)
 
-atom_lattice = am.quant.statistical_quant(sublattice.image, sublattice, models[3], 4)
+atom_lattice = am.quant.statistical_quant(sublattice, models[3], 4, 'C', 2.4)
 plt.savefig(os.path.join(my_path, 'quant_output1a.png'), overwrite=True)
 
 s_al = atom_lattice.get_sublattice_atom_list_on_image()

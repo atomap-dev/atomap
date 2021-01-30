@@ -19,6 +19,48 @@ A Gaussian mixture model is then fit to this distribution, with each Gaussian co
 Absolute Integrator
 ===================
 
+The absolute integrator function expects signals in the form of HyperSpy Signal2Ds where the Signal dimension looks like an atomic lattice. The Voronoi integrator function can take additional dimensions (such as EDS, EELS or 4D-STEM) as navigation dimensions. The Watershed integrator can only take 2D-datasets.
+
+As an example using the `nanoparticle dataset <https://gitlab.com/atomap/atomap_demos/-/blob/release/nanoparticle_example_notebook/simulated_nanoparticle.tif>`_ from the `Atomap-demos repository <https://gitlab.com/atomap/atomap_demos/-/tree/release>`_, we can integrate over the atomic columns, letting the Voronoi cells expand infinitely.
+
+.. code-block:: python
+
+    >>> import atomap.api as am
+    >>> s = am.dummy_data.get_nanoparticle_signal()
+    >>> points_x, points_y = am.get_atom_positions(s, separation=4).T
+    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y)
+    >>> intensity_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle1.png
+    :scale: 70 %
+    :align: center
+
+The infinitely expanding cells make it difficult for the eye to interpret the image. There are two ways to handle this:
+One can remove any cells that exist a certain distance from the image border, effectively removing one layer of atoms around the nanoparticle. This functionality is also optionally callable from the integrate function with ``remove_edge_cells=True``.
+
+.. code-block:: python
+
+    >>> from atomap.tools import remove_integrated_edge_cells
+    >>> integrated_intensity, intensity_record, point_record = remove_integrated_edge_cells(integrated_intensity, intensity_record, point_record, edge_pixels=30)
+    >>> intensity_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle_remove_edge.png
+    :scale: 70 %
+    :align: center
+
+Alternatively one can specify the ``max_radius`` argument in order to limit the growth of the Voronoi cells:
+
+.. code-block:: python
+
+    >>> integrated_intensity, intensity_record, point_record = am.integrate(s, points_x, points_y, max_radius=5)
+    >>> intensity_record.plot(cmap='viridis')
+
+.. image:: images/quantification/voronoi_nanoparticle_max_radius.png
+    :scale: 70 %
+    :align: center
+
+The ``integrated_intensity`` object contains a numpy array of intensities. The intensities refer to the atomic columns by their array index, and the indices can be visualised in the ``points_record`` object.
+
 The following section describes methods incorporated from the AbsoluteIntegrator code for normalisation and quantification of ADF STEM images.
 
 .. For a full example please see the notebook in the Atomap-demos repository: https://gitlab.com/atomap/atomap_demos/adf_quantification
@@ -99,15 +141,36 @@ Once you have determined the number of Gaussians in your Gaussian mixture model,
 
 .. code-block:: python
 
-    >>> model = models[3] # 4th model
-    >>> atom_lattice = am.quant.statistical_quant(sublattice.image, sublattice, model, 4)
+    >>> model = models[3]  # 4th model
+    >>> z_spacing = 2.4  # Angstrom
+    >>> atom_lattice = am.quant.statistical_quant(sublattice, model, 4, 'C', z_spacing)
 
 The function returns an ``Atom_Lattice`` object, in which each ``Sublattice`` corresponds to atomic columns of different atomic number.
 If plotting is selected (as it is by default) this plots the histogram of column intensities with the Gaussian mixture model overlayed.
 It also displays the image of the particle with sublattices coloured differently to indicate number of atoms in each column.
+Finally, it will set the ``element_info`` attribute for each ``Atom_Position``, which includes the element and z coordinates in Angstrom.
 
 .. figure:: images/quant/quant_output1a.png
     :scale: 50 %
 
 .. figure:: images/quant/quant_output1b.png
+    :scale: 50 %
+
+
+Visualise the selected model
+----------------------------
+
+The ``z_ordering`` parameter can be used to build the atomic columns in a given direction.
+The ``z_ordering`` options are "bottom", "top" and "center". "center" can be useful for sperical nanoparticles.
+For more info on working with atomic models with Atomap, see :ref:`Working with Atomic Models <working_with_atomic_models>`.
+
+.. code-block:: python
+
+    >>> from ase.visualize import view
+    >>> sublattice.pixel_size = 0.1
+    >>> atom_lattice_1 = am.Atom_Lattice(sublattice_list=[sublattice])
+    >>> atoms = atom_lattice_1.convert_to_ase()
+    >>> view(atoms) # doctest: +SKIP
+
+.. figure:: images/quant/quant_view_bottom.png
     :scale: 50 %

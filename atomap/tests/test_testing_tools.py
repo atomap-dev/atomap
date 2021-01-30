@@ -6,7 +6,6 @@ import atomap.testing_tools as tt
 
 
 class TestMakeTestData:
-
     def test_simple_init(self):
         tt.MakeTestData(100, 100)
 
@@ -39,21 +38,21 @@ class TestMakeTestData:
         mu0, sigma0 = 0, 0.005
         test_data0.add_image_noise(mu=mu0, sigma=sigma0, only_positive=False)
         s0 = test_data0.signal
-        assert approx(s0.data.mean(), abs=1e-5) == mu0
+        assert approx(s0.data.mean(), abs=1e-4) == mu0
         assert approx(s0.data.std(), abs=1e-2) == sigma0
 
         test_data1 = tt.MakeTestData(1000, 1000)
         mu1, sigma1 = 10, 0.5
         test_data1.add_image_noise(mu=mu1, sigma=sigma1, only_positive=False)
         s1 = test_data1.signal
-        assert approx(s1.data.mean(), rel=1e-4) == mu1
+        assert approx(s1.data.mean(), rel=1e-3) == mu1
         assert approx(s1.data.std(), abs=1e-2) == sigma1
 
         test_data2 = tt.MakeTestData(1000, 1000)
         mu2, sigma2 = 154.2, 1.98
         test_data2.add_image_noise(mu=mu2, sigma=sigma2, only_positive=False)
         s2 = test_data2.signal
-        assert approx(s2.data.mean(), rel=1e-4) == mu2
+        assert approx(s2.data.mean(), rel=1e-3) == mu2
         assert approx(s2.data.std(), rel=1e-2) == sigma2
 
     def test_add_image_noise_only_positive(self):
@@ -89,8 +88,7 @@ class TestMakeTestData:
         x, y = x.flatten(), y.flatten()
         sx, sy, A, r = 2.1, 1.3, 9.5, 1.4
         td = tt.MakeTestData(100, 100)
-        td.add_atom_list(
-                x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
+        td.add_atom_list(x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
         atom_list = td.sublattice.atom_list
         assert len(atom_list) == len(x)
         for tx, ty, atom in zip(x, y, atom_list):
@@ -109,8 +107,7 @@ class TestMakeTestData:
         A = np.random.random_sample(size=len(x))
         r = np.random.random_sample(size=len(x))
         td = tt.MakeTestData(100, 100)
-        td.add_atom_list(
-                x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
+        td.add_atom_list(x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
         atom_list = td.sublattice.atom_list
         assert len(atom_list) == len(x)
 
@@ -154,8 +151,7 @@ class TestMakeTestData:
         A = np.random.random_sample(size=len(x))
         r = np.random.random_sample(size=len(x))
         td = tt.MakeTestData(100, 100)
-        td.add_atom_list(
-                x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
+        td.add_atom_list(x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
         gaussian_list = td.gaussian_list
         assert len(gaussian_list) == len(x)
 
@@ -175,7 +171,7 @@ class TestMakeTestData:
         testdata.add_atom_list(x, y)
         sublattice = testdata.sublattice
         assert (sublattice.image == 0).all()
-        assert len(sublattice.atom_list) == 150*150
+        assert len(sublattice.atom_list) == 150 * 150
 
     def test_sigma_quantile(self):
         testdata0 = tt.MakeTestData(500, 500, sigma_quantile=5)
@@ -201,8 +197,7 @@ class TestMakeTestData:
 class TestMakeVectorTestGaussian(unittest.TestCase):
     def test_running(self):
         x, y, std, n = 10, 5, 0.5, 5000
-        point_list = tt.make_vector_test_gaussian(
-                x, y, standard_deviation=std, n=n)
+        point_list = tt.make_vector_test_gaussian(x, y, standard_deviation=std, n=n)
         point_list_meanX = point_list[:, 0].mean()
         point_list_meanY = point_list[:, 1].mean()
         point_list_stdX = point_list[:, 0].std()
@@ -220,5 +215,5 @@ class TestMakeNnTestDataset(unittest.TestCase):
         xN, yN, n = 4, 4, 60
         point_list = tt.make_nn_test_dataset(xN=xN, yN=yN, n=n)
 
-        total_point = n*(((2*xN)+1)*((2*yN)+1)-1)
+        total_point = n * (((2 * xN) + 1) * ((2 * yN) + 1) - 1)
         assert point_list.shape[0] == total_point

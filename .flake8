@@ -1,5 +1,0 @@
-[flake8]
-exclude =
-    atomap/api.py
-    atomap/conftest.py
-    atomap/external/gaussian2d.py

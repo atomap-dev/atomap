@@ -21,7 +21,7 @@ Open source software has many advantages:
 
 By contributing to open source projects you will gain more experience with programming and how to do software development as a part of a community.
 
-You can check out who is contributing to Atomap `here <https://gitlab.com/atomap/atomap/graphs/master>`__.
+You can check out who is contributing to Atomap `here <https://gitlab.com/atomap/atomap/-/graphs/master>`__.
 
 What to contribute
 ^^^^^^^^^^^^^^^^^^

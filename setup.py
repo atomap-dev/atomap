@@ -12,7 +12,7 @@ setup(
             'atomap.external',
             'atomap.example_data',
             ],
-        version = '0.2.1',
+        version = '0.2.2.dev1',
         description = 'Library for analysing atomic resolution images',
         long_description=long_description,
         long_description_content_type='text/markdown',
@@ -27,13 +27,15 @@ setup(
             'microscopy',
             ],
         install_requires = [
-            'scipy',
+            'scipy>=1.4.0',
             'numpy>=1.13',
             'h5py',
             'matplotlib>=3.1.0',
             'scikit-learn',
-            'scikit-image>=0.13',
+            'scikit-image>=0.17.1',
             'hyperspy>=1.5.2',
+            'ase>=3.17.0'
+            'numba'
             ],
         classifiers = [
             'Development Status :: 3 - Alpha',
@@ -47,6 +49,7 @@ setup(
                 'test_ABF_cropped.hdf5',
                 'test_atom_lattice.hdf5'],
             'atomap.example_data': [
-                'example_detector_image.hspy'],
+                'example_detector_image.hspy',
+                'simulated_nanoparticle.hspy'],
             }
 )

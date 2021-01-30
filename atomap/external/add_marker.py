@@ -2,8 +2,13 @@ from hyperspy.misc.utils import isiterable
 
 
 def add_marker(
-        self, marker, plot_on_signal=True, plot_marker=True,
-        permanent=False, plot_signal=True):
+    self,
+    marker,
+    plot_on_signal=True,
+    plot_marker=True,
+    permanent=False,
+    plot_signal=True,
+):
     """
     Add a marker to the signal or navigator plot.
 
@@ -79,8 +84,8 @@ def add_marker(
         marker_list = [marker]
     markers_dict = {}
     if permanent:
-        if not self.metadata.has_item('Markers'):
-            self.metadata.add_node('Markers')
+        if not self.metadata.has_item("Markers"):
+            self.metadata.add_node("Markers")
         marker_object_list = []
         for marker_tuple in list(self.metadata.Markers):
             marker_object_list.append(marker_tuple[1])
@@ -89,10 +94,12 @@ def add_marker(
     for m in marker_list:
         marker_data_shape = m._get_data_shape()
         if (not (len(marker_data_shape) == 0)) and (
-                marker_data_shape != self.axes_manager.navigation_shape):
+            marker_data_shape != self.axes_manager.navigation_shape
+        ):
             raise ValueError(
                 "Navigation shape of the marker must be 0 or the "
-                "same navigation shape as this signal.")
+                "same navigation shape as this signal."
+            )
         if (m.signal is not None) and (m.signal is not self):
             raise ValueError("Markers can not be added to several signals")
         m._plot_on_signal = plot_on_signal

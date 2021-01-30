@@ -35,7 +35,7 @@ As the atoms in the dumbbells are typically pretty close together, we use a low 
 
 .. code-block:: python
 
-   >>> s_peaks = am.get_feature_separation(s, separation_range=(2, 6))
+   >>> s_peaks = am.get_feature_separation(s, separation_range=(2, 6), show_progressbar=False)
    >>> s_peaks.plot()
 
 
@@ -67,7 +67,7 @@ As these are further apart, we use a higher ``separation_range`` between 5 and 2
 
 .. code-block:: python
 
-   >>> s_peaks = am.get_feature_separation(s, separation_range=(5, 20))
+   >>> s_peaks = am.get_feature_separation(s, separation_range=(5, 20), show_progressbar=False)
    >>> s_peaks.plot()
 
 

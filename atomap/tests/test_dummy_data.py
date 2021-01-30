@@ -2,7 +2,6 @@ import atomap.dummy_data as dd
 
 
 class TestDummyData:
-
     def test_make_simple_cubic_testdata(self):
         dd._make_simple_cubic_testdata()
         dd._make_simple_cubic_testdata(image_noise=False)
@@ -76,9 +75,32 @@ class TestDummyData:
         sublattice = dd.get_scanning_distortion_sublattice()
         sublattice.plot()
 
+    def test_nanoparticle(self):
+        s = dd.get_nanoparticle_signal()
+        s.plot()
+
+    def test_get_perovskite_001_signal(self):
+        signal = dd.get_perovskite_001_signal(image_noise=False)
+        signal.plot()
+        signal = dd.get_perovskite_001_signal(image_noise=True)
+        signal.plot()
+
+    def test_get_perovskite_001_atom_lattice(self):
+        atom_lattice = dd.get_perovskite_001_atom_lattice(
+            image_noise=False, set_element_info=False
+        )
+        atom_lattice.plot()
+        atom = atom_lattice.sublattice_list[0].atom_list[0]
+        assert not hasattr(atom, "element_info")
+        atom_lattice = dd.get_perovskite_001_atom_lattice(
+            image_noise=True, set_element_info=True
+        )
+        atom_lattice.plot()
+        atom = atom_lattice.sublattice_list[0].atom_list[0]
+        assert len(atom.element_info.items()) > 1
+
 
 class TestDummyDataFantasite:
-
     def test_signal(self):
         s = dd.get_fantasite()
         s.plot()
@@ -95,7 +117,6 @@ class TestDummyDataFantasite:
 
 
 class TestDummyDataDistortedCubic:
-
     def test_signal(self):
         s0 = dd.get_distorted_cubic_signal(image_noise=False)
         s1 = dd.get_distorted_cubic_signal(image_noise=True)
@@ -109,7 +130,6 @@ class TestDummyDataDistortedCubic:
 
 
 class TestDummyDataHexagonalDouble:
-
     def test_signal(self):
         s0 = dd.get_hexagonal_double_signal(image_noise=False)
         s1 = dd.get_hexagonal_double_signal(image_noise=True)
@@ -119,18 +139,17 @@ class TestDummyDataHexagonalDouble:
 
 
 class TestDummyDataEELSMap:
-
     def test_make_eels_map_spatial_image_la(self):
         x, y = 100, 100
         s = dd._make_eels_map_spatial_image_la(x_size=x, y_size=y)
         assert s.axes_manager.signal_shape == (100, 100)
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
 
     def test_make_eels_map_spatial_image_mn(self):
         x, y = 100, 100
         s = dd._make_eels_map_spatial_image_mn(x_size=x, y_size=y)
         assert s.axes_manager.signal_shape == (100, 100)
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
 
     def test_make_mn_eels_spectrum(self):
         data = dd._make_mn_eels_spectrum(energy_range=(400, 700))
@@ -142,26 +161,25 @@ class TestDummyDataEELSMap:
 
     def test_get_eels_spectrum_survey_image(self):
         s = dd.get_eels_spectrum_survey_image()
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
 
     def test_get_eels_spectrum_map(self):
         s = dd.get_eels_spectrum_map()
         assert len(s.axes_manager.shape) == 3
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
 
         s_no_noise = dd.get_eels_spectrum_map(add_noise=False)
         assert len(s.axes_manager.shape) == 3
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
         assert not (s_no_noise.data == s.data).all()
 
     def test_get_precipitate_signal(self):
         s = dd.get_precipitate_signal()
         assert len(s.axes_manager.shape) == 2
-        assert hasattr(s, 'plot')
+        assert hasattr(s, "plot")
 
 
 class TestGetSimpleCubicWithVacanciesSublattice:
-
     def test_signal(self):
         s0 = dd.get_simple_cubic_with_vacancies_signal(image_noise=False)
         s1 = dd.get_simple_cubic_with_vacancies_signal(image_noise=True)
@@ -175,7 +193,6 @@ class TestGetSimpleCubicWithVacanciesSublattice:
 
 
 class TestGetPolarizationFilmSignal:
-
     def test_signal(self):
         s0 = dd.get_polarization_film_signal(image_noise=False)
         s1 = dd.get_polarization_film_signal(image_noise=True)

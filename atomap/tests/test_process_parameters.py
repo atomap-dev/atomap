@@ -2,7 +2,6 @@ from atomap import process_parameters
 
 
 class TestProcessParameters:
-
     def setup_method(self):
         self.generic_structure = process_parameters.GenericStructure()
 
