@@ -798,14 +798,15 @@ class Atom_Position:
         element : str or list of str
             elements contained in the atomic column.
         z : list of floats
+            In Ångstrøm
 
         Examples
         --------
         >>> from atomap.atom_position import Atom_Position
         >>> atom = Atom_Position(x=15, y=10, sigma_x=5, sigma_y=3)
-        >>> atom.set_element_info("C", [0, 0.5])
+        >>> atom.set_element_info("C", [0, 2.5])
         >>> atom2 = Atom_Position(x=10, y=15, sigma_x=5, sigma_y=3)
-        >>> atom2.set_element_info(["C", "O"], [0, 0.5])
+        >>> atom2.set_element_info(["C", "O"], [0, 2.5])
         """
 
         self.element_info = {}

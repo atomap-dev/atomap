@@ -209,7 +209,8 @@ class Atom_Lattice:
         """
         Convert the Atomlattice object to an Atoms object of the Atomic
         Simulation Environment package. All Sublattices must have element_info
-        set. All sublattices must have the correct scale set (in Angstroms).
+        set. All sublattices must have the correct scale set (in Angstroms), and
+        the z positions set with sublattice.set_element_info must be in Angstrom.
 
         Returns
         -------
@@ -217,10 +218,8 @@ class Atom_Lattice:
 
         Examples
         --------
-        >>> al = am.dummy_data.get_simple_atom_lattice_two_sublattices()
-        >>> al.sublattice_list[0].set_element_info("C", [0.])
-        >>> al.sublattice_list[1].set_element_info(["Ti", "O"], [-2., 2.])
-        >>> atoms = al.convert_to_ase()
+        >>> atom_lattice = am.dummy_data.get_perovskite_001_atom_lattice()
+        >>> atoms = atom_lattice.convert_to_ase()
 
         """
         if not hasattr(self.sublattice_list[0].atom_list[0], "element_info"):

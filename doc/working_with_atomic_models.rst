@@ -13,14 +13,16 @@ Exporting to atomic models
 :py:class:`atomap.atom_lattice.Atom_Lattice` objects can be converted to an ASE Atoms object using the :py:meth:`~atomap.atom_lattice.Atom_Lattice.convert_to_ase` function.
 Before conversion, all :py:class:`atomap.atom_position.Atom_Position` objects must have their :py:attr:`~atomap.atom_position.Atom_Position.element_info` set.
 The easiest way to set :py:attr:`~atomap.atom_position.Atom_Position.element_info` for each atom position is to set the same values for all atoms in a :py:class:`~atomap.sublattice.Sublattice`.
+Both the calibration in the `Atom_Lattice` and the Z-positions specified with `set_element_info` needs to be in Ångstrøm.
 For example:
 
 .. code-block:: python
 
     >>> import atomap.api as am
-    >>> atom_lattice = am.dummy_data.get_fantasite_atom_lattice()
-    >>> atom_lattice.sublattice_list[0].set_element_info('Sr', [0.5])
-    >>> atom_lattice.sublattice_list[1].set_element_info(['Ti', 'O'], [0.0, 1.0])
+    >>> atom_lattice = am.dummy_data.get_perovskite_001_atom_lattice(set_element_info=False)
+    >>> atom_lattice.set_scale(scale=0.2, units="Å")
+    >>> atom_lattice.sublattice_list[0].set_element_info('Sr', [0., 4., 8., 12., 16.])
+    >>> atom_lattice.sublattice_list[1].set_element_info('Ti', [2., 6., 10., 14.])
     >>> atoms = atom_lattice.convert_to_ase()
 
 The converted Atoms object can now be saved as an atomic structure file (xyz, cif, etc...), can be visualized in 3D and can be input to atomistic simulations.
@@ -32,7 +34,20 @@ Visualization of atomic structure in 3D:
     >>> from ase.visualize import view
     >>> view(atoms) # doctest: +SKIP
 
-Note: In order to accurately convert an atomic structure, the :py:attr:`~atomap.sublattice.Sublattice.pixel_size` attribute must be set correctly for each :py:class:`~atomap.sublattice.Sublattice`.
+If there are different elements in an atomic column, each individual Z-position in an
+atomic column can be set.
+For the second sublattice:
+
+.. code-block:: python
+
+    >>> atom_lattice = am.dummy_data.get_perovskite_001_atom_lattice(set_element_info=False)
+    >>> atom_lattice.set_scale(scale=0.2, units="Å")
+    >>> atom_lattice.sublattice_list[0].set_element_info('Sr', [0., 4., 8.])
+    >>> atom_lattice.sublattice_list[1].set_element_info(
+    ...        ['O', 'Ti', 'O', 'Ti', 'O'], [0., 2., 4., 6., 8.])
+    >>> atoms = atom_lattice.convert_to_ase()
+    >>> view(atoms) # doctest: +SKIP
+
 
 Importing atomic models
 =======================

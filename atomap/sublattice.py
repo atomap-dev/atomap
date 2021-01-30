@@ -2883,13 +2883,14 @@ class Sublattice:
         element : str or list of str
             elements contained in the atomic column.
         z : list of floats
+            Must be in Ångstrøm
 
         Examples
         --------
         >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
-        >>> sublattice.set_element_info("C", [0, 0.5])
+        >>> sublattice.set_element_info("C", [0, 2.5])
         >>> sublattice2 = am.dummy_data.get_simple_cubic_sublattice()
-        >>> sublattice2.set_element_info(["C", "O"], [0, 0.5])
+        >>> sublattice2.set_element_info(["C", "O"], [0, 2.5])
         """
 
         [atom.set_element_info(element, z) for atom in self.atom_list]
