@@ -2850,6 +2850,28 @@ class Sublattice:
         )
         return pdf
 
+    def set_scale(self, scale, units):
+        """Set the scale for the sublattice.
+
+        In units per pixel.
+
+        Parameters
+        ----------
+        scale : float
+            Preferably Ångstrøm. If the distance between the atom columns
+            are 4 Ångstrøm, and there are 20 pixels between them. The scale should be
+            0.2.
+        units : string
+
+        Example
+        -------
+        >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
+        >>> sublattice.set_scale(0.2, "Å")
+
+        """
+        self.pixel_size = scale
+        self.units = units
+
     def set_element_info(self, element, z):
         """Set which atoms are present along atomic columns for all atoms in
         the sublattice. This will set all atomic columns to have the same

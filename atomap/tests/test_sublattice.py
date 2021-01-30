@@ -864,6 +864,16 @@ class TestConstructZoneAxes:
         assert len(planes1) == 10
 
 
+def test_set_scale():
+    sublattice = dd.get_distorted_cubic_sublattice()
+    sublattice.set_scale(0.02, "Å")
+    assert sublattice.pixel_size == 0.02
+    assert sublattice.units == "Å"
+    sublattice.set_scale(0.2, "nm")
+    assert sublattice.pixel_size == 0.2
+    assert sublattice.units == "nm"
+
+
 class TestSublatticeMask:
     def setup_method(self):
         image_data = np.random.random(size=(100, 100))

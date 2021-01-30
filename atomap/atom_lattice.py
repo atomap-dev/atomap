@@ -180,6 +180,31 @@ class Atom_Lattice:
 
         return signal
 
+    def set_scale(self, scale, units):
+        """Set the scale for the Atom_Lattice and the Sublattices.
+
+        In units per pixel.
+
+        Parameters
+        ----------
+        scale : float
+            Preferably Ångstrøm. If the distance between the atom columns
+            are 4 Ångstrøm, and there are 20 pixels between them. The scale should be
+            0.2.
+        units : string
+
+        Example
+        -------
+        >>> atom_lattice = am.dummy_data.get_simple_atom_lattice_two_sublattices()
+        >>> atom_lattice.set_scale(0.2, "Å")
+
+        """
+        self.pixel_size = scale
+        self.units = units
+        for sublattice in self.sublattice_list:
+            sublattice.pixel_size = scale
+            sublattice.units = units
+
     def convert_to_ase(self):
         """
         Convert the Atomlattice object to an Atoms object of the Atomic

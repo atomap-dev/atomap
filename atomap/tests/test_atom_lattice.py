@@ -165,6 +165,16 @@ class TestAtomLatticeASEConversion:
             atom_lattice.convert_to_ase()
 
 
+def test_set_scale():
+    atom_lattice = am.dummy_data.get_polarization_film_atom_lattice()
+    atom_lattice.set_scale(0.02, "Å")
+    assert atom_lattice.pixel_size == 0.02
+    assert atom_lattice.units == "Å"
+    for sublattice in atom_lattice.sublattice_list:
+        sublattice.pixel_size = 0.02
+        sublattice.units = "Å"
+
+
 class TestDumbbellLatticeInit:
     def test_empty(self):
         dumbbell_lattice = al.Dumbbell_Lattice()
