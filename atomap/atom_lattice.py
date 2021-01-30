@@ -175,7 +175,7 @@ class Atom_Lattice:
                     add_numbers=add_numbers,
                 )
             )
-        signal = at.array2signal2d(image, scale)
+        signal = at.array2signal2d(image, scale, self.units)
         signal.add_marker(marker_list, permanent=True, plot_marker=False)
 
         return signal
