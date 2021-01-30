@@ -10,6 +10,7 @@ from atomap.atom_lattice import Atom_Lattice
 from atomap.tools import integrate
 import atomap.dummy_data as dummy_data
 import atomap.example_data as example_data
+import atomap.convert_ase as convert_ase
 
 import atomap.quantification as quant
 from atomap.convert_ase import ase_to_atom_lattice
