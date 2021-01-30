@@ -49,11 +49,26 @@ For the second sublattice:
     >>> view(atoms) # doctest: +SKIP
 
 
+This can also be set for individual atoms.
+For example, lets replace the Strontium column with Lanthanum.
+
+.. code-block:: python
+
+    >>> atom = atom_lattice.sublattice_list[0].atom_list[45]
+    >>> atom.set_element_info("La", [0, 4, 8])
+    >>> view(atoms) # doctest: +SKIP
+
+
+.. image:: images/working_with_atomic_models/perovskite_001_with_la.jpg
+    :scale: 70 %
+    :align: center
+
+
 Importing atomic models
 =======================
 
 It is also possible to import an atomic model from ASE, to create an :py:class:`~atomap.atom_lattice.Atom_Lattice` object.
-To do this, use the :py:func:`~atomap.convert_ase.load_ase` function.
+To do this, use the :py:func:`~atomap.convert_ase.ase_to_atom_lattice` function.
 For example, to import a nanoparticle example dataset from ASE:
 
 .. code-block:: python
