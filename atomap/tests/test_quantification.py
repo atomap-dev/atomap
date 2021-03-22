@@ -2,7 +2,7 @@ import numpy as np
 import math
 import atomap.quantification as quant
 from atomap.example_data import get_detector_image_signal
-from atomap.dummy_data import get_simple_cubic_signal
+from atomap.dummy_data import get_simple_cubic_signal, get_perovskite_001_atom_lattice
 import atomap.atom_finding_refining as atom_finding
 from atomap.sublattice import Sublattice
 import atomap.testing_tools as tt
@@ -66,6 +66,10 @@ class TestStatisticalQuant:
 
     def test_quant_criteria(self):
         quant.get_statistical_quant_criteria([self.sublattice], 10)
+
+    def test_quant_criteria_multiple_sublattices(self):
+        atom_lattice = get_perovskite_001_atom_lattice()
+        quant.get_statistical_quant_criteria(atom_lattice.sublattice_list, 10)
 
     def test_plot_fitted_hist(self):
         models = quant.get_statistical_quant_criteria([self.sublattice], 10)
