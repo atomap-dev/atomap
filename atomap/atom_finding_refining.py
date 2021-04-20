@@ -4,6 +4,7 @@ from hyperspy.signals import Signal2D
 import hyperspy.api as hs
 import numpy as np
 from skimage.feature import peak_local_max
+from sklearn.decomposition import TruncatedSVD
 import math
 
 from atomap.external.gaussian2d import Gaussian2D
@@ -1100,10 +1101,12 @@ def refine_sublattice(sublattice, refinement_config_list, percent_to_nn):
 
 def do_pca_on_signal(signal, pca_components=22):
     signal.change_dtype("float64")
-    temp_signal = hs.signals.Signal1D(signal.data)
-    temp_signal.decomposition(print_info=False)
-    temp_signal = temp_signal.get_decomposition_model(pca_components)
-    temp_signal = Signal2D(temp_signal.data)
+    model = TruncatedSVD(n_components=pca_components)
+    # for compatibility with hyperspy's decomposition, transpose
+    model.fit(signal.data.T)
+    projected = model.transform(signal.data.T)
+    truncated = model.inverse_transform(projected).T
+    temp_signal = Signal2D(truncated)
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
     return temp_signal
