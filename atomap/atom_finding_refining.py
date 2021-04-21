@@ -88,8 +88,9 @@ def get_atom_positions(
     return atom_positions
 
 
-def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance, intensities=None,
-                            max_iter=20):
+def _remove_too_close_atoms(
+    atom_positions, pixel_separation_tolerance, intensities=None, max_iter=20
+):
     """Remove atoms which are within the tolerance from a list of positions
 
     Parameters
@@ -133,16 +134,20 @@ def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance, intensit
         min_int_col = np.argmin(pair_intensities, axis=1)
         # Index of each pair where intensitity is lowest and highest resp
         minimum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), min_int_col]
-        maximum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), 1-min_int_col]
+        maximum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), 1 - min_int_col]
         # Only consider pairs where the maximum index is not in the minimum index; those rows would be removed anyway
-        original_tuples = np.where(np.isin(maximum_int_indexes, minimum_int_indexes)==False)[0]
+        original_tuples = np.where(
+            np.isin(maximum_int_indexes, minimum_int_indexes) == False
+        )[0]
         # The rows corresponding to unique indices in the minimum column must be removed
         remove_indexes = np.unique(minimum_int_indexes[original_tuples])
         atom_positions = np.delete(atom_positions, remove_indexes, axis=0)
         # we must iterate to check for non-resolved situations e.g. triplets
         i += 1
     if not converged:
-        warnings.warn(f"Not all additional atoms could be removed in {max_iter} iterations!")
+        warnings.warn(
+            f"Not all additional atoms could be removed in {max_iter} iterations!"
+        )
     return atom_positions
 
 
