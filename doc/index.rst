@@ -4,6 +4,10 @@ Welcome to Atomap's documentation!
 News
 ----
 
+**2021-4-23: Try Atomap without having to install anything, via Binder**
+
+- `Introductory Jupyter Notebook <https://mybinder.org/v2/gl/atomap%2Fatomap_demos/release?filepath=introduction_to_atomap.ipynb>`_
+
 **2021-1-30: Atomap 0.3.0 released!**
 
 * Information about the 3D structure of ``Sublattices`` can now be added, allowing for 3D atomic models to be "converted" into an ``Atom_Lattice`` via the `Atomic Simulation Environment <https://wiki.fysik.dtu.dk/ase/>`_, and vice versa. This 3D information can be set manually, or via the intensity for homogeneous structures see :ref:`statistical method <statistical_method>` and :ref:`working with atomic models <working_with_atomic_models>` for more info. Thanks to `Tom Slater <https://gitlab.com/TomSlater>`_ and `Eoghan O'Connell <https://gitlab.com/PinkShnack>`_ for implementing this!
@@ -18,6 +22,9 @@ Atomap is a Python library for analysing atomic resolution scanning transmission
 It relies in fitting 2-D Gaussian functions to every atomic column in an image, and automatically find all major symmetry
 axes. The full procedure is explained in the article `Atomap: a new software tool for the automated analysis of
 atomic resolution images using two-dimensional Gaussian fitting <https://dx.doi.org/10.1186/s40679-017-0042-5>`_.
+
+The easiest way to try Atomap is via Binder: `introductory Jupyter Notebook <https://mybinder.org/v2/gl/atomap%2Fatomap_demos/release?filepath=introduction_to_atomap.ipynb>`_.
+To install Atomap on your own computer, see the :ref:`install instructions <install>`.
 
 .. figure:: images/index/elli_figure.jpg
     :scale: 45 %
