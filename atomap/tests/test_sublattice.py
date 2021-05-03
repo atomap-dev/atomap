@@ -75,6 +75,15 @@ class TestInitSublattice:
         image = np.zeros((100, 50))
         Sublattice(atom_position_list=self.peaks, image=image)
 
+    def test_negative_values_image_input(self):
+        image = np.zeros((100, 50)) - 100
+        sublattice = Sublattice(atom_position_list=self.peaks, image=image)
+        assert sublattice.image.min() < 0.0
+        sublattice = Sublattice(
+            atom_position_list=self.peaks, image=image, fix_negative_values=True
+        )
+        assert sublattice.image.min() == 0.0
+
     def test_wrong_image_dimension_input(self):
         image = np.zeros((100, 50, 5))
         with pytest.raises(ValueError):

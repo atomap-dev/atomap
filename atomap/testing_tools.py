@@ -271,7 +271,7 @@ class MakeTestData(object):
         for tx, ty, tsigma_x, tsigma_y, tamplitude, trotation in iterator:
             self.add_atom(tx, ty, tsigma_x, tsigma_y, tamplitude, trotation)
 
-    def add_image_noise(self, mu=0, sigma=0.005, only_positive=False, random_seed=None):
+    def add_image_noise(self, mu=0, sigma=0.005, only_positive=True, random_seed=None):
         """
         Add white noise to the image signal. The noise component is Gaussian
         distributed, with a default expectation value at 0, and a sigma of
@@ -287,7 +287,7 @@ class MakeTestData(object):
             The standard deviation of the Gaussian distribution, default
             is 0.005.
         only_positive : bool
-            Default is False. If True, the absolute value of the noise is added
+            Default is True. If True, the absolute value of the noise is added
             to the image signal.
         random_seed : int, optional
             Set the random seed of the noise, which gives the same image

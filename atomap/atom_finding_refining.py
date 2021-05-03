@@ -1109,6 +1109,8 @@ def do_pca_on_signal(signal, pca_components=22):
     temp_signal = Signal2D(truncated)
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
+    if temp_signal.data.min() < 0.0:
+        temp_signal.data -= temp_signal.data.min()
     return temp_signal
 
 

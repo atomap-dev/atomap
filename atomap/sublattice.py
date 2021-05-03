@@ -40,6 +40,7 @@ class Sublattice:
         color="red",
         pixel_size=None,
         units=None,
+        fix_negative_values=False,
     ):
         """
         Parameters
@@ -57,6 +58,10 @@ class Sublattice:
             Scaling number, default 1.
         units : string, optional
             Default "pixel".
+        fix_negative_values : optional, default False
+            Negative values in the image data is not supported, and can in some cases
+            lead to bad 2-D Gaussian fitting results. To fix this, the negative
+            values will be shifted to zero.
 
         Attributes
         ----------
@@ -121,6 +126,7 @@ class Sublattice:
             original_image=original_image,
             pixel_size=pixel_size,
             units=units,
+            fix_negative_values=fix_negative_values,
         )
         self.atom_list = []
         for atom_position in atom_position_list:
