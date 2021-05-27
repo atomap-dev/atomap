@@ -99,7 +99,7 @@ def _remove_too_close_atoms(
         In the form [[x0, y0], [x1, y1], ...]
     pixel_separation_tolerance : scalar
         Minimum separation between the positions.
-    intensities : Numpy array, optional
+    intensities : NumPy array, optional
         An intensity value corresponding to each atom_position to decide
         which atom is more appropriate to remove in a pair. If not provided it will be
         assumed that peaks are sorted from most to least intense.
@@ -132,10 +132,11 @@ def _remove_too_close_atoms(
         pairs_ar = np.array(list(pairs))
         pair_intensities = intensities[pairs_ar]
         min_int_col = np.argmin(pair_intensities, axis=1)
-        # Index of each pair where intensitity is lowest and highest resp
+        # Index of each pair where intensity is lowest and highest resp
         minimum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), min_int_col]
         maximum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), 1 - min_int_col]
-        # Only consider pairs where the maximum index is not in the minimum index; those rows would be removed anyway
+        # Only consider pairs where the maximum index is not in the minimum index;
+        # those rows would be removed anyway
         original_tuples = np.where(
             np.isin(maximum_int_indexes, minimum_int_indexes) == False
         )[0]
