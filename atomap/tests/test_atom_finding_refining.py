@@ -102,6 +102,17 @@ class TestRemoveTooCloseAtoms:
         assert len(data_new2)
         assert (data_new2 == data[0]).all()
 
+    def test_intensities(self):
+        data = np.array([[1, 10], [10, 1]])
+        intensities0 = np.array([30, 20])
+        data_new0 = afr._remove_too_close_atoms(data, 20, intensities=intensities0)
+        assert len(data_new0) == 1
+        assert (data_new0 == data[0]).all()
+        intensities1 = np.array([20, 30])
+        data_new1 = afr._remove_too_close_atoms(data, 20, intensities=intensities1)
+        assert len(data_new1) == 1
+        assert (data_new1 == data[1]).all()
+
 
 class TestCropMask:
     def test_radius_1(self):
