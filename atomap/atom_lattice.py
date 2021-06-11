@@ -15,6 +15,7 @@ class Atom_Lattice:
         sublattice_list=None,
         original_image=None,
         image_extra=None,
+        fix_negative_values=False,
     ):
         """
         Parameters
@@ -33,6 +34,10 @@ class Atom_Lattice:
         y_position : list of floats
             y positions for all sublattices.
         image_extra : 2D NumPy array, optional
+        fix_negative_values : optional, default False
+            Negative values in the image data is not supported, and can in some cases
+            lead to bad 2-D Gaussian fitting results. To fix this, the negative
+            values will be shifted to zero.
 
         """
         if not isinstance(name, str):
@@ -41,7 +46,12 @@ class Atom_Lattice:
             self.sublattice_list = []
         else:
             self.sublattice_list = sublattice_list
-        at._image_init(self, image=image, original_image=original_image)
+        at._image_init(
+            self,
+            image=image,
+            original_image=original_image,
+            fix_negative_values=fix_negative_values,
+        )
         self.image_extra = image_extra
         self.name = name
         self._pixel_separation = 10

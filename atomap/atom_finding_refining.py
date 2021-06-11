@@ -1,10 +1,13 @@
 from hyperspy.external.progressbar import progressbar
 from scipy.ndimage.filters import gaussian_filter
+from scipy.spatial import cKDTree
 from hyperspy.signals import Signal2D
 import hyperspy.api as hs
 import numpy as np
 from skimage.feature import peak_local_max
+from sklearn.decomposition import TruncatedSVD
 import math
+import warnings
 
 from atomap.external.gaussian2d import Gaussian2D
 
@@ -86,7 +89,9 @@ def get_atom_positions(
     return atom_positions
 
 
-def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance):
+def _remove_too_close_atoms(
+    atom_positions, pixel_separation_tolerance, intensities=None, max_iter=20
+):
     """Remove atoms which are within the tolerance from a list of positions
 
     Parameters
@@ -95,6 +100,13 @@ def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance):
         In the form [[x0, y0], [x1, y1], ...]
     pixel_separation_tolerance : scalar
         Minimum separation between the positions.
+    intensities : NumPy array, optional
+        An intensity value corresponding to each atom_position to decide
+        which atom is more appropriate to remove in a pair. If not provided it will be
+        assumed that peaks are sorted from most to least intense.
+    max_iter : int, optional
+        Maximum number of iterations of removing points as a back-stop against
+        infinite loop.
 
     Returns
     -------
@@ -108,22 +120,37 @@ def _remove_too_close_atoms(atom_positions, pixel_separation_tolerance):
     >>> data_new = afr._remove_too_close_atoms(data, 5)
 
     """
-    x_array = atom_positions[:, 0]
-    y_array = atom_positions[:, 1]
-    remove_list = []
-    for i, (x, y) in enumerate(atom_positions):
-        r = np.hypot(x_array - x, y_array - y)
-        index_list = np.where(r < pixel_separation_tolerance)[0]
-        for index in index_list:
-            if i != index:
-                if not (i in remove_list):
-                    remove_list.append(index)
-    remove_list = list(set(remove_list))  # Only get unique indices
-    remove_list.sort()
-    atom_list_new = atom_positions.tolist()
-    for i_remove in remove_list[::-1]:
-        atom_list_new.pop(i_remove)
-    return np.array(atom_list_new)
+    if intensities is None:
+        intensities = np.arange(atom_positions.shape[0])[::-1]
+    i = 0
+    converged = False
+    while i < max_iter:
+        tree = cKDTree(atom_positions)
+        pairs = tree.query_pairs(pixel_separation_tolerance)
+        if not pairs:
+            converged = True
+            break
+        pairs_ar = np.array(list(pairs))
+        pair_intensities = intensities[pairs_ar]
+        min_int_col = np.argmin(pair_intensities, axis=1)
+        # Index of each pair where intensity is lowest and highest resp
+        minimum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), min_int_col]
+        maximum_int_indexes = pairs_ar[np.arange(min_int_col.shape[0]), 1 - min_int_col]
+        # Only consider pairs where the maximum index is not in the minimum index;
+        # those rows would be removed anyway
+        original_tuples = np.where(
+            np.isin(maximum_int_indexes, minimum_int_indexes) == False
+        )[0]
+        # The rows corresponding to unique indices in the minimum column must be removed
+        remove_indexes = np.unique(minimum_int_indexes[original_tuples])
+        atom_positions = np.delete(atom_positions, remove_indexes, axis=0)
+        # we must iterate to check for non-resolved situations e.g. triplets
+        i += 1
+    if not converged:
+        warnings.warn(
+            f"Not all additional atoms could be removed in {max_iter} iterations!"
+        )
+    return atom_positions
 
 
 def find_features_by_separation(
@@ -1100,12 +1127,16 @@ def refine_sublattice(sublattice, refinement_config_list, percent_to_nn):
 
 def do_pca_on_signal(signal, pca_components=22):
     signal.change_dtype("float64")
-    temp_signal = hs.signals.Signal1D(signal.data)
-    temp_signal.decomposition(print_info=False)
-    temp_signal = temp_signal.get_decomposition_model(pca_components)
-    temp_signal = Signal2D(temp_signal.data)
+    model = TruncatedSVD(n_components=pca_components)
+    # for compatibility with hyperspy's decomposition, transpose
+    model.fit(signal.data.T)
+    projected = model.transform(signal.data.T)
+    truncated = model.inverse_transform(projected).T
+    temp_signal = Signal2D(truncated)
     temp_signal.axes_manager[0].scale = signal.axes_manager[0].scale
     temp_signal.axes_manager[1].scale = signal.axes_manager[1].scale
+    if temp_signal.data.min() < 0.0:
+        temp_signal.data -= temp_signal.data.min()
     return temp_signal
 
 

@@ -17,6 +17,9 @@ from sklearn.cluster import DBSCAN
 import logging
 
 
+_logger = logging.getLogger(__name__)
+
+
 # From Vidars HyperSpy repository
 def _line_profile_coordinates(src, dst, linewidth=1):
     """Return the coordinates of the profile of an image along a scan line.
@@ -1606,7 +1609,12 @@ def _get_atom_selection_from_verts(atom_positions, verts, invert_selection=False
 
 
 def _image_init(
-    lattice_object, image, original_image=None, pixel_size=None, units=None
+    lattice_object,
+    image,
+    original_image=None,
+    pixel_size=None,
+    units=None,
+    fix_negative_values=False,
 ):
     if image is not None:
         if not hasattr(image, "__array__"):
@@ -1661,6 +1669,20 @@ def _image_init(
             )
     else:
         original_image_out = image_out
+
+    if image_out is not None:
+        image_out_min = image_out.min()
+        if image_out_min < 0.0:
+            if fix_negative_values:
+                image_out -= image_out_min
+            else:
+                _logger.warning(
+                    "Image data has negative values, with the lowest being {0}. "
+                    "This is not supported, and can lead to bad fitting results. "
+                    "To fix the negative values, by increasing all pixel values by {0}"
+                    ", use the fix_negative_values=True "
+                    "parameter".format(image_out_min)
+                )
 
     lattice_object.image = image_out
     lattice_object.original_image = original_image_out

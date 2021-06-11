@@ -575,7 +575,7 @@ def _make_subplot_map_from_complex_regular_grid(
     plot_title="",
     vector_to_plot=None,
 ):
-    """amplitude_data and phase_data in the form [(x, y , z)]"""
+    """Amplitude_data and phase_data in the form [(x, y, z)]"""
     x_lim = (amplitude_data[0][0][0], amplitude_data[0][-1][0])
     y_lim = (amplitude_data[1][0][0], amplitude_data[1][0][-1])
     rgb_array = get_rgb_array(

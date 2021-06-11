@@ -412,7 +412,8 @@ def get_statistical_quant_criteria(sublattice_list, max_atom_nums):
                 for atom in sublattice.atom_list
             ]
         )
-    int_array = np.asarray(intensities)
+    flat_intensities = [item for sublist in intensities for item in sublist]
+    int_array = np.asarray(flat_intensities)
     int_array = int_array.reshape(-1, 1)
 
     # Fit Gaussian Mixture models with components from 1 to tot_atom_nums
