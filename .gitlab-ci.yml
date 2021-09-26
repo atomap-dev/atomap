@@ -14,6 +14,8 @@ style_checks_black:
     - python3 -m black atomap/ --diff --check --quiet
 
 pip_install_unittest_docstring_documentation_coverage:
+    variables:
+      MPLBACKEND: "Qt5Agg"
     coverage: '/TOTAL.*\s+(\d+%)$/'
     script:
     - *atomap_dependencies
