@@ -1,5 +1,5 @@
 from hyperspy.external.progressbar import progressbar
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 from scipy.spatial import cKDTree
 from hyperspy.signals import Signal2D
 import hyperspy.api as hs

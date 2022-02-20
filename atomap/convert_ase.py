@@ -1,4 +1,4 @@
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 from hyperspy.misc.elements import elements
 from atomap import atom_lattice, sublattice
 import numpy as np
