@@ -295,7 +295,7 @@ def get_rgb_array(angle, magnitude, rotation=0, angle_lim=None, magnitude_lim=No
 
 def make_color_wheel(ax, rotation=0):
     x, y = np.mgrid[-2.0:2.0:500j, -2.0:2.0:500j]
-    r = (x ** 2 + y ** 2) ** 0.5
+    r = (x**2 + y**2) ** 0.5
     t = np.arctan2(x, y)
     del x, y
     if not (rotation == 0):

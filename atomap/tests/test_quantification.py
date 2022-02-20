@@ -41,7 +41,7 @@ class TestDetectorNormalisation:
     def test_find_flux_limits_running(self):
         flux1 = quant.centered_distance_matrix((63, 63), np.zeros((128, 128)))
         (profiler, flux_profile) = quant.find_flux_limits(100 - flux1, 25)
-        assert len(flux_profile) == math.ceil((64 ** 2 + 64 ** 2) ** 0.5)
+        assert len(flux_profile) == math.ceil((64**2 + 64**2) ** 0.5)
 
 
 class TestStatisticalQuant:

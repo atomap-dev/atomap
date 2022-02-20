@@ -95,8 +95,8 @@ class Gaussian2D(Component):
         y0 = self.centre_y.value
         theta = self.rotation.value
 
-        sx2 = sx ** 2
-        sy2 = sy ** 2
+        sx2 = sx**2
+        sy2 = sy**2
         cos_theta2 = math.cos(theta) ** 2
         sin_theta2 = math.sin(theta) ** 2
         sin_2theta = math.sin(2 * theta)

@@ -728,7 +728,7 @@ class TestGetFeatureSeparation:
             "int8",
         ]
         s = dd.get_simple_cubic_signal()
-        s *= 10 ** 9
+        s *= 10**9
         for dtype in dtype_list:
             print(dtype)
             s.change_dtype(dtype)

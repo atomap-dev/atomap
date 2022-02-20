@@ -64,7 +64,7 @@ def _detector_threshold(det_image):
 
 
 def _func(x, a, b, c):
-    return a * (x ** -b) + c
+    return a * (x**-b) + c
 
 
 def _radial_profile(data, centre):

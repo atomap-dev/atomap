@@ -11,7 +11,7 @@ import atomap.tools as to
 def _make_hexagonal_two_sublattice_testdata(image_noise=False):
     hexagon_height = 40
     dy = hexagon_height / 2
-    dx = hexagon_height / 2 / 3 ** 0.5
+    dx = hexagon_height / 2 / 3**0.5
 
     im_x, im_y = 300, 300
 

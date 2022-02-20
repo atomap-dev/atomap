@@ -2318,7 +2318,7 @@ class Sublattice:
         assert x_pos.shape == y_pos.shape == (n_atoms * (n_atoms - 1),)
 
         # Produce a mask that only select vectors that are shorter than radius
-        mask = (x_pos ** 2 + y_pos ** 2) < pixel_radius ** 2
+        mask = (x_pos**2 + y_pos**2) < pixel_radius**2
         assert mask.shape == (n_atoms * (n_atoms - 1),)
         n_atoms_closer_than_radius = mask.sum()
 

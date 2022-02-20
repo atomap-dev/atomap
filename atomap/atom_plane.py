@@ -352,7 +352,7 @@ class Atom_Plane:
         dist_x = new_x - x_position_point
         dist_y = new_y - y_position_point
 
-        distance = (dist_x ** 2 + dist_y ** 2) ** 0.5
+        distance = (dist_x**2 + dist_y**2) ** 0.5
 
         closest_index = distance.argmin()
         closest_point = (new_x[closest_index], new_y[closest_index])
