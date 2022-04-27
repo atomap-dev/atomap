@@ -1,5 +1,5 @@
 ﻿import numpy as np
-import scipy
+from scipy import ndimage, optimize
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import sklearn.mixture as mixture
@@ -195,7 +195,7 @@ def find_flux_limits(flux_pattern, conv_angle, limits=None):
     flux_pattern = flux_pattern / np.max(flux_pattern)
 
     # convert 2D image into a 1D profile.
-    centre = scipy.ndimage.center_of_mass(flux_pattern)
+    centre = ndimage.center_of_mass(flux_pattern)
     flux_profile = _radial_profile(flux_pattern, centre[::-1])
     grad = np.gradient(flux_profile)
     # scale flux_profile relative to the bright field disc.
@@ -263,7 +263,7 @@ def analyse_flux(coords, flux_profile, conv_angle):
     upper = np.sum(radius < coords[1])
     xdata = radius[lower:upper]
     ydata = flux_profile[lower:upper]
-    popt, pcov = scipy.curve_fit(_func, xdata, ydata, p0=([1, 1, 1]))
+    popt, pcov = optimize.curve_fit(_func, xdata, ydata, p0=([1, 1, 1]))
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 1, 1)
     ax1.plot(xdata, ydata, "b-", label="data")
@@ -324,7 +324,7 @@ def detector_normalisation(
         (det_image.shape[0] / 2, det_image.shape[1] / 2), det_image
     )
     centre_image = np.multiply((m < 512), (1 - threshold_image))
-    centre = scipy.ndimage.center_of_mass(centre_image)
+    centre = ndimage.center_of_mass(centre_image)
 
     # Using the centre of the detector and sensitivity profile can be made.
     # The maximum gradient of this profile is the inner collection angle
