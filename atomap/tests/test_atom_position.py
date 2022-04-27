@@ -352,8 +352,8 @@ class TestEstimateLocalScanningDistortion:
         distortion_x, distortion_y = atom.estimate_local_scanning_distortion(
             image_data, radius=6, edge_skip=2
         )
-        assert approx(distortion_x, 0)
-        assert approx(distortion_y, 0)
+        assert approx(distortion_x) == 0
+        assert approx(distortion_y) == 0
 
     def test_values(self):
         image_data = np.zeros((100, 100))
@@ -366,7 +366,7 @@ class TestEstimateLocalScanningDistortion:
         distortion_x, distortion_y = atom.estimate_local_scanning_distortion(
             image_data, radius=4, edge_skip=2
         )
-        assert approx(distortion_y, np.std((20, 21, 20, 21, 20)))
+        assert approx(distortion_y) == np.std((20, 21, 20, 21, 20))
 
     def test_elliptical_atom(self):
         image = np.zeros((100, 100))
