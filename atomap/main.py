@@ -53,6 +53,13 @@ def _get_signal_name(signal):
                 temp_title = signal_dict["metadata"]["General"]["title"]
                 if not temp_title == "":
                     filename = temp_title
+    # In HyperSpy 1.7, 'metadata' was changed to '_metadata'
+    if "_metadata" in signal_dict:
+        if "General" in signal_dict["_metadata"]:
+            if "title" in signal_dict["_metadata"]["General"]:
+                temp_title = signal_dict["_metadata"]["General"]["title"]
+                if not temp_title == "":
+                    filename = temp_title
     if filename is None:
         if "tmp_parameters" in signal_dict:
             if "filename" in signal_dict["tmp_parameters"]:
