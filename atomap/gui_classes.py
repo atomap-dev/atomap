@@ -41,8 +41,8 @@ class AtomToggleRefine:
         if event.inaxes != self.ax.axes:
             return
         if event.button == 1:  # Left mouse button
-            x = np.float(event.xdata)
-            y = np.float(event.ydata)
+            x = float(event.xdata)
+            y = float(event.ydata)
             atom_nearby = self.is_atom_nearby(x, y)
             if atom_nearby is not None:
                 ref_pos_current = self.sublattice.atom_list[atom_nearby].refine_position
@@ -110,10 +110,10 @@ class GetAtomSelection:
             self.atom_positions[:, 0], self.atom_positions[:, 1], "o", color="red"
         )[0]
         self.line_selected = None
-        markerprops = dict(color="blue")
-        lineprops = dict(color="blue")
+        handle_props = dict(color="blue")
+        props = dict(color="blue")
         self.poly = PolygonSelector(
-            self.ax, self.onselect, markerprops=markerprops, lineprops=lineprops
+            self.ax, self.onselect, handle_props=handle_props, props=props
         )
         self.fig.tight_layout()
 

@@ -203,8 +203,8 @@ class AtomAdderRemover:
         if event.inaxes != self.ax.axes:
             return
         if event.button == 1:  # Left mouse button
-            x = np.float(event.xdata)
-            y = np.float(event.ydata)
+            x = float(event.xdata)
+            y = float(event.ydata)
             atom_nearby = self.is_atom_nearby(x, y)
             if atom_nearby is False:
                 self.atom_positions.append([x, y])

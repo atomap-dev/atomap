@@ -417,7 +417,7 @@ class TestMakeMaskCircleCentre:
     def test_radius_2(self):
         arr = np.zeros((3, 3))
         mask = afr._make_mask_circle_centre(arr, 2)
-        np.testing.assert_array_equal(mask, np.zeros((3, 3), dtype=np.bool))
+        np.testing.assert_array_equal(mask, np.zeros((3, 3), dtype=bool))
 
     def test_wrong_arr_dimensions(self):
         arr = np.zeros((3, 3, 4))

@@ -90,7 +90,7 @@ def _radial_profile(data, centre):
 
     y, x = np.indices((data.shape))
     r = np.sqrt((x - centre[0]) ** 2 + (y - centre[1]) ** 2)
-    r = r.astype(np.int)
+    r = r.astype(int)
 
     tbin = np.bincount(r.ravel(), data.ravel())
     nr = np.bincount(r.ravel())
@@ -104,8 +104,8 @@ class InteractiveFluxAnalyser:
             self.profile = profile[0]
             self.radius = radius
             self.flux_profile = flux_profile
-            self.left = np.int(min(self.profile.get_xdata()))
-            self.right = np.int(max(self.profile.get_xdata()))
+            self.left = int(min(self.profile.get_xdata()))
+            self.right = int(max(self.profile.get_xdata()))
             self.l_line = self.profile.axes.axvline(
                 self.left, color="firebrick", linestyle="--"
             )
@@ -134,13 +134,13 @@ class InteractiveFluxAnalyser:
         if event.inaxes != self.profile.axes:
             return
         if event.button == 1:  # Left mouse button
-            left = np.int(event.xdata)
+            left = int(event.xdata)
             if left < self.right:
                 self.left = left
             self.l_line.set_xdata(self.left)
             self.profile.figure.canvas.draw_idle()
         elif event.button == 3:  # Right mouse button
-            right = np.int(event.xdata)
+            right = int(event.xdata)
             if right > self.left:
                 self.right = right
             self.r_line.set_xdata(self.right)

@@ -648,7 +648,7 @@ def _make_mask_from_positions(position_list, radius_list, data_shape):
     """
     if len(position_list) != len(radius_list):
         raise ValueError("position_list and radius_list must be the same length")
-    mask = np.zeros(data_shape, dtype=np.bool)
+    mask = np.zeros(data_shape, dtype=bool)
     for position, radius in zip(position_list, radius_list):
         mask += _make_circular_mask(
             position[0], position[1], data_shape[0], data_shape[1], radius

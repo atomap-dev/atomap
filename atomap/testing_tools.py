@@ -176,7 +176,7 @@ class MakeTestData(object):
     def _shift_vertical_rows(self, signal):
         scale = self._add_row_scan_distortion
         shift_list = np.random.standard_normal(self.data_extent[1]) * scale
-        shift_list = np.round(shift_list).astype(np.int)
+        shift_list = np.round(shift_list).astype(int)
         for iy, shift in enumerate(shift_list):
             signal.data[iy] = np.roll(signal.data[iy], shift)
 
