@@ -636,7 +636,6 @@ def _make_subplot_map_from_complex_regular_grid(
 def _make_line_profile_subplot_from_three_parameter_data(
     ax, data_list, interface_plane, scale_x=1.0, scale_y=1.0, invert_line_profiles=False
 ):
-
     projected_positions = to.project_position_property(data_list, interface_plane)
     layer_list = to.sort_projected_positions_into_layers(projected_positions)
     line_profile_data = to.combine_projected_positions_layers(layer_list)

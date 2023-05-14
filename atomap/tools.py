@@ -1224,7 +1224,6 @@ def integrate(
         total=np.prod(image.shape[-2:]),
         leave=False,
     ):
-
         point_index = point_record[i, j]
         if point_index == -1:
             intensity_record[..., i, j] = np.nan

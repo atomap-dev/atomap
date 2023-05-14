@@ -1097,7 +1097,6 @@ def fit_atom_positions_gaussian(
 
 
 def refine_sublattice(sublattice, refinement_config_list, percent_to_nn):
-
     total_number_of_refinements = 0
     for refinement_config in refinement_config_list:
         total_number_of_refinements += refinement_config[1]

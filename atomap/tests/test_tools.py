@@ -341,9 +341,7 @@ class TestRotatePointsAndSignal:
 class TestRotatePointsAroundPosition:
     def test_degrees_centre_0(self):
         xc, yc = 0, 0
-        x, y = [5,], [
-            0,
-        ]
+        x, y = list([5]), list([0])
         x_rot, y_rot = to._rotate_points_around_position(xc, yc, x, y, 90)
         assert len(x_rot)
         assert len(y_rot)
@@ -361,9 +359,7 @@ class TestRotatePointsAroundPosition:
 
     def test_degrees_centre_10(self):
         xc, yc = 10, 10
-        x, y = [5,], [
-            0,
-        ]
+        x, y = list([5]), list([0])
         x_rot, y_rot = to._rotate_points_around_position(xc, yc, x, y, 90)
         assert approx(x_rot[0]) == 0
         assert approx(y_rot[0]) == 15

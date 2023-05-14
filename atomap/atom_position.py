@@ -288,7 +288,6 @@ class Atom_Position:
         return image_slice, x0, y0
 
     def _plot_gaussian2d_debug(self, slice_radius, gaussian, data_slice):
-
         X, Y = np.meshgrid(
             np.arange(-slice_radius, slice_radius, 1),
             np.arange(-slice_radius, slice_radius, 1),
