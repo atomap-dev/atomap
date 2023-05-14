@@ -34,9 +34,8 @@ def add_marker(
 
     Examples
     --------
-    >>> import scipy.misc
     >>> import hyperspy.api as hs
-    >>> im = hs.signals.Signal2D(scipy.misc.ascent())
+    >>> im = hs.signals.Signal2D(np.random.random((512, 512)))
     >>> m = hs.markers.rectangle(x1=150, y1=100, x2=400, y2=400, color='red')
     >>> im.add_marker(m)
 

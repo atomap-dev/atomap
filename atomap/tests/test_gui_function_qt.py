@@ -1,6 +1,7 @@
 from pytest import approx
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import MouseEvent
 from hyperspy.signals import Signal2D
 import atomap.initial_position_finding as ipf
 from atomap.sublattice import Sublattice
@@ -15,9 +16,15 @@ class TestAddAtomAdderRemoving:
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((100, 100))
         assert len(peaks) == 0
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 1
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 0
 
     def test_atoms_input(self):
@@ -32,10 +39,16 @@ class TestAddAtomAdderRemoving:
         fig = plt.figure(1)
         x0, y0 = fig.axes[0].transData.transform((100, 10))
         assert len(peaks) == 2
-        fig.canvas.button_press_event(x0, y0, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x0, y=y0, button=1),
+        )
         assert len(peaks) == 3
         x1, y1 = fig.axes[0].transData.transform((120, 30))
-        fig.canvas.button_press_event(x1, y1, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x1, y=y1, button=1),
+        )
         assert len(peaks) == 2
         assert peaks[0] == approx([120, 20])
         assert peaks[1] == approx([100, 10])
@@ -49,7 +62,10 @@ class TestAddAtomAdderRemoving:
         assert len(peaks) == len(positions)
         fig = plt.figure(1)
         x0, y0 = fig.axes[0].transData.transform((peaks[0][0], peaks[0][1]))
-        fig.canvas.button_press_event(x0, y0, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x0, y=y0, button=1),
+        )
         assert len(peaks) == len(positions) - 1
 
     def test_distance_threshold(self):
@@ -57,20 +73,32 @@ class TestAddAtomAdderRemoving:
         peaks0 = ipf.add_atoms_with_gui(data, distance_threshold=10)
         fig0 = plt.figure(1)
         x00, y00 = fig0.axes[0].transData.transform((100, 10))
-        fig0.canvas.button_press_event(x00, y00, 1)
+        fig0.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig0.canvas, x=x00, y=y00, button=1),
+        )
         assert len(peaks0) == 1
         x01, y01 = fig0.axes[0].transData.transform((109, 19))
-        fig0.canvas.button_press_event(x01, y01, 1)
+        fig0.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig0.canvas, x=x01, y=y01, button=1),
+        )
         assert len(peaks0) == 0
         plt.close(fig0)
 
         peaks1 = ipf.add_atoms_with_gui(data, distance_threshold=4)
         fig1 = plt.figure(1)
         x10, y10 = fig1.axes[0].transData.transform((100, 10))
-        fig1.canvas.button_press_event(x10, y10, 1)
+        fig1.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig1.canvas, x=x10, y=y10, button=1),
+        )
         assert len(peaks1) == 1
         x11, y11 = fig1.axes[0].transData.transform((109, 19))
-        fig1.canvas.button_press_event(x11, y11, 1)
+        fig1.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig1.canvas, x=x11, y=y11, button=1),
+        )
         assert len(peaks1) == 2
         plt.close(fig1)
 
@@ -80,9 +108,15 @@ class TestAddAtomAdderRemoving:
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((100, 100))
         assert len(peaks) == 0
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 1
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 0
 
     def test_log_norm(self):
@@ -91,9 +125,15 @@ class TestAddAtomAdderRemoving:
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((100, 100))
         assert len(peaks) == 0
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 1
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert len(peaks) == 0
 
     def test_log_norm_negative_image_values(self):
@@ -114,9 +154,15 @@ class TestToggleAtomRefinePosition:
         fig = plt.figure(1)
         x, y = fig.axes[0].transData.transform((10, 20))
         assert sublattice.atom_list[1].refine_position
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert not sublattice.atom_list[1].refine_position
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
         assert sublattice.atom_list[1].refine_position
 
     def test_toggle_all(self):
@@ -126,13 +172,25 @@ class TestToggleAtomRefinePosition:
         fig = plt.figure(1)
         x0, y0 = fig.axes[0].transData.transform((10, 10))
         x1, y1 = fig.axes[0].transData.transform((10, 20))
-        fig.canvas.button_press_event(x0, y0, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x0, y=y0, button=1),
+        )
         assert not sublattice.atom_list[0].refine_position
-        fig.canvas.button_press_event(x1, y1, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x1, y=y1, button=1),
+        )
         assert not sublattice.atom_list[1].refine_position
-        fig.canvas.button_press_event(x0, y0, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x0, y=y0, button=1),
+        )
         assert sublattice.atom_list[0].refine_position
-        fig.canvas.button_press_event(x1, y1, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x1, y=y1, button=1),
+        )
         assert sublattice.atom_list[1].refine_position
 
     def test_with_fitting(self):
@@ -151,7 +209,10 @@ class TestToggleAtomRefinePosition:
         x0, y0 = fig.axes[0].transData.transform(
             (x_pos[0] + delta_pos, y_pos[0] + delta_pos)
         )
-        fig.canvas.button_press_event(x0, y0, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x0, y=y0, button=1),
+        )
         print(atom0.refine_position)
         print(atom1.refine_position)
         sublattice.refine_atom_positions_using_center_of_mass(mask_radius=4)

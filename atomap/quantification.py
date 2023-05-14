@@ -1,7 +1,7 @@
 ﻿import numpy as np
 from scipy import ndimage, optimize
 import matplotlib.pyplot as plt
-from matplotlib import cm
+from matplotlib import colormaps
 import sklearn.mixture as mixture
 
 from atomap.sublattice import Sublattice
@@ -572,7 +572,7 @@ def statistical_quant(
         sorted_labels[labels == k] = v
 
     x = np.linspace(0.0, 1.0, max_atom_nums)
-    truncated_cmap = cm.get_cmap(cmap)(x)[np.newaxis, :, :3].tolist()
+    truncated_cmap = colormaps["viridis"](x)[np.newaxis, :, :3].tolist()
     truncated_cmap[0] = truncated_cmap[0][-model.n_components :]
 
     if image is None:

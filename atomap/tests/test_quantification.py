@@ -94,10 +94,10 @@ class TestStatisticalQuant:
         for k, v in dic.items():
             sorted_labels[labels == k] = v
 
-        from matplotlib import cm
+        from matplotlib import colormaps
 
         x = np.linspace(0.0, 1.0, 4)
-        rgb = cm.get_cmap("viridis")(x)[np.newaxis, :, :3].tolist()
+        rgb = colormaps["viridis"](x)[np.newaxis, :, :3].tolist()
 
         quant._plot_fitted_hist(int_array, model, rgb, sort_indices)
 
