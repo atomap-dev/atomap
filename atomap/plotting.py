@@ -30,7 +30,7 @@ def plot_vector_field(x_pos_list, y_pos_list, x_rot_list, y_rot_list, save=True)
         pivot="middle",
     )
     ax.set_xlim(min(x_pos_list), max(x_pos_list))
-    ax.set_ylim(min(y_pos_list), max(y_pos_list))
+    ax.set_ylim(max(y_pos_list), min(y_pos_list))
     ax.set_aspect("equal")
     if save:
         fig.savefig("vector_field.png", dpi=200)
