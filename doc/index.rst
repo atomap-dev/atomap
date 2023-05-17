@@ -4,14 +4,14 @@ Welcome to Atomap's documentation!
 News
 ----
 
-**2022-4-28: Atomap 0.3.2 released**
+**2023-5-17: Atomap 0.3.3 released**
+
+This is a small maintenance release, fixing some deprecation warning, style issues, and fixing a plotting bug when visualizing vectors.
+
+
+*2022-4-28: Atomap 0.3.2 released*
 
 This is a maintenance release, updating Atomap to work with the newly released HyperSpy 1.7.
-
-
-*2021-6-11: Atomap 0.3.1 released!*
-
-This is a small release, with one bug fix from `Tom Slater <https://gitlab.com/TomSlater>`_, and two performance improvements from `Niels Cautaerts <https://gitlab.com/din14970>`_. The latter are related to finding the initial atomic column positions, and will especially improve the processing time for large images.
 
 
 About Atomap
@@ -81,6 +81,11 @@ Contents on this webpage
 
 Old news
 --------
+
+*2021-6-11: Atomap 0.3.1 released!*
+
+This is a small release, with one bug fix from `Tom Slater <https://gitlab.com/TomSlater>`_, and two performance improvements from `Niels Cautaerts <https://gitlab.com/din14970>`_. The latter are related to finding the initial atomic column positions, and will especially improve the processing time for large images.
+
 
 *2021-4-23: Try Atomap without having to install anything, via Binder*
 
