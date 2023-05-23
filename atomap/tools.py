@@ -916,7 +916,7 @@ def _get_n_nearest_neighbors(position_list, nearest_neighbors, leafsize=100):
     return np.array(position_neighbor_list)
 
 
-@nb.jit()
+@nb.jit(nopython=True)
 def find_smallest_distance(i, j, points):
     """
     Finds the smallest distance between coordinates (i, j)
