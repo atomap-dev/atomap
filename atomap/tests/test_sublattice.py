@@ -814,10 +814,22 @@ class TestConstructZoneAxes:
         sublattice = test_data.sublattice
         sublattice.construct_zone_axes()
         zone_vectors = sublattice.zones_axis_average_distances
+        assert len(zone_vectors) == 5
         assert zone_vectors[0] == (0, vY)
         assert zone_vectors[1] == (vX, 0)
         assert zone_vectors[2] == (vX, vY)
         assert zone_vectors[3] == (vX, -vY)
+        assert zone_vectors[4] == (-vX, 2 * vY)
+
+    def test_cubic_simple_with_nearest_neighbors(self):
+        vX, vY = 10, 10
+        x, y = np.mgrid[5:95:vX, 5:95:vY]
+        test_data = tt.MakeTestData(100, 100)
+        test_data.add_atom_list(x.flatten(), y.flatten(), sigma_x=2, sigma_y=2)
+        sublattice = test_data.sublattice
+        sublattice.construct_zone_axes(nearest_neighbors=25)
+        zone_vectors = sublattice.zones_axis_average_distances
+        assert len(zone_vectors) == 8
 
     def test_rectangle(self):
         vX, vY = 15, 10

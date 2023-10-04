@@ -220,6 +220,15 @@ If you're using your own dataset and some of the planes are non-continuous
 or missing, try increasing the ``atom_plane_tolerance`` from the default 0.5:
 ``sublattice.construct_zone_axes(atom_plane_tolerance=0.7)``.
 
+If you want to get more atomic planes, increase the ``nearest_neighbor`` parameter from the default 15:
+
+.. code-block:: python
+
+    >>> sublattice_cubic = am.dummy_data.get_simple_cubic_sublattice()
+    >>> sublattice_cubic.construct_zone_axes(nearest_neighbors=25)
+    >>> sublattice_cubic
+    <Sublattice,  (atoms:400,planes:8)>
+
 
 Images with more than one sublattice
 ====================================

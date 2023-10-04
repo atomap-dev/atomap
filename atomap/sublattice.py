@@ -2251,7 +2251,12 @@ class Sublattice:
         mean_angle = np.array(angle_list).mean()
         return mean_angle
 
-    def construct_zone_axes(self, atom_plane_tolerance=0.5, zone_axis_para_list=False):
+    def construct_zone_axes(
+        self,
+        atom_plane_tolerance=0.5,
+        zone_axis_para_list=False,
+        nearest_neighbors=15,
+    ):
         """Constructs the zone axes for an atomic resolution image.
 
         The zone axes are found by finding the 15 nearest neighbors for each
@@ -2273,6 +2278,11 @@ class Sublattice:
             A zone axes parameter list is used to name and index the zone
             axes. See atomap.process_parameters for more info. Useful for
             automation.
+        nearest_neighbors : int, default 15
+            The number of nearest neighbors which are calculated for each
+            atomic position. Increase this if you want to get more
+            atomic planes.
+
 
         Example
         -------
@@ -2284,6 +2294,13 @@ class Sublattice:
         >>> sublattice
         <Sublattice,  (atoms:400,planes:4)>
 
+        Increasing nearest_neighbors to get more planes
+        >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
+        >>> sublattice.construct_zone_axes(nearest_neighbors=25)
+        >>> sublattice
+        <Sublattice,  (atoms:400,planes:8)>
+
+
         See also
         --------
         atom_finding_refining.construct_zone_axes_from_sublattice
@@ -2293,6 +2310,7 @@ class Sublattice:
             self,
             atom_plane_tolerance=atom_plane_tolerance,
             zone_axis_para_list=zone_axis_para_list,
+            nearest_neighbors=nearest_neighbors,
         )
 
     def _get_fingerprint(self, pixel_radius=100):

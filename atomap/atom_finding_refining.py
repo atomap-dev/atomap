@@ -334,7 +334,10 @@ def find_feature_density(
 
 
 def construct_zone_axes_from_sublattice(
-    sublattice, atom_plane_tolerance=0.5, zone_axis_para_list=False
+    sublattice,
+    atom_plane_tolerance=0.5,
+    zone_axis_para_list=False,
+    nearest_neighbors=15,
 ):
     """Constructs zone axes for a sublattice.
 
@@ -354,6 +357,10 @@ def construct_zone_axes_from_sublattice(
     zone_axis_para_list : parameter list or bool, default False
         A zone axes parameter list is used to name and index the zone axes.
         See atomap.process_parameters for more info. Useful for automation.
+    nearest_neighbors : int, default 15
+        The number of nearest neighbors which are calculated for each
+        atomic position. Increase this if you want to get more
+        atomic planes.
 
     Example
     -------
@@ -366,17 +373,25 @@ def construct_zone_axes_from_sublattice(
     >>> sublattice
     <Sublattice,  (atoms:400,planes:4)>
 
+    Increasing nearest_neighbors to get more planes
+    >>> sublattice = am.dummy_data.get_simple_cubic_sublattice()
+    >>> afr.construct_zone_axes_from_sublattice(sublattice, nearest_neighbors=25)
+    >>> sublattice
+    <Sublattice,  (atoms:400,planes:8)>
+
+
     See also
     --------
     sublattice._make_translation_symmetry : How unique zone axes are found
     sublattice._remove_bad_zone_vectors : How fragmented ("bad zone axis")
         are identified and removed.
+    sublattice.construct_zone_axes
     atomap.process_parameters : more info on zone axes parameter list
 
     """
     if sublattice._pixel_separation == 0.0:
         sublattice._pixel_separation = sublattice._get_pixel_separation()
-    sublattice.find_nearest_neighbors(nearest_neighbors=15)
+    sublattice.find_nearest_neighbors(nearest_neighbors=nearest_neighbors)
     sublattice._make_translation_symmetry()
 
     if zone_axis_para_list is not False:
