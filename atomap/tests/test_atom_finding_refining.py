@@ -5,6 +5,7 @@ from hyperspy.signals import Signal1D, Signal2D
 from atomap.atom_position import Atom_Position
 from atomap.sublattice import Sublattice
 from atomap.testing_tools import MakeTestData
+from atomap.external.gaussian2d import Gaussian2D
 import atomap.dummy_data as dd
 import atomap.atom_finding_refining as afr
 
@@ -65,6 +66,93 @@ class TestMakeMaskFromPositions:
             )
 
 
+class TestRegionAroundAtomsAsSignal:
+    def setup_method(self):
+        image_data = np.random.random(size=(100, 100))
+        position_list = []
+        for x in range(10, 100, 6):
+            for y in range(10, 100, 6):
+                position_list.append([x, y])
+        sublattice = Sublattice(np.array(position_list), image_data)
+        sublattice.find_nearest_neighbors()
+        self.sublattice = sublattice
+
+    def test_1_atom_mask_radius(self):
+        sublattice = self.sublattice
+        atom_list = [sublattice.atom_list[8]]
+        mask_radius = 3
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list, image_data=sublattice.image, mask_radius=mask_radius
+        )
+
+        axm = signal_crop.axes_manager
+        assert axm.shape == (2 * mask_radius + 1, 2 * mask_radius + 1)
+        assert shifted_pos_list == [(mask_radius, mask_radius)]
+        assert (axm[1].low_value + shifted_pos_list[0][0]) == atom_list[0].pixel_y
+        assert (axm[0].low_value + shifted_pos_list[0][1]) == atom_list[0].pixel_x
+
+    def test_2_atoms_mask_radius(self):
+        sublattice = self.sublattice
+        atom_list = [sublattice.atom_list[8], sublattice.atom_list[22]]
+        mask_radius = 3
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list, image_data=sublattice.image, mask_radius=mask_radius
+        )
+
+        axm = signal_crop.axes_manager
+        atom_pos_x_min = min(atom_list[0].pixel_x, atom_list[1].pixel_x)
+        atom_pos_y_min = min(atom_list[0].pixel_y, atom_list[1].pixel_y)
+        atom_pos_x_max = max(atom_list[0].pixel_x, atom_list[1].pixel_x)
+        atom_pos_y_max = max(atom_list[0].pixel_y, atom_list[1].pixel_y)
+
+        len_x = (atom_pos_x_max - atom_pos_x_min + 1) + mask_radius * 2
+        len_y = (atom_pos_y_max - atom_pos_y_min + 1) + mask_radius * 2
+        assert axm.shape == (len_x, len_y)
+        assert (axm[1].low_value + shifted_pos_list[0][0]) == atom_list[0].pixel_y
+        assert (axm[0].low_value + shifted_pos_list[0][1]) == atom_list[0].pixel_x
+
+    def test_1_atom_percent_to_nn(self):
+        sublattice = self.sublattice
+        atom_list = [sublattice.atom_list[8]]
+        mask_radius = 3
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            percent_to_nn=0.5,
+        )
+
+        axm = signal_crop.axes_manager
+        assert axm.shape == (2 * radius_list[0] + 1, 2 * radius_list[0] + 1)
+        assert shifted_pos_list == [(radius_list[0], radius_list[0])]
+        assert (axm[1].low_value + shifted_pos_list[0][0]) == atom_list[0].pixel_y
+        assert (axm[0].low_value + shifted_pos_list[0][1]) == atom_list[0].pixel_x
+
+    def test_2_atoms_percent_to_nn(self):
+        sublattice = self.sublattice
+        atom_list = [sublattice.atom_list[8], sublattice.atom_list[22]]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            percent_to_nn=0.5,
+        )
+
+        axm = signal_crop.axes_manager
+        atom_pos_x_min = min(atom_list[0].pixel_x, atom_list[1].pixel_x)
+        atom_pos_y_min = min(atom_list[0].pixel_y, atom_list[1].pixel_y)
+        atom_pos_x_max = max(atom_list[0].pixel_x, atom_list[1].pixel_x)
+        atom_pos_y_max = max(atom_list[0].pixel_y, atom_list[1].pixel_y)
+
+        len_x = (atom_pos_x_max - atom_pos_x_min + 1) + radius_list[0] * 2
+        len_y = (atom_pos_y_max - atom_pos_y_min + 1) + radius_list[0] * 2
+        assert axm.shape == (len_x, len_y)
+        assert (axm[1].low_value + shifted_pos_list[0][0]) == atom_list[0].pixel_y
+        assert (axm[0].low_value + shifted_pos_list[0][1]) == atom_list[0].pixel_x
+
+
 class TestRemoveTooCloseAtoms:
     def test_simple(self):
         afr._remove_too_close_atoms(np.array([[0, 1]]), 5)
@@ -112,39 +200,6 @@ class TestRemoveTooCloseAtoms:
         data_new1 = afr._remove_too_close_atoms(data, 20, intensities=intensities1)
         assert len(data_new1) == 1
         assert (data_new1 == data[1]).all()
-
-
-class TestCropMask:
-    def test_radius_1(self):
-        x, y, r = 10, 20, 1
-        pos = [[x, y]]
-        rad = [r]
-        mask = afr._make_mask_from_positions(pos, rad, (40, 40))
-        x0, x1, y0, y1 = afr._crop_mask_slice_indices(mask)
-        assert x0 == x - r
-        assert x1 == x + r + 1
-        assert y0 == y - r
-        assert y1 == y + r + 1
-        mask_crop = mask[x0:x1, y0:y1]
-        assert mask_crop.shape == (2 * r + 1, 2 * r + 1)
-
-    def test_radius_2(self):
-        x, y, r = 15, 10, 2
-        pos = [[x, y]]
-        rad = [r]
-        mask = afr._make_mask_from_positions(pos, rad, (40, 40))
-        x0, x1, y0, y1 = afr._crop_mask_slice_indices(mask)
-        mask_crop = mask[x0:x1, y0:y1]
-        assert mask_crop.shape == (2 * r + 1, 2 * r + 1)
-
-    def test_radius_5(self):
-        x, y, r = 15, 10, 5
-        pos = [[x, y]]
-        rad = [r]
-        mask = afr._make_mask_from_positions(pos, rad, (40, 40))
-        x0, x1, y0, y1 = afr._crop_mask_slice_indices(mask)
-        mask_crop = mask[x0:x1, y0:y1]
-        assert mask_crop.shape == (2 * r + 1, 2 * r + 1)
 
 
 class TestCropAndPadArray:
@@ -208,31 +263,43 @@ class TestMakeModelFromAtomList:
 
     def test_1_atom(self):
         sublattice = self.sublattice
-        model, mask = afr._make_model_from_atom_list(
-            [sublattice.atom_list[10]], sublattice.image
+        atom_list = [sublattice.atom_list[10]]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
         )
+        model = afr._make_model_from_atom_list(atom_list, signal_crop)
         assert len(model) == 1
 
     def test_2_atom(self):
         sublattice = self.sublattice
-        model, mask = afr._make_model_from_atom_list(
-            sublattice.atom_list[10:12], sublattice.image
+        atom_list = sublattice.atom_list[10:12]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
         )
+        model = afr._make_model_from_atom_list(atom_list, signal_crop)
         assert len(model) == 2
 
     def test_5_atom(self):
         sublattice = self.sublattice
-        model, mask = afr._make_model_from_atom_list(
-            sublattice.atom_list[10:15], sublattice.image
+        atom_list = sublattice.atom_list[10:15]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
         )
+        model = afr._make_model_from_atom_list(atom_list, signal_crop)
         assert len(model) == 5
 
     def test_set_mask_radius_atom(self):
         atom_list = [Atom_Position(2, 2), Atom_Position(4, 4)]
         image = np.random.random((20, 20))
-        model, mask = afr._make_model_from_atom_list(
-            atom_list=atom_list, image_data=image, mask_radius=3
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            mask_radius=3,
         )
+        model = afr._make_model_from_atom_list(atom_list, signal_crop)
         assert len(model) == 2
 
 
@@ -325,23 +392,66 @@ class TestFitAtomPositionsWithGaussianModel:
 
     def test_1_atom(self):
         sublattice = self.sublattice
+        atom_list = [sublattice.atom_list[5]]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+        )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
         g_list = afr._fit_atom_positions_with_gaussian_model(
-            [sublattice.atom_list[5]], sublattice.image
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
         )
         assert len(g_list) == 1
 
     def test_2_atom(self):
         sublattice = self.sublattice
+        atom_list = sublattice.atom_list[5:7]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+        )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
         g_list = afr._fit_atom_positions_with_gaussian_model(
-            sublattice.atom_list[5:7], sublattice.image
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
         )
         assert len(g_list) == 2
 
     def test_5_atom(self):
         sublattice = self.sublattice
-        g_list = afr._fit_atom_positions_with_gaussian_model(
-            sublattice.atom_list[5:10], sublattice.image
+        atom_list = sublattice.atom_list[5:10]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
         )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+
         assert len(g_list) == 5
 
     def test_wrong_input_0(self):
@@ -573,47 +683,221 @@ class TestBadFitCondition:
 
     def test_initial_position_inside_mask_x(self):
         sublattice = self.sublattice
-        atom = [sublattice.atom_list[6]]
-        x0 = atom[0].pixel_x
-        atom[0].pixel_x += 2
-        g = afr._fit_atom_positions_with_gaussian_model(
-            atom, sublattice.image, mask_radius=4
+        atom_list = [sublattice.atom_list[6]]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            mask_radius=4,
         )
-        assert_allclose(g[0].centre_x.value, x0, rtol=1e-2)
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+        x0 = atom_list[0].pixel_x
+        atom_list[0].pixel_x += 2
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+        assert_allclose(g_list[0].centre_x.value, x0, rtol=1e-2)
 
     def test_initial_position_outside_mask_x(self):
         sublattice = self.sublattice
-        atom = [sublattice.atom_list[6]]
-        atom[0].pixel_x += 3
-        g = afr._fit_atom_positions_with_gaussian_model(
-            atom, sublattice.image, mask_radius=2
+        atom_list = [sublattice.atom_list[6]]
+        atom_list[0].pixel_x += 3
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            mask_radius=2,
         )
-        assert not g
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+        assert not g_list
 
     def test_initial_position_outside_mask_y(self):
         sublattice = self.sublattice
-        atom = [sublattice.atom_list[6]]
-        atom[0].pixel_y -= 4
-        g = afr._fit_atom_positions_with_gaussian_model(
-            atom, sublattice.image, mask_radius=2
+        atom_list = [sublattice.atom_list[6]]
+        atom_list[0].pixel_y -= 4
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            mask_radius=2,
         )
-        assert not g
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+        assert not g_list
 
     def test_initial_position_outside_mask_xy(self):
         sublattice = self.sublattice
-        atom = [sublattice.atom_list[6]]
-        atom[0].pixel_y += 3
-        atom[0].pixel_x += 3
-        g = afr._fit_atom_positions_with_gaussian_model(
-            atom, sublattice.image, mask_radius=2
+        atom_list = [sublattice.atom_list[6]]
+        atom_list[0].pixel_y += 3
+        atom_list[0].pixel_x += 3
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            mask_radius=2,
         )
-        assert not g
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+        assert not g_list
 
     def test_too_small_percent_to_nn(self):
         sublattice = self.sublattice
-        afr._fit_atom_positions_with_gaussian_model(
-            [sublattice.atom_list[6]], sublattice.image, percent_to_nn=0.01
+        atom_list = [sublattice.atom_list[6]]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=sublattice.image,
+            percent_to_nn=0.01,
         )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        g_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+        assert not g_list
+
+
+class GetMaskSlice:
+    def test_simple(self):
+        y, x, r = 70, 30, 20
+        position_list = [(y, x)]
+        radius_list = [r]
+
+        mask_slice = afr.get_mask_slice(position_list, radius_list)
+        assert mask_slice[0].start == y - r
+        assert mask_slice[0].stop == y + r + 1
+        assert mask_slice[1].start == x - r
+        assert mask_slice[1].stop == x + r + 1
+
+    def test_two_positions(self):
+        y0, x0, r0 = 30, 40, 20
+        y1, x1, r1 = 70, 80, 20
+        position_list = [(y0, x0), (y1, x1)]
+        radius_list = [r0, r1]
+
+        mask_slice = afr.get_mask_slice(position_list, radius_list)
+        assert mask_slice[0].start == y0 - r0
+        assert mask_slice[0].stop == y1 + r1 + 1
+        assert mask_slice[1].start == x0 - r0
+        assert mask_slice[1].stop == x1 + r1 + 1
+
+    def test_three_positions(self):
+        y0, x0, r0 = 30, 40, 20
+        y1, x1, r1 = 70, 80, 10
+        y2, x2, r2 = 50, 200, 15
+        position_list = [(y0, x0), (y1, x1), (y2, x2)]
+        radius_list = [r0, r1, r2]
+
+        mask_slice = afr.get_mask_slice(position_list, radius_list)
+        assert mask_slice[0].start == y0 - r0
+        assert mask_slice[0].stop == y1 + r1 + 1
+        assert mask_slice[1].start == x0 - r0
+        assert mask_slice[1].stop == x2 + r2 + 1
+
+    def test_zero_pos_y(self):
+        y0, x0, r0 = 20, 40, 30
+        y1, x1, r1 = 70, 80, 10
+        position_list = [(y0, x0), (y1, x1)]
+        radius_list = [r0, r1]
+
+        mask_slice = afr.get_mask_slice(position_list, radius_list)
+        assert mask_slice[0].start == 0
+        assert mask_slice[0].stop == y1 + r1 + 1
+        assert mask_slice[1].start == x0 - r0
+        assert mask_slice[1].stop == x1 + r1 + 1
+
+    def test_zero_pos_x(self):
+        y0, x0, r0 = 30, 5, 20
+        y1, x1, r1 = 70, 80, 10
+        position_list = [(y0, x0), (y1, x1)]
+        radius_list = [r0, r1]
+
+        mask_slice = afr.get_mask_slice(position_list, radius_list)
+        assert mask_slice[0].start == y0 - r0
+        assert mask_slice[0].stop == y1 + r1 + 1
+        assert mask_slice[1].start == 0
+        assert mask_slice[1].stop == x1 + r1 + 1
+
+
+class TestCopyGaussianParametersToAtom:
+    def test_simple(self):
+        atom = Atom_Position(
+            x=5,
+            y=10,
+            sigma_x=1.5,
+            sigma_y=1.2,
+            rotation=1.8,
+            amplitude=10.0,
+        )
+
+        A, c_x, c_y, s_x, s_y, rotation = 52.0, 13.0, 15.0, 3.2, 2.8, 1.1
+        g = Gaussian2D(
+            A=A,
+            centre_x=c_x,
+            centre_y=c_y,
+            sigma_x=s_x,
+            sigma_y=s_y,
+            rotation=rotation,
+        )
+        afr._copy_gaussian_parameters_to_atom(atom, g)
+        assert atom.pixel_x == c_x
+        assert atom.pixel_y == c_y
+        assert atom.sigma_x == s_x
+        assert atom.sigma_y == s_y
+        assert atom.amplitude_gaussian == A
+        assert atom.rotation == rotation
+        assert atom._gaussian_fitted
 
 
 class TestFitOutsideImageBounds:
@@ -624,8 +908,25 @@ class TestFitOutsideImageBounds:
 
         image = test_data.signal.data
         atom_position = Atom_Position(50, 10)
+        atom_list = [atom_position]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            mask_radius=30,
+        )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
         gaussian_list = afr._fit_atom_positions_with_gaussian_model(
-            [atom_position], image, mask_radius=30
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
         )
         if gaussian_list is not False:
             gaussian = gaussian_list[0]
@@ -641,9 +942,27 @@ class TestFitOutsideImageBounds:
 
         image = test_data.signal.data
         atom_position = Atom_Position(10, 30)
-        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
-            [atom_position], image, mask_radius=30
+        atom_list = [atom_position]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            mask_radius=30,
         )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+
         if gaussian_list is not False:
             gaussian = gaussian_list[0]
             assert gaussian.centre_x.value > 0
@@ -658,9 +977,27 @@ class TestFitOutsideImageBounds:
 
         image = test_data.signal.data
         atom_position = Atom_Position(50, 90)
-        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
-            [atom_position], image, mask_radius=30
+        atom_list = [atom_position]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            mask_radius=30,
         )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+
         if gaussian_list is not False:
             gaussian = gaussian_list[0]
             assert gaussian.centre_x.value > 0
@@ -675,9 +1012,27 @@ class TestFitOutsideImageBounds:
 
         image = test_data.signal.data
         atom_position = Atom_Position(80, 50)
-        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
-            [atom_position], image, mask_radius=30
+        atom_list = [atom_position]
+
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            mask_radius=30,
         )
+        mask_crop = afr._make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
+        )
+
+        model = afr._make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+        gaussian_list = afr._fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+        )
+
         if gaussian_list is not False:
             gaussian = gaussian_list[0]
             assert gaussian.centre_x.value > 0

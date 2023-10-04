@@ -12,7 +12,7 @@ from hyperspy.signals import Signal1D, Signal2D, BaseSignal
 from skimage.segmentation import watershed
 
 import numba as nb
-from atomap.atom_finding_refining import _fit_atom_positions_with_gaussian_model
+import atomap.atom_finding_refining as afr
 from sklearn.cluster import DBSCAN
 import logging
 
@@ -125,16 +125,47 @@ def remove_atoms_from_image_using_2d_gaussian(
     for atom in progressbar(
         sublattice.atom_list, desc="Subtracting atoms", disable=not show_progressbar
     ):
+        atom_list = [atom]
+        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
+            atom_list=atom_list,
+            image_data=image,
+            percent_to_nn=percent_to_nn,
+        )
+
         percent_distance = percent_to_nn
         for i in range(10):
-            g_list = _fit_atom_positions_with_gaussian_model(
-                [atom], image, rotation_enabled=True, percent_to_nn=percent_distance
+            mask_crop = afr._make_mask_from_positions(
+                shifted_pos_list, radius_list, signal_crop.data.shape
             )
+            signal_crop.data = signal_crop.data * mask_crop
+
+            lower_value = afr._find_background_value(
+                signal_crop.data[mask_crop], lowest_percentile=0.03
+            )
+            signal_crop.data -= lower_value
+            signal_crop.data[signal_crop.data < 0] = 0.0
+
+            model = afr._make_model_from_atom_list(
+                atom_list=atom_list,
+                signal_crop=signal_crop,
+            )
+
+            g_list = afr._fit_atom_positions_with_gaussian_model(
+                model=model,
+                atom_list=atom_list,
+                mask=mask_crop,
+                rotation_enabled=True,
+                centre_free=True,
+            )
+
             if g_list is False:
                 if i == 9:
                     break
                 else:
                     percent_distance *= 0.95
+                    radius_list = afr._make_radius_list(
+                        atom_list, temp_mask_radius, percent_distance
+                    )
             else:
                 g = g_list[0]
                 model_image += g.function(X, Y)

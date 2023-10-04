@@ -671,25 +671,6 @@ def _make_mask_from_positions(position_list, radius_list, data_shape):
     return mask
 
 
-def _crop_mask_slice_indices(mask):
-    """
-    Find the outer True values in a mask.
-
-    Examples
-    --------
-    >>> from atomap.atom_finding_refining import _make_mask_from_positions
-    >>> from atomap.atom_finding_refining import _crop_mask_slice_indices
-    >>> mask = _make_mask_from_positions([[10, 20]], [1], (40, 40))
-    >>> x0, x1, y0, y1 = _crop_mask_slice_indices(mask)
-    >>> mask_crop = mask[x0:x1, y0:y1]
-    """
-    x0 = np.nonzero(mask)[0].min()
-    x1 = np.nonzero(mask)[0].max() + 1
-    y0 = np.nonzero(mask)[1].min()
-    y1 = np.nonzero(mask)[1].max() + 1
-    return (x0, x1, y0, y1)
-
-
 def _find_background_value(data, method="median", lowest_percentile=0.1):
     """
     Get background value for image data. Intended for Gaussian
@@ -791,30 +772,132 @@ def _atom_to_gaussian_component(atom):
     return g
 
 
-def _make_model_from_atom_list(
-    atom_list, image_data, percent_to_nn=0.40, mask_radius=None
+def _copy_gaussian_parameters_to_atom(atom, g):
+    """
+    Copy HyperSpy 2D Gaussian parameters to an Atomap Atom_Position.
+
+    Parameter
+    ---------
+    atom : Atomap Atom_Position object
+    g : HyperSpy 2D Gaussian component
+
+    """
+
+    atom.old_pixel_x_list.append(atom.pixel_x)
+    atom.old_pixel_y_list.append(atom.pixel_y)
+    atom.pixel_x = g.centre_x.value
+    atom.pixel_y = g.centre_y.value
+    atom.rotation = g.rotation.value % math.pi
+    atom.sigma_x = abs(g.sigma_x.value)
+    atom.sigma_y = abs(g.sigma_y.value)
+    atom.amplitude_gaussian = g.A.value
+    atom._gaussian_fitted = True
+
+
+def get_mask_slice(position_list, radius_list):
+    """Get a NumPy slice for extracting atom positions and
+    the region around them.
+
+    Parameters
+    ----------
+    position_list : list of tuples
+        Positions of the atom positions, (y, x)
+    radius_list : list of numbers
+        Region around the atoms
+
+    Returns
+    -------
+    NumPy 2D slice
+
+    """
+    mask_position_list_x = []
+    mask_position_list_y = []
+    for position, radius in zip(position_list, radius_list):
+        mask_position_list_y.append(position[0] - radius)
+        mask_position_list_y.append(position[0] + radius)
+        mask_position_list_x.append(position[1] - radius)
+        mask_position_list_x.append(position[1] + radius)
+    mask_min_x = int(round(min(mask_position_list_x)))
+    mask_max_x = int(round(max(mask_position_list_x))) + 1
+    mask_min_y = int(round(min(mask_position_list_y)))
+    mask_max_y = int(round(max(mask_position_list_y))) + 1
+    if mask_min_x < 0:
+        mask_min_x = 0
+    if mask_min_y < 0:
+        mask_min_y = 0
+
+    mask_slice = np.s_[mask_min_y:mask_max_y, mask_min_x:mask_max_x]
+    return mask_slice
+
+
+def _region_around_atoms_as_signal(
+    atom_list,
+    image_data,
+    mask_radius=None,
+    percent_to_nn=0.4,
 ):
     """
+    Get a subset of an image, based on atom positions and fitting
+    region around each atom.
+
+    Parameters
+    ----------
+    atom_list : list of Atomap Atom_Position objects
+        This can also be a single Atom_Position.
+    image_data : NumPy 2D array
+    mask_radius : scalar
+        Default None
+    percent_to_nn : float
+        Default 0.4
+
+    Returns
+    -------
+    signal_crop : HyperSpy 2D Signal
+        signal_crop.axes_manager[...].offset is used to set the correct
+        location from where the signal is extracted from image_data
+    shifted_pos_list : list of tuples
+    radius_list : list of numbers
+
+    """
+    position_list, radius_list = [], []
+    for atom in atom_list:
+        position_list.append((atom.pixel_y, atom.pixel_x))
+        if mask_radius is None:
+            mask_radius = atom.get_closest_neighbor() * percent_to_nn
+        radius_list.append(mask_radius)
+
+    mask_slice = get_mask_slice(position_list, radius_list)
+    mask_min_y = mask_slice[0].start
+    mask_min_x = mask_slice[1].start
+    image_data_crop = image_data[mask_slice]
+
+    signal_crop = Signal2D(image_data_crop)
+    signal_crop.axes_manager[0].offset = mask_min_x
+    signal_crop.axes_manager[1].offset = mask_min_y
+
+    shifted_pos_list = []
+    for position in position_list:
+        shifted_position = (position[0] - mask_min_y, position[1] - mask_min_x)
+        shifted_pos_list.append(shifted_position)
+
+    return signal_crop, shifted_pos_list, radius_list
+
+
+def _make_model_from_atom_list(atom_list, signal_crop):
+    """
     Make a HyperSpy model from a list of Atom_Position objects and
-    an image.
+    an HyperSpy Signal2D object.
 
     Parameters
     ----------
     atom_list : list of Atom_Position objects
         List of atoms to be included in the model.
-    image_data : NumPy 2D array
-    percent_to_nn : float, optional
-    mask_radius : float, optional
-        Radius of the mask around each atom. If this is not set,
-        the radius will be the distance to the nearest atom in the
-        same sublattice times the `percent_to_nn` value.
+    signal_crop : HyperSpy Signal2D
 
     Returns
     -------
     model : HyperSpy model
         Model where the atoms are added as gaussian components.
-    mask : NumPy 2D array
-        The mask from _make_mask_from_positions()
 
     See also
     --------
@@ -824,39 +907,18 @@ def _make_model_from_atom_list(
     Examples
     --------
     >>> import numpy as np
+    >>> import hyperspy.api as hs
     >>> from atomap.atom_position import Atom_Position
     >>> from atomap.atom_finding_refining import _make_model_from_atom_list
     >>> atom_list = [Atom_Position(2, 2), Atom_Position(4, 4)]
     >>> image = np.random.random((100, 100))
-    >>> m, mask = _make_model_from_atom_list(
-    ...     atom_list=atom_list, image_data=image, mask_radius=3)
+    >>> s = hs.signals.Signal2D(image)
+    >>> m = _make_model_from_atom_list(
+    ...     atom_list=atom_list, signal_crop=s)
     >>> m.fit(print_info=False, return_info=False)
 
     """
-    image_data = image_data.astype("float64")
-    mask = np.zeros_like(image_data)
-
-    position_list, radius_list = [], []
-    for atom in atom_list:
-        position_list.append((atom.pixel_y, atom.pixel_x))
-        if mask_radius is None:
-            mask_radius = atom.get_closest_neighbor() * percent_to_nn
-        radius_list.append(mask_radius)
-    mask = _make_mask_from_positions(position_list, radius_list, image_data.shape)
-    x0, x1, y0, y1 = _crop_mask_slice_indices(mask)
-    mask_crop = mask[x0:x1, y0:y1].astype("bool")
-    data_mask_crop = (image_data * mask)[x0:x1, y0:y1]
-
-    upper_value = _find_median_upper_percentile(
-        data_mask_crop[mask_crop], upper_percentile=0.03
-    )
-    lower_value = _find_background_value(
-        data_mask_crop[mask_crop], lowest_percentile=0.03
-    )
-    data_mask_crop -= lower_value
-    data_mask_crop[data_mask_crop < 0] = 0.0
-
-    s = Signal2D(data_mask_crop)
+    upper_value = _find_median_upper_percentile(signal_crop.data, upper_percentile=0.03)
     gaussian_list = []
     for atom in atom_list:
         gaussian = _atom_to_gaussian_component(atom)
@@ -866,19 +928,16 @@ def _make_model_from_atom_list(
             gaussian.A.value = upper_value * 10
         gaussian_list.append(gaussian)
 
-    s.axes_manager[0].offset = y0
-    s.axes_manager[1].offset = x0
-    m = s.create_model()
+    m = signal_crop.create_model()
     m.extend(gaussian_list)
-    return (m, mask)
+    return m
 
 
 def _fit_atom_positions_with_gaussian_model(
+    model,
     atom_list,
-    image_data,
+    mask,
     rotation_enabled=True,
-    percent_to_nn=0.40,
-    mask_radius=None,
     centre_free=True,
 ):
     """
@@ -891,15 +950,11 @@ def _fit_atom_positions_with_gaussian_model(
 
     Parameters
     ----------
+    model : HyperSpy model object
     atom_list : list of Atom_Position objects
-    image_data : NumPy 2D array
+    mask : 2-D NumPy array
     rotation_enabled : bool, optional
         If True (default), the 2D gaussian will be able to rotate.
-    percent_to_nn : float, optional
-    mask_radius : float, optional
-        Radius of the mask around each atom. If this is not set,
-        the radius will be the distance to the nearest atom in the
-        same sublattice times the `percent_to_nn` value.
     centre_free : bool, optional
         If True (default), the gaussian will be free to move. Setting this
         to False can be used to find better values for the other parameters
@@ -914,26 +969,11 @@ def _fit_atom_positions_with_gaussian_model(
     _make_model_from_atom_list
     fit_atom_positions_gaussian
 
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from atomap.atom_position import Atom_Position
-    >>> import atomap.atom_finding_refining as afr
-    >>> atom_list = [Atom_Position(2, 2), Atom_Position(4, 4)]
-    >>> image = np.zeros((9, 9))
-    >>> image[2, 2] = 1.
-    >>> image[4, 4] = 1.
-    >>> g_list = afr._fit_atom_positions_with_gaussian_model(
-    ...     atom_list=atom_list, image_data=image, mask_radius=2)
-
     """
-    if (not hasattr(atom_list[0], "pixel_x")) or hasattr(atom_list, "pixel_x"):
-        raise TypeError("atom_list argument must be a list of Atom_Position objects")
-
-    model, mask = _make_model_from_atom_list(
-        atom_list, image_data, mask_radius=mask_radius, percent_to_nn=percent_to_nn
-    )
-    x0, x1, y0, y1 = model.axes_manager.signal_extent
+    # If the model has less than 6 points for fitting, the fitting will
+    # not work, so return False
+    if model.signal.axes_manager.signal_size < 6:
+        return False
 
     if centre_free is False:
         for g in model:
@@ -945,18 +985,24 @@ def _fit_atom_positions_with_gaussian_model(
         else:
             g.rotation.free = False
 
-    if model.signal.axes_manager.signal_size < 6:
-        return False
     model.fit()
 
     gaussian_list = []
+    axm_x = model.signal.axes_manager[0]
+    axm_y = model.signal.axes_manager[1]
     for atom, g in zip(atom_list, model):
         # If the Gaussian centre is located outside the masked region,
         # return False
-        centre_y, centre_x = g.centre_y.value, g.centre_x.value
-        if not (0 < centre_y < image_data.shape[0]):
+        try:
+            centre_y = axm_y.value2index(g.centre_y.value)
+            centre_x = axm_x.value2index(g.centre_x.value)
+        except ValueError:
+            # If ValueError is raised the center point is most likely
+            # outside the signal itself, and the fitting was bad
             return False
-        if not (0 < centre_x < image_data.shape[1]):
+        if not (0 < centre_y < model.signal.data.shape[0]):
+            return False
+        if not (0 < centre_x < model.signal.data.shape[1]):
             return False
         inside_mask = mask[int(centre_y)][int(centre_x)]
         if not inside_mask:
@@ -1063,23 +1109,44 @@ def fit_atom_positions_gaussian(
 
     """
     if (mask_radius is None) and (percent_to_nn is None):
-        raise ValueError(
-            "Both mask_radius and percent_to_nn is None, one of them must " "be set"
-        )
-    if (not hasattr(atom_list[0], "pixel_x")) or hasattr(atom_list, "pixel_x"):
-        raise TypeError("atom_list argument must be a list of Atom_Position objects")
+        raise ValueError
+    if image_data.dtype != np.dtype("float64"):
+        image_data = image_data.astype("float64")
 
+    signal_crop, shifted_pos_list, radius_list = _region_around_atoms_as_signal(
+        atom_list=atom_list,
+        image_data=image_data,
+        mask_radius=mask_radius,
+        percent_to_nn=percent_to_nn,
+    )
+
+    temp_mask_radius = mask_radius
+    temp_percent_to_nn = percent_to_nn
     for i in range(10):
-        temp_mask_radius = mask_radius
-        temp_percent_to_nn = percent_to_nn
-        g_list = _fit_atom_positions_with_gaussian_model(
-            atom_list,
-            image_data,
-            rotation_enabled=rotation_enabled,
-            mask_radius=temp_mask_radius,
-            percent_to_nn=temp_percent_to_nn,
-            centre_free=centre_free,
+        mask_crop = _make_mask_from_positions(
+            shifted_pos_list, radius_list, signal_crop.data.shape
         )
+        signal_crop.data = signal_crop.data * mask_crop
+
+        lower_value = _find_background_value(
+            signal_crop.data[mask_crop], lowest_percentile=0.03
+        )
+        signal_crop.data -= lower_value
+        signal_crop.data[signal_crop.data < 0] = 0.0
+
+        model = _make_model_from_atom_list(
+            atom_list=atom_list,
+            signal_crop=signal_crop,
+        )
+
+        g_list = _fit_atom_positions_with_gaussian_model(
+            model=model,
+            atom_list=atom_list,
+            mask=mask_crop,
+            rotation_enabled=True,
+            centre_free=True,
+        )
+
         if g_list is False:
             if i == 9:
                 for atom in atom_list:
@@ -1093,21 +1160,23 @@ def fit_atom_positions_gaussian(
                     atom.amplitude_gaussian = 0.0
                 break
             else:
-                if percent_to_nn is not None:
+                # If the fitting is bad, reduce the size of the mask, and try again.
+                # Bad fitting is often caused by intensity from neighboring atoms,
+                # thus reducing the mask size might improve the fitting
+                if (temp_mask_radius is None) and (temp_percent_to_nn is None):
+                    raise ValueError
+                if temp_percent_to_nn is not None:
                     temp_percent_to_nn *= 0.95
-                if mask_radius is not None:
+                if temp_mask_radius is not None:
                     temp_mask_radius *= 0.95
+                radius_list = []
+                for atom in atom_list:
+                    if mask_radius is None:
+                        mask_radius = atom.get_closest_neighbor() * temp_percent_to_nn
+                    radius_list.append(mask_radius)
         else:
             for g, atom in zip(g_list, atom_list):
-                atom.old_pixel_x_list.append(atom.pixel_x)
-                atom.old_pixel_y_list.append(atom.pixel_y)
-                atom.pixel_x = g.centre_x.value
-                atom.pixel_y = g.centre_y.value
-                atom.rotation = g.rotation.value % math.pi
-                atom.sigma_x = abs(g.sigma_x.value)
-                atom.sigma_y = abs(g.sigma_y.value)
-                atom.amplitude_gaussian = g.A.value
-                atom._gaussian_fitted = True
+                _copy_gaussian_parameters_to_atom(atom, g)
             break
 
 
