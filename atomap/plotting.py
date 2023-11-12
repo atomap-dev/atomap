@@ -751,8 +751,7 @@ def _make_atom_position_marker_list(
                         va="top",
                         ha="right",
                         )
-
-        marker_list.append(marker)
+        marker_list.append(texts)
     return marker_list
 
 
@@ -760,40 +759,36 @@ def _make_multidim_atom_plane_marker_list(
     atom_plane_zone_list, scale=1.0, color="red", add_numbers=True
 ):
     marker_list = []
-    line_list = []
-    text_offsets = []
-    texts = []
+    line_list = np.empty(len(atom_plane_zone_list), dtype=object)
+    text_offsets = np.empty(len(atom_plane_zone_list), dtype=object)
+    texts = np.empty(len(atom_plane_zone_list), dtype=object)
     for i, atom_plane_list in enumerate(atom_plane_zone_list):
         for index_atom_plane, atom_plane in enumerate(atom_plane_list):
+            lines = []
             for j in range(len(atom_plane.atom_list[1:])):
-                x1 = [-1000] * len(atom_plane_zone_list)
-                y1 = [-1000] * len(atom_plane_zone_list)
-                x2 = [-1000] * len(atom_plane_zone_list)
-                y2 = [-1000] * len(atom_plane_zone_list)
-                x1[i] = atom_plane.atom_list[j].pixel_x * scale
-                y1[i] = atom_plane.atom_list[j].pixel_y * scale
-                x2[i] = atom_plane.atom_list[j + 1].pixel_x * scale
-                y2[i] = atom_plane.atom_list[j + 1].pixel_y * scale
-                line_list.append([[x1, y1], [x2, y2]])
+                x1 = atom_plane.atom_list[j].pixel_x * scale
+                y1 = atom_plane.atom_list[j].pixel_y * scale
+                x2 = atom_plane.atom_list[j + 1].pixel_x * scale
+                y2 = atom_plane.atom_list[j + 1].pixel_y * scale
+                lines.append([[x1, y1], [x2, y2]])
+            line_list[i] = lines
             if add_numbers:
-                x = [-1000] * len(atom_plane_zone_list)
-                y = [-1000] * len(atom_plane_zone_list)
-                x[i] = atom_plane.atom_list[0].pixel_x * scale
-                y[i] = atom_plane.atom_list[0].pixel_y * scale
-                text_offsets.append([x, y])
-                texts.append([str(index_atom_plane)])
+                x = atom_plane.atom_list[0].pixel_x * scale
+                y = atom_plane.atom_list[0].pixel_y * scale
+                text_offsets[i]=[[x, y],]
+                texts[i] = [str(index_atom_plane)]
     if add_numbers:
         marker_list.append(
             Texts(
                 offsets=text_offsets,
                 texts=texts,
                 color=color,
-                va="top",
-                ha="right",
+                verticalalignment="top",
+                horizontalalignment="right",
             )
         )
 
-    marker_list.append(Lines(segments=np.array(line_list),
+    marker_list.append(Lines(segments=line_list,
                              color=color))
     return marker_list
 
@@ -874,14 +869,11 @@ def _make_zone_vector_text_marker_list(
                                  color=color,
                                  sizes=(20,)))
     else:
-        offsets = []
-        texts = []
+        offsets = np.empty(number, dtype=object)
+        texts = np.empty(number, dtype=object)
         for index, zone_vector in enumerate(zone_vector_list):
-            xP, yP = [-1000] * number, [-1000] * number
-            xP[index] = x
-            yP[index] = y
-            offsets.append([xP, yP])
-            texts.append(str(zone_vector))
+            offsets[index] = [[x, y], ]
+            texts[index] = str(zone_vector)
         marker_list.append(Texts(offsets=offsets,
                                     texts=texts,
                                     color=color,
