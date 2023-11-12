@@ -722,9 +722,9 @@ def _make_atom_planes_marker_list(
         )
         marker_list.extend(atom_plane_markers)
         if add_numbers:
-            marker = Texts([[atom_plane.start_atom.pixel_x * scale,
+            marker = Texts(offsets=[[atom_plane.start_atom.pixel_x * scale,
                              atom_plane.start_atom.pixel_y * scale],],
-                           [str(i)],
+                           texts=[str(i)],
                            color=color,
                            va="top",
                            ha="right",
@@ -742,11 +742,11 @@ def _make_atom_position_marker_list(
         x = atom_position.pixel_x * scale
         y = atom_position.pixel_y * scale
         offsets.append([x, y])
-    marker = Points(offsets, color=color, size=markersize)
+    marker = Points(offsets, color=(color,), sizes=(markersize,))
     marker_list.append(marker)
     if add_numbers:
-        texts = Texts(offsets,
-                      [str(i) for i in range(len(atom_position_list))],
+        texts = Texts(offsets=offsets,
+                      texts=[str(i) for i in range(len(atom_position_list))],
                         color=color,
                         va="top",
                         ha="right",
@@ -785,15 +785,15 @@ def _make_multidim_atom_plane_marker_list(
     if add_numbers:
         marker_list.append(
             Texts(
-                text_offsets,
-                texts,
+                offsets=text_offsets,
+                texts=texts,
                 color=color,
                 va="top",
                 ha="right",
             )
         )
 
-    marker_list.append(Lines(segments=line_list,
+    marker_list.append(Lines(segments=np.array(line_list),
                              color=color))
     return marker_list
 

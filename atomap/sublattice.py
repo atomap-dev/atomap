@@ -2434,6 +2434,9 @@ class Sublattice:
             return s
 
         atom_num = len(self.atom_list)
+
+        offsets = np.empty((pos_num), dtype=object)
+
         peak_list = np.zeros((pos_num, atom_num, 2))
         for i, atom in enumerate(self.atom_list):
             for j in range(len(atom.old_pixel_x_list)):
@@ -2442,8 +2445,13 @@ class Sublattice:
                 peak_list[-1, i, 0] = atom.pixel_x
                 peak_list[-1, i, 1] = atom.pixel_y
 
+        for i in range(pos_num):
+            offsets[i] = np.zeros((atom_num, 2))
+
         signal = Signal2D(image)
         s = hs.stack([signal] * pos_num, show_progressbar=False)
+
+
 
         marker_list_x = np.ones((len(peak_list), atom_num)) * -100
         marker_list_y = np.ones((len(peak_list), atom_num)) * -100

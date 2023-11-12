@@ -1416,7 +1416,7 @@ def fliplr_points_and_signal(signal, x_array, y_array):
     """
 
     s_out = signal.deepcopy()
-    s_out.map(np.fliplr, parallel=False, show_progressbar=False)
+    s_out.map(np.fliplr, show_progressbar=False)
     x_array, y_array = fliplr_points_around_signal_centre(s_out, x_array, y_array)
     return s_out, x_array, y_array
 

@@ -18,7 +18,7 @@ class TestMakeAtomPositionMarkerList:
             color="black",
             add_numbers=True,
         )
-        assert len(marker_list) == 40
+        assert len(marker_list) == 2
 
 
 class TestAtomPlaneMarkerPlotting:

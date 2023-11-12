@@ -316,7 +316,7 @@ class TestSublatticeGetSignal:
         for atom_plane in atom_planes:
             number_of_atom_planes += len(atom_plane.atom_list) - 1
         s = sublattice.get_atom_planes_on_image(atom_planes, add_numbers=False)
-        assert number_of_atom_planes == len(s.metadata.Markers)
+        assert len(atom_planes) == len(s.metadata.Markers)
 
     def test_get_atom_list(self):
         self.sublattice.get_atom_list_on_image()
@@ -996,7 +996,7 @@ class TestGetPropertyLineProfile:
         )
         assert_allclose(s.isig[:-5.0].data.all(), 0, rtol=1e-07)
         assert_allclose(s.isig[0.0:].data.all(), 1, rtol=1e-07)
-        assert len(s.metadata["Markers"].keys()) == 9
+        assert s.metadata.Markers.Points.kwargs["offsets"].shape == (9, 2)
 
         lpd = s.metadata.line_profile_data
         x_list, y_list, std_list = lpd.x_list, lpd.y_list, lpd.std_list
@@ -1014,7 +1014,7 @@ class TestGetPropertyLineProfile:
             sublattice.x_position, sublattice.y_position, property_list, plane
         )
         assert (s.data == (5.0 / 9)).all()
-        assert len(s.metadata["Markers"].keys()) == 9
+        assert len(s.metadata["Markers"].keys()) == 1
 
     def test_horizontal_interface_vertical_projection_plane(self):
         sublattice = self.sublatticeH
@@ -1026,7 +1026,7 @@ class TestGetPropertyLineProfile:
         )
         assert_allclose(s.isig[:0.0].data.all(), 1, rtol=1e-07)
         assert_allclose(s.isig[5.0:].data.all(), 0, rtol=1e-07)
-        assert len(s.metadata["Markers"].keys()) == 9
+        assert s.metadata.Markers.Points.kwargs["offsets"].shape == (9, 2)
 
     def test_horizontal_interface_horizontal_projection_plane(self):
         sublattice = self.sublatticeH
@@ -1037,7 +1037,7 @@ class TestGetPropertyLineProfile:
             sublattice.x_position, sublattice.y_position, property_list, plane
         )
         assert (s.data == (5.0 / 9)).all()
-        assert len(s.metadata["Markers"].keys()) == 9
+        assert s.metadata.Markers.Points.kwargs["offsets"].shape == (9, 2)
 
     def test_metadata_line_profile_data(self):
         sublattice = self.sublatticeH
@@ -1189,7 +1189,7 @@ class TestGetPropertyMap:
         assert s.data[20:100, 20:100].mean() <= 1
         assert s.axes_manager[0].size == 120
         assert s.axes_manager[1].size == 120
-        assert len(s.metadata["Markers"].keys()) == 4
+        assert s.metadata.Markers.Lines.kwargs["segments"].shape == (4,2, 2)
 
 
 class TestSignalProperty:
@@ -1342,8 +1342,9 @@ class TestGetPolarizationFromSecondSublattice:
         s_p = sublattice0.get_polarization_from_second_sublattice(
             za0, za1, sublattice1, color="red"
         )
-        color = s_p.metadata.Markers.line_segment1.marker_properties["color"]
-        assert color == "red"
+        color = s_p.metadata.Markers.Lines.kwargs["color"]
+        assert color == ("red",)
+
 
     def test_values(self):
         sublattice0, sublattice1 = self.sublattice0, self.sublattice1
