@@ -2,10 +2,10 @@ import os
 import numpy as np
 import hyperspy.api as hs
 from hyperspy import components1d
-from hyperspy.signals import EELSSpectrum
 from atomap.testing_tools import MakeTestData
 import atomap.atom_lattice as al
 import atomap.tools as to
+from exspy.signals.eels import EELSSpectrum
 
 
 def _make_hexagonal_two_sublattice_testdata(image_noise=False):

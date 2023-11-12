@@ -1492,7 +1492,6 @@ def rotate_points_and_signal(signal, x_array, y_array, rotation):
         ndimage.rotate,
         angle=rotation,
         reshape=False,
-        parallel=False,
         show_progressbar=False,
     )
     x_array, y_array = rotate_points_around_signal_centre(

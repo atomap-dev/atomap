@@ -3,6 +3,7 @@ from scipy.ndimage import gaussian_filter
 from scipy.spatial import cKDTree
 import hyperspy.api as hs
 from hyperspy._signals.signal2d import Signal2D
+from hyperspy.drawing._markers.points import Points
 import numpy as np
 from skimage.feature import peak_local_max
 from sklearn.decomposition import TruncatedSVD
@@ -288,20 +289,12 @@ def get_feature_separation(
             "using a better image"
         )
 
-    marker_list_x = np.ones((len(peak_list), max_peaks)) * -100
-    marker_list_y = np.ones((len(peak_list), max_peaks)) * -100
+    offsets = np.empty(len(peak_list), dtype=object)
+    for ind in range(len(peak_list)):
+        offsets[ind] = peak_list[ind] * [scale_x, scale_y] + [offset_x, offset_y]
 
-    for index, peaks in enumerate(peak_list):
-        if len(peaks) != 0:
-            marker_list_x[index, 0 : len(peaks)] = (peaks[:, 0] * scale_x) + offset_x
-            marker_list_y[index, 0 : len(peaks)] = (peaks[:, 1] * scale_y) + offset_y
-
-    marker_list = []
-    for i in progressbar(range(marker_list_x.shape[1]), disable=not show_progressbar):
-        m = hs.markers.point(x=marker_list_x[:, i], y=marker_list_y[:, i], color="red")
-        marker_list.append(m)
-
-    s.add_marker(marker_list, permanent=True, plot_marker=False)
+    p = Points(offsets=offsets, color="red")
+    s.add_marker(p, permanent=True, plot_marker=False)
     return s
 
 
