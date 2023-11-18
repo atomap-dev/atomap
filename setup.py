@@ -20,7 +20,7 @@ setup(
         author_email = 'magnunor@gmail.com',
         license = 'GPL v3',
         url = 'https://atomap.org/',
-        download_url = 'https://gitlab.com/atomap/atomap/repository/archive.tar?ref=0.3.3',
+        download_url = 'https://gitlab.com/atomap/atomap/repository/archive.tar?ref=0.3.4',
         keywords = [
             'STEM',
             'data analysis',
@@ -33,7 +33,7 @@ setup(
             'matplotlib>=3.1.0',
             'scikit-learn',
             'scikit-image>=0.17.1',
-            'hyperspy>=1.5.2',
+            'hyperspy>=1.5.2, <2.0.0',
             'ase>=3.17.0',
             'numba',
             ],
