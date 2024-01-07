@@ -1495,7 +1495,7 @@ class Sublattice:
         signal.metadata.General.title = "Atom planes by zone vector"
         signal_ax0 = signal.axes_manager.signal_axes[0]
         signal_ax1 = signal.axes_manager.signal_axes[1]
-        x = signal_ax0.index2value(int(image.shape[0] * 0.1))
+        x = signal_ax0.index2value(int(image.shape[0] * 0.3))
         y = signal_ax1.index2value(int(image.shape[1] * 0.1))
         text_marker_list = _make_zone_vector_text_marker_list(
             zone_vector_list, x=x, y=y
@@ -2576,7 +2576,7 @@ class Sublattice:
         for atom in self.atom_list:
             atom.find_atom_intensity_inside_mask(image_data, radius)
 
-    def plot(self, color=None, add_numbers=False, markersize=20, **kwargs):
+    def plot(self, color=None, add_numbers=False, markersize=4, **kwargs):
         """
         Plot all atom positions in the sublattice on the image data.
 

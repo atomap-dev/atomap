@@ -758,38 +758,40 @@ def _make_atom_position_marker_list(
 def _make_multidim_atom_plane_marker_list(
     atom_plane_zone_list, scale=1.0, color="red", add_numbers=True
 ):
-    marker_list = []
-    line_list = np.empty(len(atom_plane_zone_list), dtype=object)
-    text_offsets = np.empty(len(atom_plane_zone_list), dtype=object)
-    texts = np.empty(len(atom_plane_zone_list), dtype=object)
-    for i, atom_plane_list in enumerate(atom_plane_zone_list):
-        for index_atom_plane, atom_plane in enumerate(atom_plane_list):
-            lines = []
-            for j in range(len(atom_plane.atom_list[1:])):
-                x1 = atom_plane.atom_list[j].pixel_x * scale
-                y1 = atom_plane.atom_list[j].pixel_y * scale
-                x2 = atom_plane.atom_list[j + 1].pixel_x * scale
-                y2 = atom_plane.atom_list[j + 1].pixel_y * scale
-                lines.append([[x1, y1], [x2, y2]])
-            line_list[i] = lines
-            if add_numbers:
+    lines_array = np.empty(len(atom_plane_zone_list), dtype=object)
+    for iz, atom_plane_list in enumerate(atom_plane_zone_list):
+        temp_lines_zone = []
+        for ia, atom_plane in enumerate(atom_plane_list):
+            temp_line = []
+            for atom in atom_plane.atom_list:
+                temp_line.append([atom.pixel_x * scale, atom.pixel_y * scale])
+            temp_lines_zone.append(temp_line)
+        lines_array[iz] = temp_lines_zone
+    marker_lines = Lines(segments=lines_array, color=color)
+    marker_list = [marker_lines]
+
+    if add_numbers:
+        text_offsets = np.empty(len(atom_plane_zone_list), dtype=object)
+        texts = np.empty(len(atom_plane_zone_list), dtype=object)
+        for iz, atom_plane_list in enumerate(atom_plane_zone_list):
+            text_offset_plane = []
+            text_plane = []
+            for ia, atom_plane in enumerate(atom_plane_list):
                 x = atom_plane.atom_list[0].pixel_x * scale
                 y = atom_plane.atom_list[0].pixel_y * scale
-                text_offsets[i]=[[x, y],]
-                texts[i] = [str(index_atom_plane)]
-    if add_numbers:
-        marker_list.append(
-            Texts(
-                offsets=text_offsets,
-                texts=texts,
-                color=color,
-                verticalalignment="top",
-                horizontalalignment="right",
-            )
-        )
+                text_offset_plane.append([x, y])
+                text_plane.append(str(ia))
+            text_offsets[iz] = text_offset_plane
+            texts[iz] = text_plane
 
-    marker_list.append(Lines(segments=line_list,
-                             color=color))
+        marker_text = Texts(
+            offsets=text_offsets,
+            texts=texts,
+            color=color,
+            verticalalignment="top",
+            horizontalalignment="right",
+        )
+        marker_list.append(marker_text)
     return marker_list
 
 
@@ -863,19 +865,16 @@ def _make_zone_vector_text_marker_list(
 ):
     number = len(zone_vector_list)
     marker_list = []
-    if len(zone_vector_list) == 1:
+    if number == 1:
         marker_list.append(Texts(offsets=[[x, y],],
                                  texts=[str(zone_vector_list[0]),],
                                  color=color,
-                                 sizes=(20,)))
+                                 sizes=(5,)))
     else:
         offsets = np.empty(number, dtype=object)
         texts = np.empty(number, dtype=object)
         for index, zone_vector in enumerate(zone_vector_list):
             offsets[index] = [[x, y], ]
-            texts[index] = str(zone_vector)
-        marker_list.append(Texts(offsets=offsets,
-                                    texts=texts,
-                                    color=color,
-                                    sizes=(20,)))
+            texts[index] = [str(zone_vector)]
+        marker_list = Texts(offsets=offsets, texts=texts, color=color, sizes=[5,])
     return marker_list
