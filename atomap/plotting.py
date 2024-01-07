@@ -734,7 +734,7 @@ def _make_atom_planes_marker_list(
 
 
 def _make_atom_position_marker_list(
-    atom_position_list, scale=1.0, markersize=20, add_numbers=True, color="red"
+    atom_position_list, scale=1.0, markersize=4, add_numbers=True, color="red"
 ):
     marker_list = []
     offsets = []

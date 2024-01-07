@@ -293,7 +293,7 @@ def get_feature_separation(
     for ind in range(len(peak_list)):
         offsets[ind] = peak_list[ind] * [scale_x, scale_y] + [offset_x, offset_y]
 
-    p = Points(offsets=offsets, color="red")
+    p = Points(offsets=offsets, color="red", sizes=4)
     s.add_marker(p, permanent=True, plot_marker=False)
     return s
 
