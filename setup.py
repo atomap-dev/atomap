@@ -36,6 +36,7 @@ setup(
             'hyperspy~=2.0rc0',
             'ase>=3.17.0',
             'numba',
+            'exspy'
             ],
         classifiers = [
             'Development Status :: 3 - Alpha',
