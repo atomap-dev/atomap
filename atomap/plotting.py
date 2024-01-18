@@ -767,6 +767,8 @@ def _make_multidim_atom_plane_marker_list(
                 temp_line.append([atom.pixel_x * scale, atom.pixel_y * scale])
             temp_lines_zone.append(temp_line)
         lines_array[iz] = temp_lines_zone
+    if len(atom_plane_zone_list) == 1:
+        lines_array = lines_array[0]
     marker_lines = Lines(segments=lines_array, color=color)
     marker_list = [marker_lines]
 
@@ -783,6 +785,9 @@ def _make_multidim_atom_plane_marker_list(
                 text_plane.append(str(ia))
             text_offsets[iz] = text_offset_plane
             texts[iz] = text_plane
+        if len(atom_plane_zone_list) == 1:
+            text_offsets = text_offsets[0]
+            texts = texts[0]
 
         marker_text = Texts(
             offsets=text_offsets,

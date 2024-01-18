@@ -1487,7 +1487,7 @@ class Sublattice:
         for zone_vector in zone_vector_list:
             atom_plane_list.append(self.atom_planes_by_zone_vector[zone_vector])
         marker_list = _make_multidim_atom_plane_marker_list(
-            atom_plane_list, scale=self.pixel_size
+            atom_plane_list, scale=self.pixel_size, add_numbers=add_numbers,
         )
         signal = at.array2signal2d(image, self.pixel_size, self.units)
         signal = hs.stack([signal] * len(zone_vector_list), show_progressbar=False)
