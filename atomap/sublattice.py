@@ -116,7 +116,7 @@ class Sublattice:
         >>> sublattice = am.Sublattice(
         ...     atom_positions, image_data, color='yellow',
         ...     name='the sublattice')
-        >>> sublattice.get_atom_list_on_image(markersize=50).plot()
+        >>> sublattice.get_atom_list_on_image(markersize=8).plot()
 
         """
         at._image_init(
@@ -1504,7 +1504,7 @@ class Sublattice:
         return signal
 
     def get_atom_list_on_image(
-        self, atom_list=None, image=None, color=None, add_numbers=False, markersize=20
+        self, atom_list=None, image=None, color=None, add_numbers=False, markersize=4,
     ):
         """
         Plot atom positions on the image data.
@@ -1522,7 +1522,7 @@ class Sublattice:
             Plot the number of the atom beside each atomic
             position in the plot. Useful for locating
             misfitted atoms.
-        markersize : number, default 20
+        markersize : number, default 4
             Size of the atom position markers
 
         Returns
@@ -2397,7 +2397,7 @@ class Sublattice:
         image=None,
         color="red",
         add_numbers=False,
-        markersize=20,
+        markersize=4,
         show_progressbar=True,
     ):
         """
@@ -2413,7 +2413,7 @@ class Sublattice:
             Plot the number of the atom beside each atomic
             position in the plot. Useful for locating
             misfitted atoms.
-        markersize : number, default 20
+        markersize : number, default 4
             Size of the atom position markers
         show_progressbar : default True
 
@@ -2429,7 +2429,10 @@ class Sublattice:
         pos_num = len(self.atom_list[0].old_pixel_x_list) + 1
         if pos_num == 1:
             s = self.get_atom_list_on_image(
-                image=image, color=color, add_numbers=add_numbers, markersize=markersize
+                image=image,
+                color=color,
+                add_numbers=add_numbers,
+                markersize=markersize,
             )
             return s
 
@@ -2590,7 +2593,7 @@ class Sublattice:
         add_numbers : bool, default False
             Plot the number of the atom beside each atomic position in the
             plot. Useful for locating misfitted atoms.
-        markersize : number, default 20
+        markersize : number, default 4
             Size of the atom position markers
         **kwargs
             Addition keywords passed to HyperSpy's signal plot function.
@@ -2604,7 +2607,7 @@ class Sublattice:
         Setting color and color map
 
         >>> sublattice.plot(color='green', cmap='viridis', add_numbers=True,
-        ...                 markersize=15)
+        ...                 markersize=8)
 
         See also
         --------

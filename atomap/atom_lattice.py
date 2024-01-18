@@ -166,7 +166,7 @@ class Atom_Lattice:
         return (i_points, i_record, p_record)
 
     def get_sublattice_atom_list_on_image(
-        self, image=None, add_numbers=False, markersize=20
+        self, image=None, add_numbers=False, markersize=4,
     ):
         if image is None:
             if self.original_image is None:
@@ -286,7 +286,7 @@ class Atom_Lattice:
             filename = self.name + "_atom_lattice.hdf5"
         save_atom_lattice_to_hdf5(self, filename=filename, overwrite=overwrite)
 
-    def plot(self, image=None, add_numbers=False, markersize=20, **kwargs):
+    def plot(self, image=None, add_numbers=False, markersize=4, **kwargs):
         """
         Plot all atom positions for all sub lattices on the image data.
 
@@ -301,7 +301,7 @@ class Atom_Lattice:
         add_numbers : bool, default False
             Plot the number of the atom beside each atomic position in the
             plot. Useful for locating misfitted atoms.
-        markersize : number, default 20
+        markersize : number, default 4
             Size of the atom position markers
         **kwargs
             Addition keywords passed to HyperSpy's signal plot function.
