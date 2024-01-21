@@ -467,6 +467,12 @@ class TestGetPositionHistory:
             atom.old_pixel_y_list.append(np.random.random())
         sublattice.get_position_history()
 
+    def test_add_numbers(self):
+        sublattice.get_position_history(add_numbers=True)
+
+    def test_color_markersize(self):
+        sublattice.get_position_history(color="blue", markersize=6)
+
 
 class TestGetAtomAnglesFromZoneVector:
     def setup_method(self):
@@ -919,7 +925,10 @@ class TestPlotFunctions:
 
     def test_plot(self):
         self.sublattice.plot()
-        self.sublattice.plot(color="green", cmap="viridis")
+        self.sublattice.plot(color="green", cmap="viridis", markersize=2)
+
+    def test_plot_with_add_numbers(self):
+        self.sublattice.plot(add_numbers=True)
 
     def test_plot_planes(self):
         self.sublattice.construct_zone_axes()
