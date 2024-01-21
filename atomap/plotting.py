@@ -722,13 +722,15 @@ def _make_atom_planes_marker_list(
         )
         marker_list.extend(atom_plane_markers)
         if add_numbers:
-            marker = Texts(offsets=[[atom_plane.start_atom.pixel_x * scale,
-                             atom_plane.start_atom.pixel_y * scale],],
-                           texts=[str(i)],
-                           color=color,
-                           va="top",
-                           ha="right",
-                           )
+            x_pos = atom_plane.start_atom.pixel_x * scale
+            y_pos = atom_plane.start_atom.pixel_y * scale
+            marker = Texts(
+                offsets=[[x_pos, y_pos]],
+                texts=[str(i)],
+                color=color,
+                va="top",
+                ha="right",
+            )
             marker_list.append(marker)
     return marker_list
 
@@ -745,12 +747,13 @@ def _make_atom_position_marker_list(
     marker = Points(offsets, color=(color,), sizes=(markersize,))
     marker_list.append(marker)
     if add_numbers:
-        texts = Texts(offsets=offsets,
-                      texts=[str(i) for i in range(len(atom_position_list))],
-                        color=color,
-                        va="top",
-                        ha="right",
-                        )
+        texts = Texts(
+            offsets=offsets,
+            texts=[str(i) for i in range(len(atom_position_list))],
+            color=color,
+            verticalalignment="top",
+            horizontalalignment="right",
+        )
         marker_list.append(texts)
     return marker_list
 
