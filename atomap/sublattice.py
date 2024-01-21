@@ -6,6 +6,7 @@ from scipy.spatial import cKDTree
 import hyperspy.api as hs
 from hyperspy.signals import Signal2D
 from hyperspy.drawing._markers.points import Points
+from hyperspy.drawing._markers.texts import Texts
 
 import atomap.tools as at
 import atomap.analysis_tools as an
@@ -2436,43 +2437,39 @@ class Sublattice:
             )
             return s
 
-        atom_num = len(self.atom_list)
+        offsets = np.empty(pos_num, dtype=object)
+        for j in range(pos_num - 1):
+            offsets[j] = []
+            for i, atom in enumerate(self.atom_list):
+                x_pos = atom.old_pixel_x_list[j]
+                y_pos = atom.old_pixel_y_list[j]
+                offsets[j].append([x_pos, y_pos])
 
-        offsets = np.empty((pos_num), dtype=object)
+        offsets[-1] = []
+        for atom in self.atom_list:
+            offsets[-1].append([atom.pixel_x, atom.pixel_y])
 
-        peak_list = np.zeros((pos_num, atom_num, 2))
-        for i, atom in enumerate(self.atom_list):
-            for j in range(len(atom.old_pixel_x_list)):
-                peak_list[j, i, 0] = atom.old_pixel_x_list[j]
-                peak_list[j, i, 1] = atom.old_pixel_y_list[j]
-                peak_list[-1, i, 0] = atom.pixel_x
-                peak_list[-1, i, 1] = atom.pixel_y
+        markers = Points(offsets, color=(color,), sizes=(markersize,))
 
-        for i in range(pos_num):
-            offsets[i] = np.zeros((atom_num, 2))
+        if add_numbers:
+            texts = np.empty(pos_num, dtype=object)
+            for j in range(pos_num):
+                texts[j] = []
+                for i in range(len(self.atom_list)):
+                    texts[j].append(str(i))
+            marker_text = Texts(
+                offsets=offsets,
+                texts=texts,
+                color=color,
+                verticalalignment="top",
+                horizontalalignment="right",
+            )
 
         signal = Signal2D(image)
         s = hs.stack([signal] * pos_num, show_progressbar=False)
-
-
-
-        marker_list_x = np.ones((len(peak_list), atom_num)) * -100
-        marker_list_y = np.ones((len(peak_list), atom_num)) * -100
-
-        for index, peaks in enumerate(peak_list):
-            marker_list_x[index, 0 : len(peaks)] = peaks[:, 0]
-            marker_list_y[index, 0 : len(peaks)] = peaks[:, 1]
-
-        marker_list = []
-        for i in progressbar(
-            range(marker_list_x.shape[1]), disable=not show_progressbar
-        ):
-            m = hs.markers.point(
-                x=marker_list_x[:, i], y=marker_list_y[:, i], color="red"
-            )
-            marker_list.append(m)
-
-        s.add_marker(marker_list, permanent=True, plot_marker=False)
+        s.add_marker(markers, permanent=True, plot_marker=False)
+        if add_numbers:
+            s.add_marker(marker_text, permanent=True, plot_marker=False)
         return s
 
     def _get_sublattice_atom_list_mask(self, image_data=None, radius=1):
