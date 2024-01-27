@@ -250,8 +250,8 @@ def plot_complex_image_map_line_profile_using_interface_plane(
                 amplitude_image_lim[0] * 0.97,
                 color_bar_marker[1],
                 transform=colorbar_ax.transData,
-                va="top",
-                ha="center",
+                verticalalignment="top",
+                horizontalalignment="center",
                 fontsize=8,
             )
 
@@ -728,8 +728,8 @@ def _make_atom_planes_marker_list(
                 offsets=[[x_pos, y_pos]],
                 texts=[str(i)],
                 color=color,
-                va="top",
-                ha="right",
+                verticalalignment="top",
+                horizontalalignment="right",
             )
             marker_list.append(marker)
     return marker_list
