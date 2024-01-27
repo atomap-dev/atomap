@@ -1374,7 +1374,7 @@ def _make_mask(image, points_x, points_y):
     Create points_map for the watershed integration
     function
     """
-    mask = np.zeros(image.shape[-2:])
+    mask = np.zeros(image.shape[-2:], dtype=int)
     indices = np.round(np.array([points_y, points_x])).astype(int)
     values = np.arange(len(points_x))
     mask[tuple(indices)] = values
