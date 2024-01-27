@@ -1555,7 +1555,7 @@ class Sublattice:
         positions as permanent markers.
 
         >>> s = sublattice.get_atom_list_on_image()
-        >>> s.save("sublattice_atom_positions.hdf5", overwrite=True)
+        >>> s.save("sublattice_atom_positions.hspy", overwrite=True)
         """
         if color is None:
             color = self._plot_color
