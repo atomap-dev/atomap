@@ -67,7 +67,7 @@ This function uses the peak finding algorithm for a range of pixel separations.
 The default separation range is 5 to 30.
 ``s_peaks`` is plotted below.
 The left figure shows where the peak finding function has located a peak, the right figure shows the minimum feature separation in pixels on the x-axis.
-Use the left-right arrow keys to navigate through the different minimum feature separation, and see how it affects the result of the peak finding in the left figure.
+Use the Ctrl key + left-right arrow keys to navigate through the different minimum feature separation, and see how it affects the result of the peak finding in the left figure.
 
 .. code-block:: python
 
@@ -214,7 +214,7 @@ which contains all the atoms in one plane, and the relation between these atoms.
 .. image:: images/finding_atom_lattices/zone_axes_sig.png
     :width: 300 px
 
-Navigate though the different zone vectors to see the corresponding planes (left-right arrow keys).
+Navigate though the different zone vectors to see the corresponding planes (Ctrl + left-right arrow keys).
 
 If you're using your own dataset and some of the planes are non-continuous
 or missing, try increasing the ``atom_plane_tolerance`` from the default 0.5:
