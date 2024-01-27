@@ -309,12 +309,14 @@ class TestSublatticeGetSignal:
         s_list = sublattice.get_all_atom_planes_by_zone_vector()
         assert len(s_list) == len(sublattice.zones_axis_average_distances)
 
+    def test_atomap_plane_on_image_simple(self):
+        sublattice = self.sublattice
+        atom_planes = sublattice.atom_plane_list[10:20]
+        s = sublattice.get_atom_planes_on_image(atom_planes)
+
     def test_atomap_plane_on_image(self):
         sublattice = self.sublattice
         atom_planes = sublattice.atom_plane_list[10:20]
-        number_of_atom_planes = 0
-        for atom_plane in atom_planes:
-            number_of_atom_planes += len(atom_plane.atom_list) - 1
         s = sublattice.get_atom_planes_on_image(atom_planes, add_numbers=False)
         assert len(atom_planes) == len(s.metadata.Markers)
 
@@ -468,9 +470,11 @@ class TestGetPositionHistory:
         sublattice.get_position_history()
 
     def test_add_numbers(self):
+        sublattice = self.sublattice
         sublattice.get_position_history(add_numbers=True)
 
     def test_color_markersize(self):
+        sublattice = self.sublattice
         sublattice.get_position_history(color="blue", markersize=6)
 
 
