@@ -9,26 +9,33 @@ class TestDrawCursor:
         fig0, ax0 = plt.subplots()
         ax0.imshow(np.arange(100).reshape(10, 10))
         fig0.canvas.draw()
+        imagestring0 = fig0.canvas.buffer_rgba().tobytes()
+
         fig1, ax1 = plt.subplots()
         ax1.imshow(np.arange(100).reshape(10, 10))
         fig1.canvas.draw()
-        assert fig0.canvas.tostring_rgb() == fig1.canvas.tostring_rgb()
+        imagestring1 = fig1.canvas.buffer_rgba().tobytes()
+        assert imagestring0 == imagestring1
 
         fig2, ax2 = plt.subplots()
         ax2.imshow(np.arange(100).reshape(10, 10))
         apt._draw_cursor(ax2, 5, 8)
         fig2.canvas.draw()
-        assert fig0.canvas.tostring_rgb() != fig2.canvas.tostring_rgb()
+        imagestring2 = fig2.canvas.buffer_rgba().tobytes()
+        assert imagestring0 != imagestring2
 
     def test_draw_outside(self):
         fig0, ax0 = plt.subplots()
         ax0.imshow(np.arange(100).reshape(10, 10))
         fig0.canvas.draw()
+        imagestring0 = fig0.canvas.buffer_rgba().tobytes()
+
         fig1, ax1 = plt.subplots()
         ax1.imshow(np.arange(100).reshape(10, 10))
         apt._draw_cursor(ax1, -1, 8)
         fig1.canvas.draw()
-        assert fig0.canvas.tostring_rgb() != fig1.canvas.tostring_rgb()
+        imagestring1 = fig1.canvas.buffer_rgba().tobytes()
+        assert imagestring0 != imagestring1
 
 
 class TestUpdateFrame:
