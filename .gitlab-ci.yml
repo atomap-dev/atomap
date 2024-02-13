@@ -12,3 +12,20 @@ run_style_check:
     script:
     - conda install black -c conda-forge -y
     - python3 -m black atomap/ --diff --check --quiet
+
+pages_development:
+    stage: deploy
+    script:
+    - apt update
+    - apt-get install -qy --no-install-recommends build-essential
+    - conda install hyperspy sphinx sphinx_rtd_theme -c conda-forge -y
+    - pip3 install .
+    - cd doc/
+    - bash make_all_documentation_images.sh
+    - make html
+    - cd ..
+    - mv doc/_build/html public_development
+    artifacts:
+        paths:
+        - public_development
+
