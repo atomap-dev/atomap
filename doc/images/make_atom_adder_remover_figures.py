@@ -1,6 +1,5 @@
 import os
 import matplotlib
-matplotlib.use('Qt5Agg') # noqa
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import atomap.api as am
