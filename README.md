@@ -13,7 +13,13 @@ planes with the largest spacings.
 Installing
 ----------
 
-The easiest way is via PyPI:
+The easiest way is via the Anaconda Python distribution, and installing with:
+
+```bash
+conda install atomap -c conda-forge
+```
+
+It can also be installed via PyPI:
 
 ```bash
 pip3 install atomap
