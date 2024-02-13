@@ -12,13 +12,13 @@ if not os.path.exists(my_path):
     os.makedirs(my_path)
 
 # Load the atomic resolution image
-s_adf = hs.load(os.path.join(my_path, 'ADF_image.hdf5'))
+s_adf = hs.load(os.path.join(my_path, 'ADF_image.hspy'))
 
 # Load the structural data
 atoms_A = np.load(os.path.join(my_path, 'sublattice_A.npz'))
 atoms_B = np.load(os.path.join(my_path, 'sublattice_B.npz'))
-dd_map = hs.load(os.path.join(my_path, 'distance_difference_map.hdf5'))
-dd_line = hs.load(os.path.join(my_path, 'dd_line.hdf5'))
+dd_map = hs.load(os.path.join(my_path, 'distance_difference_map.hspy'))
+dd_line = hs.load(os.path.join(my_path, 'dd_line.hspy'))
 
 # Scaling the data
 scale = 0.142

@@ -25,17 +25,17 @@ np.savez(
 sublattice_A.construct_zone_axes()
 zone = sublattice_A.zones_axis_average_distances[0]
 s_dd = sublattice_A.get_atom_distance_difference_map([zone])
-s_dd.save(os.path.join(my_path, 'distance_difference_map.hdf5'),
+s_dd.save(os.path.join(my_path, 'distance_difference_map.hspy'),
           overwrite=True)
 
 # Saving the synthetic ADF-image.
 im = atom_lattice.image
 s_adf = Signal2D(im)
-s_adf.save(os.path.join(my_path, 'ADF_image.hdf5'), overwrite=True)
+s_adf.save(os.path.join(my_path, 'ADF_image.hspy'), overwrite=True)
 
 # Saving the line profile
 z1 = sublattice_A.zones_axis_average_distances[0]
 z2 = sublattice_A.zones_axis_average_distances[1]
 plane = sublattice_A.atom_planes_by_zone_vector[z2][23]
 s_dd_line = sublattice_A.get_atom_distance_difference_line_profile(z1, plane)
-s_dd_line.save(os.path.join(my_path, 'dd_line.hdf5'), overwrite=True)
+s_dd_line.save(os.path.join(my_path, 'dd_line.hspy'), overwrite=True)
