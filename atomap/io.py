@@ -1,4 +1,5 @@
 """Module containing functions to save and load Atom_Lattice objects."""
+
 import h5py
 import os
 import atomap.atom_lattice as al

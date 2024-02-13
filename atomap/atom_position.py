@@ -3,6 +3,7 @@
 The Atom_Position is the "base unit" in Atomap, since it contains
 the information about the individual atomic columns.
 """
+
 import copy
 import math
 import numpy as np
