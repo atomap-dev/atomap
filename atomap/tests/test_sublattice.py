@@ -1028,6 +1028,7 @@ class TestGetPropertyLineProfile:
         )
         assert (s.data == (5.0 / 9)).all()
         assert len(s.metadata["Markers"].keys()) == 1
+        assert s.metadata.Markers["Points"].kwargs["offsets"].shape == (9, 2)
 
     def test_horizontal_interface_vertical_projection_plane(self):
         sublattice = self.sublatticeH

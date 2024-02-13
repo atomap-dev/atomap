@@ -19,6 +19,8 @@ class TestMakeAtomPositionMarkerList:
             add_numbers=True,
         )
         assert len(marker_list) == 2
+        assert marker_list[0].kwargs['offsets'].shape == (20, 2)
+        assert marker_list[1].kwargs['offsets'].shape == (20, 2)
 
 
 class TestAtomPlaneMarkerPlotting:
