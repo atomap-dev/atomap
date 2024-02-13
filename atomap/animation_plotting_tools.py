@@ -1,5 +1,6 @@
 import numpy as np
 import atomap.testing_tools as tt
+from matplotlib.backend_bases import MouseEvent
 
 
 def _draw_cursor(ax, x, y, xd=10, yd=-30):
@@ -64,7 +65,10 @@ def _update_frame(pos, fig):
     ax = fig.axes[0]
     if pos[2]:
         x, y = ax.transData.transform((pos[0], pos[1]))
-        fig.canvas.button_press_event(x, y, 1)
+        fig.canvas.callbacks.process(
+            "button_press_event",
+            MouseEvent(name="button_left", canvas=fig.canvas, x=x, y=y, button=1),
+        )
     text = ax.texts[0]
     text.xy = (pos[0], pos[1])
     fig.canvas.draw()
