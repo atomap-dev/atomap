@@ -42,7 +42,7 @@ The branch is merged back into the master development version when it is done.
 
 You only need to know a few basic things about git to be able to start developing.
 Git is the most commonly used version control system, so there is a lot of user guides out there.
-You may consult the nice GitLab `userguide <https://docs.gitlab.com/ce/gitlab-basics/README.html>`__.
+You may consult the nice GitLab `userguide <https://docs.gitlab.com/?tab=Tutorials>`__.
 Below, you'll also find and outline of the basic first steps.
 Often as with tools, the best way to learn is by using.
 
@@ -92,7 +92,6 @@ This is fairly simple and manageable for a first contribution.
 6. Push your commit ``git push origin FixTypos``.
    This synchronizes the changes you have done to your forked remote version on GitLab.
 7. When you are ready to add the branch to the Atomap development version, make a request for merging the commit into Atomap.
-   See `here <https://docs.gitlab.com/ce/gitlab-basics/add-merge-request.html>`__.
 
 You move from branch to branch with the ``git checkout branch_name`` command.
 When starting some new branch, remember to update your master fork by pulling from Atomap (upstream master).
@@ -100,16 +99,16 @@ When starting some new branch, remember to update your master fork by pulling fr
 1. Return to your master branch ``git checkout master``
 2. Pull the newest changes from Atomap ``git pull upstream master``.
 
-Consult the nice GitLab `userguide <https://docs.gitlab.com/ce/gitlab-basics/README.html>`__.
+Consult the nice GitLab `userguide <https://docs.gitlab.com/?tab=Tutorials>`__.
 Google stuff.
-Or ask for help `here <https://gitlab.com/atomap/atomap/issues>`__, by adding an `issue <https://docs.gitlab.com/ce/user/project/issues/create_new_issue.html>`__.
+Or ask for help `here <https://gitlab.com/atomap/atomap/issues>`__.
 
 Learn more
 ^^^^^^^^^^
 
-1. HyperSpy's `contribution guide <http://hyperspy.org/hyperspy-doc/current/dev_guide.html#developer-guide>`__: a lot of nice information on how to contribute to a scientific Python project.
+1. HyperSpy's `contribution guide <https://hyperspy.org/hyperspy-doc/current/dev_guide/intro.html>`__: a lot of nice information on how to contribute to a scientific Python project.
 2. `What is git? <https://www.git-scm.com/about>`__
 3. Atomap follows the Style Guide for Python Code. These are just some rules for consistency that you can read all about in the `Python Style Guide <https://www.python.org/dev/peps/pep-0008/>`__.
-4. `Writing tests <http://hyperspy.org/hyperspy-doc/current/dev_guide.html#write-tests>`__.
-5. `Writing documentation <http://hyperspy.org/hyperspy-doc/current/dev_guide.html#write-documentation>`__.
+4. `Writing tests <https://hyperspy.org/hyperspy-doc/current/dev_guide/testing.html>`__.
+5. `Writing documentation <https://hyperspy.org/hyperspy-doc/current/dev_guide/writing_docs.html>`__.
 6. The Python programming language, `for beginners <https://www.python.org/about/gettingstarted/>`__.
