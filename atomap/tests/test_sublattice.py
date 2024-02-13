@@ -1202,7 +1202,7 @@ class TestGetPropertyMap:
         assert s.data[20:100, 20:100].mean() <= 1
         assert s.axes_manager[0].size == 120
         assert s.axes_manager[1].size == 120
-        assert s.metadata.Markers.Lines.kwargs["segments"].shape == (4,2, 2)
+        assert s.metadata.Markers.Lines.kwargs["segments"].shape == (4, 2, 2)
 
 
 class TestSignalProperty:
@@ -1357,7 +1357,6 @@ class TestGetPolarizationFromSecondSublattice:
         )
         color = s_p.metadata.Markers.Lines.kwargs["color"]
         assert color == ("red",)
-
 
     def test_values(self):
         sublattice0, sublattice1 = self.sublattice0, self.sublattice1

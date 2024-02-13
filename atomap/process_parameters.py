@@ -12,7 +12,6 @@ class SublatticeParameterBase:
 
 
 class GenericSublattice(SublatticeParameterBase):
-
     """Process parameters for a generic sublattice
 
     Attributes
@@ -303,7 +302,6 @@ class ModelParametersBase:
 
 
 class GenericStructure(ModelParametersBase):
-
     """A Generic structure with one sublattice, the GenericSublattice.
 
     Parameters
@@ -328,7 +326,6 @@ class GenericStructure(ModelParametersBase):
 
 
 class PerovskiteOxide110(ModelParametersBase):
-
     """The Perovskite Oxide structure in the 110 projection.
 
     Parameters

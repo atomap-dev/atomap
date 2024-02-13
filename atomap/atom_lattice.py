@@ -166,7 +166,10 @@ class Atom_Lattice:
         return (i_points, i_record, p_record)
 
     def get_sublattice_atom_list_on_image(
-        self, image=None, add_numbers=False, markersize=4,
+        self,
+        image=None,
+        add_numbers=False,
+        markersize=4,
     ):
         if image is None:
             if self.original_image is None:

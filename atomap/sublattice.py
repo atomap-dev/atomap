@@ -675,8 +675,7 @@ class Sublattice:
         signal.metadata.line_profile_data.std_list = std_profile_list
         if add_markers:
             marker_list = []
-            offsets = np.array([x_profile_list,
-                                y_profile_list]).T
+            offsets = np.array([x_profile_list, y_profile_list]).T
             marker_list.append(Points(offsets))
             signal.add_marker(marker_list, permanent=True, plot_marker=False)
         return signal
@@ -1488,7 +1487,9 @@ class Sublattice:
         for zone_vector in zone_vector_list:
             atom_plane_list.append(self.atom_planes_by_zone_vector[zone_vector])
         marker_list = _make_multidim_atom_plane_marker_list(
-            atom_plane_list, scale=self.pixel_size, add_numbers=add_numbers,
+            atom_plane_list,
+            scale=self.pixel_size,
+            add_numbers=add_numbers,
         )
         signal = at.array2signal2d(image, self.pixel_size, self.units)
         signal = hs.stack([signal] * len(zone_vector_list), show_progressbar=False)
@@ -1505,7 +1506,12 @@ class Sublattice:
         return signal
 
     def get_atom_list_on_image(
-        self, atom_list=None, image=None, color=None, add_numbers=False, markersize=4,
+        self,
+        atom_list=None,
+        image=None,
+        color=None,
+        add_numbers=False,
+        markersize=4,
     ):
         """
         Plot atom positions on the image data.

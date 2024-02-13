@@ -5,6 +5,7 @@ vectors.
 Used to find unique crystallographic directions, after finding the
 translation symmetries from a list of (x, y) positions.
 """
+
 import math
 import copy
 

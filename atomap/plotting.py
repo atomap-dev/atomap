@@ -828,10 +828,9 @@ def _make_arrow_marker_list(arrow_data_list, scale=1.0, color="red"):
 def _make_single_marker_arrow(x, y, vecX, vecY, scale=1.0, color="red"):
     x1, x2 = x + vecX / 2, x - vecX / 2
     y1, y2 = y - vecY / 2, y + vecY / 2
+    segments = [[[x1 * scale, y1 * scale], [x2 * scale, y2 * scale]]]
 
-    marker = Lines(segments=[[[x1*scale, y1*scale],
-                              [x2*scale, y2*scale]]],
-                   color=color)
+    marker = Lines(segments=segments, color=color)
     return marker
 
 
@@ -863,26 +862,33 @@ def vector_list_to_marker_list(vector_list, color="red", scale=1.0):
     lines = []
     for x, y, dx, dy in vector_list:
         x1, y1 = x - dx, y - dy
-        lines.append([[x*scale, y*scale],[x1*scale, y1*scale]])
+        lines.append([[x * scale, y * scale], [x1 * scale, y1 * scale]])
     marker_list.append(Lines(segments=lines, color=color))
     return marker_list
 
 
 def _make_zone_vector_text_marker_list(
-    zone_vector_list, x=1, y=1, scale=1.0, color="red"
+    zone_vector_list,
+    x=1,
+    y=1,
+    scale=1.0,
+    color="red",
 ):
     number = len(zone_vector_list)
     marker_list = []
     if number == 1:
-        marker_list.append(Texts(offsets=[[x, y],],
-                                 texts=[str(zone_vector_list[0]),],
-                                 color=color,
-                                 sizes=(5,)))
+        text_marker = Texts(
+            offsets=[[x, y]],
+            texts=[str(zone_vector_list[0])],
+            color=color,
+            sizes=[5],
+        )
+        marker_list.append(text_marker)
     else:
         offsets = np.empty(number, dtype=object)
         texts = np.empty(number, dtype=object)
         for index, zone_vector in enumerate(zone_vector_list):
-            offsets[index] = [[x, y], ]
+            offsets[index] = [[x, y]]
             texts[index] = [str(zone_vector)]
-        marker_list = Texts(offsets=offsets, texts=texts, color=color, sizes=[5,])
+        marker_list = Texts(offsets=offsets, texts=texts, color=color, sizes=[5])
     return marker_list
