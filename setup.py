@@ -33,7 +33,7 @@ setup(
             'matplotlib>=3.1.0',
             'scikit-learn',
             'scikit-image>=0.17.1',
-            'hyperspy~=2.0rc0',
+            'hyperspy>=2.0.0',
             'ase>=3.17.0',
             'numba',
             'exspy'
