@@ -565,7 +565,7 @@ def statistical_quant(
 
     dic = {}
     for i in range(model.n_components):
-        dic[int(sort_indices[i])] = i
+        dic[int(sort_indices[i][0])] = i
 
     sorted_labels = np.copy(labels)
     for k, v in dic.items():

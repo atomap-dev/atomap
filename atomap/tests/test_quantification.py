@@ -88,7 +88,7 @@ class TestStatisticalQuant:
 
         dic = {}
         for i in range(4):
-            dic[int(sort_indices[i])] = i
+            dic[int(sort_indices[i][0])] = i
 
         sorted_labels = np.copy(labels)
         for k, v in dic.items():
