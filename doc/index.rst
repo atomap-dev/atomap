@@ -4,17 +4,19 @@ Welcome to Atomap's documentation!
 News
 ----
 
-**2023-11-18: Atomap 0.3.4 released**
+**2024-02-17: Atomap 0.4.0 released**
+
+This release is the first to work with the new 2.0.0 version of HyperSpy.
+The major change is a large improvement in plotting speed for example  ``sublattice.plot()`` or ``sublattice.plot_planes()``, thanks to a reimplementation of HyperSpy's marker functionality. Thanks to `Carter Francis  <https://gitlab.com/CSSFrancis>`_ for the merge request!
+There has also been some minor updates of the install instructions, and fixes for deprecation warnings.
+
+
+*2023-11-18: Atomap 0.3.4 released*
 
 This release has a large performance improvement for the 2D Gaussian refinement, which is especially noticeable for large images with many atoms.
 A new parameter, ``nearest_neighbors``, has been added to ``sublattice.construct_zone_axes``: increasing it will give more atomic planes.
 Note: due to a new API-breaking version of HyperSpy (2.0.0), this Atomap release will be the last which will work with the older HyperSpy versions (1.x.x).
 Thus, the next releases will only work with HyperSpy 2.0.0 or higher, most users should not notice any differences.
-
-
-*2023-5-17: Atomap 0.3.3 released*
-
-This is a small maintenance release, fixing some deprecation warning, style issues, and fixing a plotting bug when visualizing vectors.
 
 
 About Atomap
@@ -84,6 +86,11 @@ Contents on this webpage
 
 Old news
 --------
+
+*2023-5-17: Atomap 0.3.3 released*
+
+This is a small maintenance release, fixing some deprecation warning, style issues, and fixing a plotting bug when visualizing vectors.
+
 
 *2022-4-28: Atomap 0.3.2 released*
 

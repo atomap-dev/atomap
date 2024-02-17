@@ -11,7 +11,7 @@ HyperSpy bundle
 
 The easiest way of installing Atomap in Windows, MacOS and Linux is by installing the HyperSpy bundle: `HyperSpy bundle <https://hyperspy.org/hyperspy-doc/current/user_guide/install.html#hyperspy-bundle>`_.
 Currently, Atomap is not included in the bundle, but it will be included in the near future.
-For now, Atomap must be installed manually by, first open the ``Hyperspy-bundle Prompt`` then run:
+For now, Atomap must be installed manually by first opening the ``Hyperspy-bundle Prompt`` then running:
 
 .. code-block:: bash
 
