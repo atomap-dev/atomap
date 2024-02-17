@@ -4,68 +4,61 @@
 Installing
 ==========
 
-.. _install_windows:
+.. _install_hyperspy_bundle:
 
-Installing in Windows
----------------------
+HyperSpy bundle
+---------------
 
-Anaconda Python environment
-***************************
+The easiest way of installing Atomap in Windows, MacOS and Linux is by installing the HyperSpy bundle: `HyperSpy bundle <https://hyperspy.org/hyperspy-doc/current/user_guide/install.html#hyperspy-bundle>`_.
+Currently, Atomap is not included in the bundle, but it will be included in the near future.
+For now, Atomap must be installed manually by, first open the ``Hyperspy-bundle Prompt`` then run:
 
-Currently, the easiest way to install Atomap is using the Anaconda python environment `Anaconda environment <https://www.anaconda.com/download>`_,
-Install HyperSpy, then Atomap via the ``Anaconda prompt`` (Start menu - Anaconda3), this will open a command line prompt.
+.. code-block:: bash
+
+    $ conda install atomap -c conda-forge
+
+
+If everything installed, continue to :ref:`starting Atomap <start_atomap>`.
+If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
+
+
+.. _install_anaconda:
+
+Anaconda Python distribution
+----------------------------
+
+First install the Anaconda python environment `Anaconda environment <https://www.anaconda.com/download>`_.
+Then install Atomap via the ``Anaconda prompt`` (in Windows: Start menu - Anaconda3), this will open a command line prompt.
 In this prompt run:
 
 .. code-block:: bash
 
     $ conda install atomap hyperspy-gui-traitsui hyperspy-gui-ipywidgets -c conda-forge
 
-If everything installed, continue to :ref:`starting Atomap in Windows <start_atomap_windows>`.
-If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
-
-
-Miniforge HyperSpy installer
-****************************
-
-Alternatively, the Miniforge HyperSpy bundle can be used.
-Firstly download and install the `Miniforge HyperSpy bundle <https://github.com/hyperspy/hyperspy-bundle/releases>`_:
-
-After installing the bundle, there should be a folder in the start menu called "HyperSpy Bundle", and this
-folder should contain the "WinPython prompt". Start the "WinPython prompt". This will open a terminal window called
-"WinPython prompt", in this window type and run:
+If you also want to use the Atomap Jupyter Notebook tutorials, install Jupyter Lab and plotting library:
 
 .. code-block:: bash
 
-    pip install atomap
+    $ conda install jupyterlab ipympl -c conda-forge
 
-If everything installed, continue to :ref:`starting Atomap in Windows <start_atomap_windows>`.
+
+If everything installed, continue to :ref:`starting Atomap <start_atomap>`.
 If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
 
 
-Installing in MacOS
--------------------
+.. _install_pypi:
 
-Install the Anaconda python environment: `Anaconda environment <https://www.anaconda.com/download>`_, and through the ``Anaconda prompt`` install HyperSpy and Atomap:
+PyPI installation
+-----------------
 
-.. code-block:: bash
-
-    $ conda install atomap hyperspy-gui-traitsui hyperspy-gui-ipywidgets -c conda-forge
-
-If everything installed, continue to :ref:`starting Atomap in MacOS <start_atomap_macos>`.
-If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
-
-
-Installing in Linux
--------------------
-
-Currently, the easiest way to install Atomap is using the Anaconda python environment `Anaconda environment <https://www.anaconda.com/download>`_,
-Install HyperSpy, then Atomap via conda in the command line:
+Atomap can also be installed via the Python respository PyPI.
+This is not recommended for beginners, and requires that you already have a Python install.
 
 .. code-block:: bash
 
-    $ conda install atomap hyperspy-gui-traitsui hyperspy-gui-ipywidgets -c conda-forge
+    $ cd atomap
+    $ pip install atomap
 
-If everything installed, continue to :ref:`starting Atomap in Linux <start_atomap_linux>`.
 If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
 
 

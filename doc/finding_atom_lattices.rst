@@ -18,9 +18,6 @@ We will use an image of a simple cubic structure to introduce the basic steps.
 After fitting a 2D-Gaussian to each atomic column a variety of structural information can be extracted: such as the distance between atoms and monolayers, and ellipticity.
 This will be dealt with in the :ref:`analysing_atom_lattices` tutorial.
 
-If want to analyse many images of the same atomic structure, the process can be made more automatic by using process parameters.
-This is outlined in :ref:`automation`.
-
 A simple cubic structure
 ========================
 

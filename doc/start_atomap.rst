@@ -1,92 +1,26 @@
 .. _start_atomap:
 
-
 ============
 Start Atomap
 ============
 
-Starting Python
----------------
-
-The first step is starting an interactive Jupyter Notebook environment.
-
-.. _start_atomap_linux:
-
-Linux
-^^^^^
-
-Open a terminal and start ``ipython3``:
-
-.. code-block:: bash
-
-    $ ipython3 notebook
-
-
-If ``ipython3`` is not available, try ``ipython``:
-
-.. code-block:: bash
-
-    $ ipython notebook
-
-
-This will open a browser window (or a new browser tab).
-Press the "New" button (top right), and start a Python 3 Notebook.
-In the first cell, run the following commands (paste them, and press Shift + Enter).
-If you are unfamiliar with the Jupyter Notebook interface, `see the Jupyter Notebook guide <https://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook%20Basics.ipynb>`_.
-
-.. code-block:: python
-
-    %matplotlib nbagg
-    import atomap.api as am
-
-If this works, continue to the :ref:`tutorials`.
-If you get some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
-
-
-.. _start_atomap_windows:
-
-Windows
-^^^^^^^
+The first step is starting an interactive JupyterLab environment.
 
 This depends on the installation method:
 
-* If the HyperSpy bundle was installed, go to the "HyperSpy Bundle" in the start-menu and start "Jupyter Notebook".
-* If Anaconda was used, go to "Anaconda3" in the start menu, and start "Jupyter Notebook".
+* If the HyperSpy bundle was installed, go to *HyperSpy-bundle* in the start-menu, click *Hyperspy-bundle prompt*. This will open a command line window, here run ``jupyter lab``.
+* If Anaconda was used, go to *Anaconda3* in the start menu, click *Anaconda prompt*. This will open a command line window, here run ``jupyter lab``.
+* If you're using MacOS or Linux, run ``jupyter lab`` in your Anaconda environment or HyperSpy-bundle environment.
 
 This will open a browser window (or a new browser tab).
-Press the "New" button (top right), and start a Python 3 Notebook.
+Click ``Python 3 (ipykernel)``, which will start and open an empty Jupyter Notebook.
+
 In the first cell, run the following commands (paste them, and press Shift + Enter).
-If you are unfamiliar with the Jupyter Notebook interface, `see the Jupyter Notebook guide <https://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook%20Basics.ipynb>`_.
+If you are unfamiliar with the Jupyter Notebook interface, `see the interactive JupyterLab guide <https://jupyter.org/try-jupyter/lab/?path=notebooks%2FIntro.ipynb>`_.
 
 .. code-block:: python
 
-    %matplotlib nbagg
-    import atomap.api as am
-
-If this works, continue to the :ref:`tutorials`.
-If you get some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
-
-
-.. _start_atomap_macos:
-
-MacOS
-^^^^^
-
-Open the Terminal, and write:
-
-.. code-block:: bash
-
-    $ jupyter notebook
-
-
-This will open a browser window (or a new browser tab).
-Press the "New" button (top right), and start a Python 3 Notebook.
-In the first cell, run the following commands (paste them, and press Shift + Enter).
-If you are unfamiliar with the Jupyter Notebook interface, `see the Jupyter Notebook guide <https://nbviewer.jupyter.org/github/jupyter/notebook/blob/master/docs/source/examples/Notebook/Notebook%20Basics.ipynb>`_.
-
-.. code-block:: python
-
-    %matplotlib nbagg
+    %matplotlib widget
     import atomap.api as am
 
 If this works, continue to the :ref:`tutorials`.
@@ -100,7 +34,6 @@ Tutorials
 
 To get you started on using Atomap there are tutorials available.
 The first tutorial :ref:`finding_atom_lattices` aims at showing how atom positions are found, while :ref:`analysing_atom_lattices` shows how this information can be visualized.
-There is also a tutorial showing how you can make your analysis semi-automatic, :ref:`automation`.
 
 The `>>>` used in the tutorials and documentation means the comment should be typed inside some kind of Python prompt, and can be copy-pasted directly into the *Jupyter Notebooks*.
 
