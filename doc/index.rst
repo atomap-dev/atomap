@@ -7,7 +7,7 @@ News
 **2024-02-17: Atomap 0.4.0 released**
 
 This release is the first to work with the new 2.0.0 version of HyperSpy.
-The major change is a large improvement in plotting speed for example  ``sublattice.plot()`` or ``sublattice.plot_planes()``, thanks to a reimplementation of HyperSpy's marker functionality. Thanks to `Carter Francis  <https://gitlab.com/CSSFrancis>`_ for the merge request!
+The major change is a large improvement in plotting speed, for example  ``sublattice.plot()`` or ``sublattice.plot_planes()``, thanks to a reimplementation of HyperSpy's marker functionality. Thanks to `Carter Francis  <https://gitlab.com/CSSFrancis>`_ for the merge request!
 There has also been some minor updates of the install instructions, and fixes for deprecation warnings.
 
 

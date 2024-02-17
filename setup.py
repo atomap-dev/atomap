@@ -12,7 +12,7 @@ setup(
             'atomap.external',
             'atomap.example_data',
             ],
-        version = '0.4.0.dev1',
+        version = '0.4.0',
         description = 'Library for analysing atomic resolution images',
         long_description=long_description,
         long_description_content_type='text/markdown',
@@ -20,7 +20,7 @@ setup(
         author_email = 'magnunor@gmail.com',
         license = 'GPL v3',
         url = 'https://atomap.org/',
-        download_url = 'https://gitlab.com/atomap/atomap/repository/archive.tar?ref=0.3.4',
+        download_url = 'https://gitlab.com/atomap/atomap/repository/archive.tar?ref=0.4.0',
         keywords = [
             'STEM',
             'data analysis',
