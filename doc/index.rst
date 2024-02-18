@@ -26,7 +26,7 @@ It relies in fitting 2-D Gaussian functions to every atomic column in an image, 
 axes. The full procedure is explained in the article `Atomap: a new software tool for the automated analysis of
 atomic resolution images using two-dimensional Gaussian fitting <https://dx.doi.org/10.1186/s40679-017-0042-5>`_.
 
-The easiest way to try Atomap is via Binder: `introductory Jupyter Notebook <https://mybinder.org/v2/gl/atomap%2Fatomap_demos/release?filepath=introduction_to_atomap.ipynb>`_.
+The easiest way to try Atomap is via Binder: `introductory Jupyter Notebook <https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.com%2Fatomap%2Fatomap_demos.git/release?labpath=introduction_to_atomap.ipynb>`_.
 To install Atomap on your own computer, see the :ref:`install instructions <install>`.
 
 .. figure:: images/index/elli_figure.jpg

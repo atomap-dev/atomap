@@ -33,7 +33,7 @@ In this prompt run:
 
 .. code-block:: bash
 
-    $ conda install atomap hyperspy-gui-traitsui hyperspy-gui-ipywidgets -c conda-forge
+    $ conda install atomap -c conda-forge
 
 If you also want to use the Atomap Jupyter Notebook tutorials, install Jupyter Lab and plotting library:
 
@@ -56,7 +56,6 @@ This is not recommended for beginners, and requires that you already have a Pyth
 
 .. code-block:: bash
 
-    $ cd atomap
     $ pip install atomap
 
 If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
