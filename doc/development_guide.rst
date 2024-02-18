@@ -46,7 +46,7 @@ and ``nbval``.
       $ python3 -m pytest --nbval-lax introduction_to_atomap.ipynb
 
 
-Note: for some reason the ``%matplotlib nbagg`` or ``%matplotlib qt`` causes the tests to fail,
+Note: for some reason the ``%matplotlib widget`` or ``%matplotlib qt`` causes the tests to fail,
 the easiest way of avoiding this is skipping that specific notebook cell. This done
 by adding ``nbval-skip`` to the tag for that cell.
 

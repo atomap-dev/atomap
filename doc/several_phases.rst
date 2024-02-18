@@ -9,7 +9,7 @@ For example precipitates in an Aluminium matrix.
 
 .. code-block:: python
 
-   >>> %matplotlib nbagg # doctest: +SKIP
+   >>> %matplotlib widget # doctest: +SKIP
    >>> import atomap.api as am
    >>> s = am.dummy_data.get_precipitate_signal()
    >>> s.plot()
