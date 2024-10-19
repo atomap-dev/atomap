@@ -210,7 +210,9 @@ class Atom_Position:
                 [atom1.pixel_x - self.pixel_x, atom1.pixel_y - self.pixel_y]
             )
         cosang = np.dot(vector0, vector1)
-        sinang = np.linalg.norm(np.cross(vector0, vector1))
+        sinang = np.linalg.norm(
+            vector0[..., 0] * vector1[..., 1] - vector0[..., 1] * vector1[..., 0]
+        )
         return np.arctan2(sinang, cosang)
 
     def get_angle_between_zone_vectors(self, zone_vector0, zone_vector1):
