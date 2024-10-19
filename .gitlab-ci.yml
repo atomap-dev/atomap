@@ -3,7 +3,7 @@ default:
 
 run_tests:
     script:
-    - conda install hyperspy pytest -c conda-forge -y
+    - conda install hyperspy exspy pytest -c conda-forge -y
     - pip3 install -e .
     - python3 -m pytest --env nogui --doctest-modules atomap/
     - python3 -m pytest --env nogui --doctest-glob="*.rst" doc/
