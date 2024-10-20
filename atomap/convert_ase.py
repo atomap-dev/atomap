@@ -1,6 +1,6 @@
 from scipy.ndimage import gaussian_filter
 
-from exspy.misc.elements import elements
+from exspy.material import elements
 from atomap import atom_lattice, sublattice
 import numpy as np
 import hyperspy.api as hs

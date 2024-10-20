@@ -415,7 +415,7 @@ def _get_interpolated2d_from_unregular_data(
         new_y_lim[0] : new_y_lim[1] : y_points * 1j,
     ].astype("float32")
     new_z = interpolate.griddata(
-        data[:, 0:2], z, (new_x, new_y), method="cubic", fill_value=np.NaN
+        data[:, 0:2], z, (new_x, new_y), method="cubic", fill_value=np.nan
     ).astype("float32")
     return (new_x, new_y, new_z)
 
@@ -1359,7 +1359,7 @@ def remove_integrated_edge_cells(
 
     border = _border_elems(p_record.data, edge_pixels)
     border_indices = np.array(list(set(border)))
-    indices = np.in1d(p_record.data, border_indices)
+    indices = np.isin(p_record.data, border_indices)
     indices = indices.reshape(p_record.data.shape)
     i_points[border_indices] = np.nan if use_nans else 0
     i_record.data[..., indices] = np.nan if use_nans else 0
