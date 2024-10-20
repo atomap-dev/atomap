@@ -42,7 +42,7 @@ pages_development:
     script:
     - apt update
     - apt-get install -qy --no-install-recommends build-essential xvfb xauth python3-pyqt5 texlive-latex-extra dvipng
-    - conda install hyperspy sphinx sphinx_rtd_theme -c conda-forge -y
+    - conda install hyperspy exspy sphinx sphinx_rtd_theme -c conda-forge -y
     - pip3 install .
     - cd doc/
     - bash make_all_documentation_images.sh
