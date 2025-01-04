@@ -13,6 +13,8 @@ from skimage.segmentation import watershed
 
 import numba as nb
 import atomap.atom_finding_refining as afr
+from atomap.sublattice import Sublattice
+from atomap.atom_position import Atom_Position
 from sklearn.cluster import DBSCAN
 import logging
 
@@ -70,7 +72,6 @@ def _line_profile_coordinates(src, dst, linewidth=1):
     return data
 
 
-# Remove atom from image using 2d gaussian model
 def remove_atoms_from_image_using_2d_gaussian(
     image, sublattice, percent_to_nn=0.40, show_progressbar=True
 ):
@@ -114,64 +115,46 @@ def remove_atoms_from_image_using_2d_gaussian(
     ...        percent_to_nn=0.2, show_progressbar=False)
 
     """
-    if sublattice.atom_list[0].nearest_neighbor_list is None:
-        raise ValueError(
-            "The atom_position objects does not seem to have a "
-            "populated nearest neighbor list. "
-            "Has sublattice.find_nearest_neighbors() been called?"
+    sublattice._check_if_nearest_neighbor_list()
+    temp_sublattice = _sublattice_thin_copy(sublattice)
+    temp_sublattice.image = image
+
+    temp_sublattice.refine_atom_positions_using_2d_gaussian(
+        image_data=image,
+        percent_to_nn=percent_to_nn,
+        show_progressbar=show_progressbar,
+    )
+    model_image = temp_sublattice.get_model_image().data
+    image_data_subtracted = image - model_image
+    return image_data_subtracted
+
+
+def _sublattice_thin_copy(sublattice):
+    ap_list = sublattice.atom_list
+    ap_list_new = []
+    for atom_position in ap_list:
+        atom_position_new = Atom_Position(
+            x=atom_position.pixel_x,
+            y=atom_position.pixel_y,
+            sigma_x=atom_position.sigma_x,
+            sigma_y=atom_position.sigma_y,
+            rotation=atom_position.rotation,
+            amplitude=atom_position.amplitude_gaussian,
         )
-    model_image = np.zeros(image.shape)
-    X, Y = np.meshgrid(np.arange(model_image.shape[1]), np.arange(model_image.shape[0]))
-    for atom in progressbar(
-        sublattice.atom_list, desc="Subtracting atoms", disable=not show_progressbar
-    ):
-        atom_list = [atom]
-        signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
-            atom_list=atom_list,
-            image_data=image,
-            percent_to_nn=percent_to_nn,
-        )
+        ap_list_new.append(atom_position_new)
 
-        percent_distance = percent_to_nn
-        for i in range(10):
-            mask_crop = afr._make_mask_from_positions(
-                shifted_pos_list, radius_list, signal_crop.data.shape
-            )
-            signal_crop.data = signal_crop.data * mask_crop
+    for atom_position, atom_position_new in zip(ap_list, ap_list_new):
+        nearest_neighbor_list_new = []
+        for nn_atom in atom_position.nearest_neighbor_list:
+            i_nn_atom = ap_list.index(nn_atom)
+            nn_atom_new = ap_list_new[i_nn_atom]
+            nearest_neighbor_list_new.append(nn_atom_new)
+        if len(nearest_neighbor_list_new) != 0:
+            atom_position_new.nearest_neighbor_list = nearest_neighbor_list_new
 
-            lower_value = afr._find_background_value(
-                signal_crop.data[mask_crop], lowest_percentile=0.03
-            )
-            signal_crop.data -= lower_value
-            signal_crop.data[signal_crop.data < 0] = 0.0
-
-            model = afr._make_model_from_atom_list(
-                atom_list=atom_list,
-                signal_crop=signal_crop,
-            )
-
-            g_list = afr._fit_atom_positions_with_gaussian_model(
-                model=model,
-                atom_list=atom_list,
-                mask=mask_crop,
-                rotation_enabled=True,
-                centre_free=True,
-            )
-
-            if g_list is False:
-                if i == 9:
-                    break
-                else:
-                    percent_distance *= 0.95
-                    radius_list = afr._make_radius_list(
-                        atom_list, temp_mask_radius, percent_distance
-                    )
-            else:
-                g = g_list[0]
-                model_image += g.function(X, Y)
-                break
-    subtracted_image = copy.deepcopy(image) - model_image
-    return subtracted_image
+    sublattice_new = Sublattice(image=sublattice.image, atom_position_list=[])
+    sublattice_new.atom_list = ap_list_new
+    return sublattice_new
 
 
 def get_atom_planes_square(

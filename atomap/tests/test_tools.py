@@ -10,7 +10,7 @@ from atomap.tools import remove_atoms_from_image_using_2d_gaussian
 import atomap.dummy_data as dd
 from atomap.tools import integrate, calculate_point_record
 from atomap.tools import find_smallest_distance, remove_integrated_edge_cells
-from atomap.tools import _border_elems
+from atomap.tools import _border_elems, _sublattice_thin_copy
 import atomap.testing_tools as tt
 import hyperspy as hs
 
@@ -125,7 +125,7 @@ class TestRemoveAtomsFromImageUsing2dGaussian:
 
     def test_no_nearest_neighbors(self):
         sublattice = self.sublattice
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             remove_atoms_from_image_using_2d_gaussian(sublattice.image, sublattice)
 
 
@@ -185,6 +185,31 @@ class TestFindAverageDistanceBetweenAtoms:
         assert len(monolayer_sep) == 11
         assert monolayer_sep == approx(8, abs=0.1)
         assert mean_separation == approx(8, abs=0.1)
+
+
+def test_sublattice_thin_copy():
+    sublattice = am.dummy_data.get_simple_cubic_sublattice()
+    sublattice.find_nearest_neighbors()
+    sublattice_new = _sublattice_thin_copy(sublattice)
+    for ap, ap_new in zip(sublattice.atom_list, sublattice_new.atom_list):
+        assert ap.pixel_x == ap_new.pixel_x
+        assert ap.pixel_y == ap_new.pixel_y
+        assert ap.sigma_x == ap_new.sigma_x
+        assert ap.sigma_y == ap_new.sigma_y
+        assert ap.rotation == ap_new.rotation
+        assert ap.amplitude_gaussian == ap_new.amplitude_gaussian
+        nn_list = ap.nearest_neighbor_list
+        nn_list_new = ap_new.nearest_neighbor_list
+        for nn, nn_new in zip(nn_list, nn_list_new):
+            index = sublattice.atom_list.index(nn)
+            index_new = sublattice_new.atom_list.index(nn_new)
+            assert index == index_new
+            assert nn.pixel_x == nn_new.pixel_x
+            assert nn.pixel_y == nn_new.pixel_y
+            assert nn.sigma_x == nn_new.sigma_x
+            assert nn.sigma_y == nn_new.sigma_y
+            assert nn.rotation == nn_new.rotation
+            assert nn.amplitude_gaussian == nn_new.amplitude_gaussian
 
 
 class TestSortPositionsIntoLayers:
