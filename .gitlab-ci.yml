@@ -36,7 +36,7 @@ pages:
 pages_development:
     stage: deploy
     rules:
-        - if: '$CI_COMMIT_REF_NAME == "master"'
+        - if: '$CI_COMMIT_REF_NAME == "main"'
           when: on_success
         - when: never
     script:

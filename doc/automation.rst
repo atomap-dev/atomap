@@ -20,7 +20,7 @@ Finding atom lattices with process parameters
 
 In this tutorial we will use the predefined process parameter :py:class:`~atomap.process_parameters.PerovskiteOxide110`  ``PerovskiteOxide110``, and a dummy image designed to look like an HAADF image of the perovskite |STO|.
 It contains various parameters and names for processing a perovskite oxide structure projected along the [110] direction.
-The master function :py:meth:`atomap.main.make_atom_lattice_from_image` takes the atomic resolution signal, process parameters and optimal feature separation.
+The main function :py:meth:`atomap.main.make_atom_lattice_from_image` takes the atomic resolution signal, process parameters and optimal feature separation.
 This means that you probably need to run :py:meth:`atomap.atom_finding_refining.get_feature_separation` and find the best pixel separation first.
 
 .. code-block:: python

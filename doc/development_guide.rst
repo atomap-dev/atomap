@@ -90,4 +90,4 @@ This runs all the above-mentioned tests, style checks and sphinx page generation
 Documentation from development branch
 -------------------------------------
 
-The most recent documentation generated from the development branch can be accessed `here <https://gitlab.com/atomap/atomap/builds/artifacts/master/file/public_development/index.html?job=pages_development>`_.
+The most recent documentation generated from the development branch can be accessed `here <https://gitlab.com/atomap/atomap/builds/artifacts/main/file/public_development/index.html?job=pages_development>`_.

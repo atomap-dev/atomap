@@ -21,7 +21,7 @@ Open source software has many advantages:
 
 By contributing to open source projects you will gain more experience with programming and how to do software development as a part of a community.
 
-You can check out who is contributing to Atomap `here <https://gitlab.com/atomap/atomap/-/graphs/master>`__.
+You can check out who is contributing to Atomap `here <https://gitlab.com/atomap/atomap/-/graphs/main>`__.
 
 What to contribute
 ^^^^^^^^^^^^^^^^^^
@@ -36,9 +36,9 @@ Version control
 
 For software development projects, version control systems are a vital part of the workflow.
 Atomap uses Git as version control system.
-One version of Atomap is the most `recently released version <https://gitlab.com/atomap/atomap/tree/release>`__, another is the `development version <https://gitlab.com/atomap/atomap/tree/master>`__.
+One version of Atomap is the most `recently released version <https://gitlab.com/atomap/atomap/tree/release>`__, another is the `development version <https://gitlab.com/atomap/atomap/tree/main>`__.
 When new functionality is created or old functionality improved, new branches of the development version is typically made.
-The branch is merged back into the master development version when it is done.
+The branch is merged back into the main development version when it is done.
 
 You only need to know a few basic things about git to be able to start developing.
 Git is the most commonly used version control system, so there is a lot of user guides out there.
@@ -94,10 +94,10 @@ This is fairly simple and manageable for a first contribution.
 7. When you are ready to add the branch to the Atomap development version, make a request for merging the commit into Atomap.
 
 You move from branch to branch with the ``git checkout branch_name`` command.
-When starting some new branch, remember to update your master fork by pulling from Atomap (upstream master).
+When starting some new branch, remember to update your main fork by pulling from Atomap (upstream main).
 
-1. Return to your master branch ``git checkout master``
-2. Pull the newest changes from Atomap ``git pull upstream master``.
+1. Return to your main branch ``git checkout main``
+2. Pull the newest changes from Atomap ``git pull upstream main``.
 
 Consult the nice GitLab `userguide <https://docs.gitlab.com/?tab=Tutorials>`__.
 Google stuff.

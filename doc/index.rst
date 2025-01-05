@@ -49,7 +49,7 @@ atomic resolution images using two-dimensional Gaussian fitting <https://dx.doi.
 (*M. Nord et al, Advanced Structural and Chemical Imaging 2017 3:9*)
 
 Atomap is available under the GNU GPL v3 license.
-The source code is found in the `GitLab repository <https://gitlab.com/atomap/atomap/tree/master/>`_.
+The source code is found in the `GitLab repository <https://gitlab.com/atomap/atomap/tree/main/>`_.
 
 
 Contents on this webpage
