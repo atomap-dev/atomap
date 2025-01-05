@@ -1,6 +1,5 @@
 from atomap.convert_ase import ase_to_atom_lattice
 from ase.cluster import Octahedron
-import math
 
 
 class TestASEImport:

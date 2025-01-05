@@ -1788,7 +1788,7 @@ class Sublattice:
         im.axes_manager[0].scale = x_scale * data_scale
         im.axes_manager[1].scale = y_scale * data_scale
         im.change_dtype("float32")
-        if not (atom_plane is None):
+        if atom_plane is not None:
             im.metadata.add_node("marker.atom_plane.x")
             im.metadata.add_node("marker.atom_plane.y")
             im.metadata.marker.atom_plane.x = atom_plane.get_x_position_list()

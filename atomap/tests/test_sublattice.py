@@ -313,6 +313,7 @@ class TestSublatticeGetSignal:
         sublattice = self.sublattice
         atom_planes = sublattice.atom_plane_list[10:20]
         s = sublattice.get_atom_planes_on_image(atom_planes)
+        assert hasattr(s, "plot")
 
     def test_atomap_plane_on_image(self):
         sublattice = self.sublattice

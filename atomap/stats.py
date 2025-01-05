@@ -71,7 +71,7 @@ def plot_atom_column_histogram_amplitude_gauss2d(sublattice, bins=20, xlim=None)
     FigureCanvas(fig)
     ax = fig.add_subplot(111)
     ax.hist(sublattice.atom_amplitude_gaussian2d, bins=bins)
-    if not (xlim is None):
+    if xlim is not None:
         ax.set_xlim(xlim[0], xlim[1])
     ax.set_xlabel("Intensity bins")
     ax.set_ylabel("Amount")

@@ -39,10 +39,10 @@ def get_neighbor_middle_position(atom, za0, za1):
     atom01 = atom.get_next_atom_in_zone_vector(za0)
     atom10 = atom.get_next_atom_in_zone_vector(za1)
     middle_position = False
-    if not (atom01 is False):
-        if not (atom10 is False):
+    if atom01 is not False:
+        if atom10 is not False:
             atom11 = atom10.get_next_atom_in_zone_vector(za0)
-            if not (atom11 is False):
+            if atom11 is not False:
                 middle_position = to.get_point_between_four_atoms(
                     (atom00, atom01, atom10, atom11)
                 )
@@ -81,7 +81,7 @@ def get_middle_position_list(sublattice, za0, za1):
     middle_position_list = []
     for atom in sublattice.atom_list:
         middle_pos = get_neighbor_middle_position(atom, za0, za1)
-        if not (middle_pos is False):
+        if middle_pos is not False:
             middle_position_list.append(middle_pos)
     return middle_position_list
 

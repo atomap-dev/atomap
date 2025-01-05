@@ -159,7 +159,7 @@ class Atom_Plane:
         )
 
     def get_slice_between_two_atoms(self, atom1, atom2):
-        if not (atom1 in self.atom_list) and not (atom2 in self.atom_list):
+        if (atom1 not in self.atom_list) and (atom2 not in self.atom_list):
             return False
         atom1_is_first = None
         for atom in self.atom_list:

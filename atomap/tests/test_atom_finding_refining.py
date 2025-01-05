@@ -116,7 +116,6 @@ class TestRegionAroundAtomsAsSignal:
     def test_1_atom_percent_to_nn(self):
         sublattice = self.sublattice
         atom_list = [sublattice.atom_list[8]]
-        mask_radius = 3
 
         signal_crop, shifted_pos_list, radius_list = afr._region_around_atoms_as_signal(
             atom_list=atom_list,

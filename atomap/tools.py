@@ -12,7 +12,6 @@ from hyperspy.signals import Signal1D, Signal2D, BaseSignal
 from skimage.segmentation import watershed
 
 import numba as nb
-import atomap.atom_finding_refining as afr
 from atomap.sublattice import Sublattice
 from atomap.atom_position import Atom_Position
 from sklearn.cluster import DBSCAN

@@ -288,13 +288,13 @@ class ModelParametersBase:
 
         if sublattice_config_object.color in color_list:
             for color in color_name_list:
-                if not (color in color_list):
+                if color not in color_list:
                     sublattice_config_object.color = color
 
         if sublattice_config_object.name in name_list:
             for i in range(20):
                 name = "Sublattice " + str(i)
-                if not (name in name_list):
+                if name not in name_list:
                     sublattice_config_object.name = name
                     break
 

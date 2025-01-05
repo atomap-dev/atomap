@@ -89,12 +89,12 @@ def load_atom_lattice_from_hdf5(filename, construct_zone_axes=True):
             else:
                 sublattice.units = "pixel"
 
-            if type(sublattice.name) == bytes:
+            if type(sublattice.name) is bytes:
                 sublattice.name = sublattice.name.decode()
 
             sublattice._plot_color = sublattice_set.attrs["plot_color"]
 
-            if type(sublattice._plot_color) == bytes:
+            if type(sublattice._plot_color) is bytes:
                 sublattice._plot_color = sublattice._plot_color.decode()
 
             if "pixel_separation" in sublattice_set.attrs.keys():
@@ -141,7 +141,7 @@ def load_atom_lattice_from_hdf5(filename, construct_zone_axes=True):
         atom_lattice._pixel_separation = h5f.attrs["pixel_separation"]
     else:
         atom_lattice._pixel_separation = 0.8 / sublattice.pixel_size
-    if type(atom_lattice.name) == bytes:
+    if type(atom_lattice.name) is bytes:
         atom_lattice.name = atom_lattice.name.decode()
     h5f.close()
     return atom_lattice

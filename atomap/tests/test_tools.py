@@ -191,15 +191,15 @@ def test_sublattice_thin_copy():
     sublattice = am.dummy_data.get_simple_cubic_sublattice()
     sublattice.find_nearest_neighbors()
     sublattice_new = _sublattice_thin_copy(sublattice)
-    for ap, ap_new in zip(sublattice.atom_list, sublattice_new.atom_list):
-        assert ap.pixel_x == ap_new.pixel_x
-        assert ap.pixel_y == ap_new.pixel_y
-        assert ap.sigma_x == ap_new.sigma_x
-        assert ap.sigma_y == ap_new.sigma_y
-        assert ap.rotation == ap_new.rotation
-        assert ap.amplitude_gaussian == ap_new.amplitude_gaussian
-        nn_list = ap.nearest_neighbor_list
-        nn_list_new = ap_new.nearest_neighbor_list
+    for atp, atp_new in zip(sublattice.atom_list, sublattice_new.atom_list):
+        assert atp.pixel_x == atp_new.pixel_x
+        assert atp.pixel_y == atp_new.pixel_y
+        assert atp.sigma_x == atp_new.sigma_x
+        assert atp.sigma_y == atp_new.sigma_y
+        assert atp.rotation == atp_new.rotation
+        assert atp.amplitude_gaussian == atp_new.amplitude_gaussian
+        nn_list = atp.nearest_neighbor_list
+        nn_list_new = atp_new.nearest_neighbor_list
         for nn, nn_new in zip(nn_list, nn_list_new):
             index = sublattice.atom_list.index(nn)
             index_new = sublattice_new.atom_list.index(nn_new)
