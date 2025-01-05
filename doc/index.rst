@@ -4,17 +4,16 @@ Welcome to Atomap's documentation!
 News
 ----
 
-**2024-10-20: Atomap 0.4.1 released**
+**2025-1-5: Atomap 0.4.2 released**
+
+This is a small release which greatly improves the performance of ``remove_atoms_from_image_using_2d_gaussian``, making it easier to work with large images with multiple sublattices.
+It also includes several minor style and linting fixes.
+
+
+*2024-10-20: Atomap 0.4.1 released*
 
 This is a maintenance release, making Atomap work with NumPy 2.0.
 It also updates Atomap to use pyproject.toml instead of setup.py.
-
-
-*2024-02-17: Atomap 0.4.0 released*
-
-This release is the first to work with the new 2.0.0 version of HyperSpy.
-The major change is a large improvement in plotting speed, for example  ``sublattice.plot()`` or ``sublattice.plot_planes()``, thanks to a reimplementation of HyperSpy's marker functionality. Thanks to `Carter Francis  <https://gitlab.com/CSSFrancis>`_ for the merge request!
-There has also been some minor updates of the install instructions, and fixes for deprecation warnings.
 
 
 About Atomap
@@ -84,6 +83,13 @@ Contents on this webpage
 
 Old news
 --------
+
+*2024-02-17: Atomap 0.4.0 released*
+
+This release is the first to work with the new 2.0.0 version of HyperSpy.
+The major change is a large improvement in plotting speed, for example  ``sublattice.plot()`` or ``sublattice.plot_planes()``, thanks to a reimplementation of HyperSpy's marker functionality. Thanks to `Carter Francis  <https://gitlab.com/CSSFrancis>`_ for the merge request!
+There has also been some minor updates of the install instructions, and fixes for deprecation warnings.
+
 
 *2023-11-18: Atomap 0.3.4 released*
 
