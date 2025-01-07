@@ -31,7 +31,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           path: doc/_build/html
-          name: doc_html
+          name: github-pages
 
   deploy:
       needs: build_webpage
