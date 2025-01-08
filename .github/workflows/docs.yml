@@ -1,6 +1,9 @@
 name: Documentation
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - release
 
 jobs:
   build_webpage:
