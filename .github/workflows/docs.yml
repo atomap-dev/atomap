@@ -28,10 +28,9 @@ jobs:
         run: |
           cd doc/
           sphinx-build -b html -d _build/doctrees   . _build/html
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: doc/_build/html
-          name: github-pages
 
   deploy:
       needs: build_webpage
