@@ -21,7 +21,7 @@ Absolute Integrator
 
 The absolute integrator function expects signals in the form of HyperSpy Signal2Ds where the Signal dimension looks like an atomic lattice. The Voronoi integrator function can take additional dimensions (such as EDS, EELS or 4D-STEM) as navigation dimensions. The Watershed integrator can only take 2D-datasets.
 
-As an example using the `nanoparticle dataset <https://gitlab.com/atomap/atomap_demos/-/blob/release/nanoparticle_example_notebook/simulated_nanoparticle.tif>`_ from the `Atomap-demos repository <https://gitlab.com/atomap/atomap_demos/-/tree/release>`_, we can integrate over the atomic columns, letting the Voronoi cells expand infinitely.
+As an example using the `nanoparticle dataset <https://github.com/atomap-dev/atomap-demos/blob/main/nanoparticle_example_notebook/simulated_nanoparticle.tif>`_ from the `Atomap-demos repository <https://github.com/atomap-dev/atomap-demos/tree/release>`_, we can integrate over the atomic columns, letting the Voronoi cells expand infinitely.
 
 .. code-block:: python
 
@@ -63,7 +63,7 @@ The ``integrated_intensity`` object contains a numpy array of intensities. The i
 
 The following section describes methods incorporated from the AbsoluteIntegrator code for normalisation and quantification of ADF STEM images.
 
-.. For a full example please see the notebook in the Atomap-demos repository: https://gitlab.com/atomap/atomap_demos/adf_quantification
+.. For a full example please see the notebook in the Atomap-demos repository: https://github.com/atomap-dev/atomap-demos/blob/release/adf_quantification_notebook/adf_quantification.ipynb
 
 Detector Normalisation
 ----------------------
@@ -92,7 +92,7 @@ The detector flux weighting method is based on the paper `G.T. Martinez et al. U
     >>> image_normalised = am.quant.detector_normalisation(image, det_image, inner_angle=60, outer_angle = None, flux_expo=2.873)
 
 
-If the flux_exponent is unknown then it is possible to create an interactive flux plot described in detail in the example notebook: https://gitlab.com/atomap/atomap_demos/blob/release/adf_quantification_notebook/adf_quantification.ipynb
+If the flux_exponent is unknown then it is possible to create an interactive flux plot described in detail in the example notebook: https://github.com/atomap-dev/atomap-demos/blob/release/adf_quantification_notebook/adf_quantification.ipynb
 
 
 .. _statistical_method:

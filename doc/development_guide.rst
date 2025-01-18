@@ -26,7 +26,7 @@ The documentation is tested by doing:
 
 
 Both the unit tests and the doc tests can be accelerated by running the tests in parallel.
-Use the `xdist <https://docs.pytest.org/en/3.0.0/xdist.html>`_ pytest package for this.
+Use the `xdist <https://pytest-xdist.readthedocs.io/en/stable/>`_ pytest package for this.
 To run the tests using 5 parallel processes:
 
 .. code-block:: bash
@@ -85,9 +85,3 @@ Continuous integration
 
 The Continuous integration (CI) settings is contained in ``.github/workflows/tests.yml``.
 This runs all the above-mentioned tests, style checks and sphinx page generation on each branch.
-
-
-Documentation from development branch
--------------------------------------
-
-The most recent documentation generated from the development branch can be accessed `here <https://gitlab.com/atomap/atomap/builds/artifacts/main/file/public_development/index.html?job=pages_development>`_.

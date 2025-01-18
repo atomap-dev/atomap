@@ -4,16 +4,16 @@ Welcome to Atomap's documentation!
 News
 ----
 
-**2025-1-5: Atomap 0.4.2 released**
+**2025-1-18: Atomap has moved to GitHub**
+
+The development of Atomap has moved from https://gitlab.com/atomap/atomap to https://github.com/atomap-dev/atomap.
+While GitLab has been a good home for Atomap, most of the HyperSpy community is on GitHub.
+So this move will make collaboration with the rest of the community easier.
+
+*2025-1-5: Atomap 0.4.2 released*
 
 This is a small release which greatly improves the performance of ``remove_atoms_from_image_using_2d_gaussian``, making it easier to work with large images with multiple sublattices.
 It also includes several minor style and linting fixes.
-
-
-*2024-10-20: Atomap 0.4.1 released*
-
-This is a maintenance release, making Atomap work with NumPy 2.0.
-It also updates Atomap to use pyproject.toml instead of setup.py.
 
 
 About Atomap
@@ -84,6 +84,12 @@ Contents on this webpage
 Old news
 --------
 
+*2024-10-20: Atomap 0.4.1 released*
+
+This is a maintenance release, making Atomap work with NumPy 2.0.
+It also updates Atomap to use pyproject.toml instead of setup.py.
+
+
 *2024-02-17: Atomap 0.4.0 released*
 
 This release is the first to work with the new 2.0.0 version of HyperSpy.
@@ -136,7 +142,7 @@ This is a small release, with one bug fix from `Tom Slater <https://gitlab.com/T
 
 *2019-10-17: Atomap 0.2.0 released!*
 
-* Greatly improved :ref:`documentation <dumbbell_lattice>`, `notebook <https://gitlab.com/atomap/atomap_demos/blob/release/dumbbell_example_notebook/dumbbell_example.ipynb>`_ and several new functions for analysing images with dumbbell features, like Si or GaAs.
+* Greatly improved :ref:`documentation <dumbbell_lattice>`, `notebook <https://github.com/atomap-dev/atomap_demos/blob/release/dumbbell_example_notebook/dumbbell_example.ipynb>`_ and several new functions for analysing images with dumbbell features, like Si or GaAs.
 * New GUI tool for :ref:`selection a subset of atom positions <atom_selector_gui>`, making it easier to work on images with :ref:`several phases <several_phases>`.
 * :ref:`Statistical quantification <statistical_method>` using Gaussian mixture model. Thanks to `Tom Slater <https://gitlab.com/TomSlater>`_ for implementing this!
 * Functions in the ``Atom_Position`` class: :py:meth:`~atomap.atom_position.Atom_Position.calculate_max_intensity` and :py:meth:`~atomap.atom_position.Atom_Position.calculate_min_intensity`. Thanks to `Eoghan O'Connell <https://gitlab.com/PinkShnack>`_ for implementing this!

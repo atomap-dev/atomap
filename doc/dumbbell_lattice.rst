@@ -4,7 +4,7 @@
 Dumbbell lattice
 ================
 
-There is also a notebook in the Atomap-demos repository: https://gitlab.com/atomap/atomap_demos/blob/release/dumbbell_example_notebook/dumbbell_example.ipynb
+There is also a notebook in the Atomap-demos repository: https://github.com/atomap-dev/atomap-demos/blob/main/dumbbell_example_notebook/dumbbell_example.ipynb
 
 Analysis of atomic resolution images can be tricky if the atoms are too close together, leading to overlap.
 For these images, several atomic columns must be fitted simultaneously.

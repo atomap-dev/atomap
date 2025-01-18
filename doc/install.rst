@@ -19,7 +19,7 @@ For now, Atomap must be installed manually by first opening the ``Hyperspy-bundl
 
 
 If everything installed, continue to :ref:`starting Atomap <start_atomap>`.
-If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
+If you got some kind of error, please report it as a New issue on the `Atomap GitHub <https://github.com/atomap-dev/atomap/issues>`_.
 
 
 .. _install_anaconda:
@@ -43,7 +43,7 @@ If you also want to use the Atomap Jupyter Notebook tutorials, install Jupyter L
 
 
 If everything installed, continue to :ref:`starting Atomap <start_atomap>`.
-If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
+If you got some kind of error, please report it as a New issue on the `Atomap GitHub <https://github.com/atomap-dev/atomap/issues>`_.
 
 
 .. _install_pypi:
@@ -58,7 +58,7 @@ This is not recommended for beginners, and requires that you already have a Pyth
 
     $ pip install atomap
 
-If you got some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
+If you got some kind of error, please report it as a New issue on the `Atomap GitHub <https://github.com/atomap-dev/atomap/issues>`_.
 
 
 Development version
@@ -68,7 +68,7 @@ Grab the development version using the version control system git (see :ref:`con
 
 .. code-block:: bash
 
-    $ git clone https://gitlab.com/atomap/atomap.git
+    $ git clone https://github.com/atomap-dev/atomap.git
 
 Then install it using pip:
 

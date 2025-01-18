@@ -21,7 +21,7 @@ Open source software has many advantages:
 
 By contributing to open source projects you will gain more experience with programming and how to do software development as a part of a community.
 
-You can check out who is contributing to Atomap `here <https://gitlab.com/atomap/atomap/-/graphs/main>`__.
+You can check out who is contributing to Atomap `here <https://github.com/atomap-dev/atomap/graphs/contributors>`__.
 
 What to contribute
 ^^^^^^^^^^^^^^^^^^
@@ -36,34 +36,29 @@ Version control
 
 For software development projects, version control systems are a vital part of the workflow.
 Atomap uses Git as version control system.
-One version of Atomap is the most `recently released version <https://gitlab.com/atomap/atomap/tree/release>`__, another is the `development version <https://gitlab.com/atomap/atomap/tree/main>`__.
+One version of Atomap is the most `recently released version <https://github.com/atomap-dev/atomap/tags>`__, another is the `development version <https://github.com/atomap-dev/atomap>`__.
 When new functionality is created or old functionality improved, new branches of the development version is typically made.
 The branch is merged back into the main development version when it is done.
 
 You only need to know a few basic things about git to be able to start developing.
 Git is the most commonly used version control system, so there is a lot of user guides out there.
-You may consult the nice GitLab `userguide <https://docs.gitlab.com/?tab=Tutorials>`__.
+You may consult the nice GitHub `userguide <https://docs.github.com/en/get-started/start-your-journey/hello-world>`__.
 Below, you'll also find and outline of the basic first steps.
 Often as with tools, the best way to learn is by using.
 
 First steps: setting up git
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Create a user on `GitLab <https://gitlab.com/>`_ and `install <https://gist.github.com/derhuerst/1b15ff4652a867391f03>`__ git on your computer.
-2. Make your own fork of Atomap `here <https://gitlab.com/atomap/atomap>`__. Click on the fork button. You need to be logged in.
-
-.. figure:: images/misc/fork.jpg
-    :scale: 75 %
-    :align: center
-
-3. Make ssh-keys for your account on GitLab, see `this guide <https://docs.gitlab.com/ee/gitlab-basics/create-your-ssh-keys.html>`__.
-4. Clone the fork to your computer, `as shown here <https://docs.gitlab.com/ce/gitlab-basics/command-line-commands.html#clone-your-project>`__.
-   (Use something like ``git clone git@gitlab.com:username/atomap.git``, with your own username).
+1. Create a user on `GitHub <https://github.com/>`_ and `install <https://github.com/git-guides/install-git>`__ git on your computer.
+2. Make your own fork of Atomap `here <https://github.com/atomap-dev/atomap>`__. Click on the fork button. You need to be logged in.
+3. Make ssh-keys for your account on GitHub, see `this guide <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>`__.
+4. Clone the fork to your computer, `as shown here <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`__.
+   (Use something like ``git clone git@github.com:USERNAME/atomap.git``, with your own username).
    This will create a new folder called Atomap, and all the Atomap source code will be inside this folder.
 5. You can now install the development version if Atomap by using the terminal.
    Enter the atomap folder in a terminal, and write  ``pip3 install -e .`` (if that doesn't work, try ``pip install -e .``).
-6. Type ``git remote -v`` to check the address for your remote origin (your fork on GitLab).
-   You can add a link to the upstream version of Atomap by writing ``git remote add upstream git@gitlab.com:atomap/atomap.git``.
+6. Type ``git remote -v`` to check the address for your remote origin (your fork on GitHub).
+   You can add a link to the upstream version of Atomap by writing ``git remote add upstream git@github.com:atomap-dev/atomap.git``.
    Type ``git remote -v`` again to check if you have registered the address for both remote origin and remote upstream.
 
 Second steps: Adding something
@@ -90,7 +85,7 @@ This is fairly simple and manageable for a first contribution.
    Write a short but clear commit message.
    Such as "Fixed typos in docstring in sublattice".
 6. Push your commit ``git push origin FixTypos``.
-   This synchronizes the changes you have done to your forked remote version on GitLab.
+   This synchronizes the changes you have done to your forked remote version on GitHub.
 7. When you are ready to add the branch to the Atomap development version, make a request for merging the commit into Atomap.
 
 You move from branch to branch with the ``git checkout branch_name`` command.
@@ -99,9 +94,9 @@ When starting some new branch, remember to update your main fork by pulling from
 1. Return to your main branch ``git checkout main``
 2. Pull the newest changes from Atomap ``git pull upstream main``.
 
-Consult the nice GitLab `userguide <https://docs.gitlab.com/?tab=Tutorials>`__.
+Consult the nice GitHub `userguide <https://docs.github.com/en/get-started/start-your-journey/about-github-and-git>`__.
 Google stuff.
-Or ask for help `here <https://gitlab.com/atomap/atomap/issues>`__.
+Or ask for help `here <https://github.com/atomap-dev/atomap/issues>`__.
 
 Learn more
 ^^^^^^^^^^

@@ -45,5 +45,5 @@ file = "LICENSE"
 [project.urls]
 Homepage = "https://atomap.org/"
 Documentation = "https://atomap.org/finding_atom_lattices.html"
-Repository = "https://gitlab.com/atomap/atomap"
-Issues = "https://gitlab.com/atomap/atomap/-/issues"
+Repository = "https://github.com/atomap-dev/atomap"
+Issues = "https://github.com/atomap-dev/atomap/issues"
