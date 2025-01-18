@@ -24,7 +24,7 @@ If you are unfamiliar with the Jupyter Notebook interface, `see the interactive 
     import atomap.api as am
 
 If this works, continue to the :ref:`tutorials`.
-If you get some kind of error, please report it as a New issue on the `Atomap GitLab <https://gitlab.com/atomap/atomap/issues>`_.
+If you get some kind of error, please report it as a New issue on the `Atomap GitHub <https://github.com/atomap-dev/atomap/issues>`_.
 
 
 .. _tutorials:
@@ -41,5 +41,5 @@ The `>>>` used in the tutorials and documentation means the comment should be ty
 Atomap demos
 ^^^^^^^^^^^^
 
-In addition to the guides on this webpage, another good resource is the `Atomap demos <https://gitlab.com/atomap/atomap_demos/>`_, which are pre-filled Jupyter Notebooks showing various aspects of Atomap's functionality.
-For beginners, the `Introduction to Atomap notebook <https://gitlab.com/atomap/atomap_demos/blob/release/introduction_to_atomap.ipynb>`_ is a good place to start.
+In addition to the guides on this webpage, another good resource is the `Atomap demos <https://github.com/atomap-dev/atomap-demos/tree/release>`_, which are pre-filled Jupyter Notebooks showing various aspects of Atomap's functionality.
+For beginners, the `Introduction to Atomap notebook <https://github.com/atomap-dev/atomap-demos/blob/release/introduction_to_atomap.ipynb>`_ is a good place to start.

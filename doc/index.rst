@@ -23,7 +23,7 @@ It relies in fitting 2-D Gaussian functions to every atomic column in an image, 
 axes. The full procedure is explained in the article `Atomap: a new software tool for the automated analysis of
 atomic resolution images using two-dimensional Gaussian fitting <https://dx.doi.org/10.1186/s40679-017-0042-5>`_.
 
-The easiest way to try Atomap is via Binder: `introductory Jupyter Notebook <https://mybinder.org/v2/git/https%3A%2F%2Fgitlab.com%2Fatomap%2Fatomap_demos.git/release?labpath=introduction_to_atomap.ipynb>`_.
+The easiest way to try Atomap is via Binder: `introductory Jupyter Notebook <https://mybinder.org/v2/gh/atomap-dev/atomap-demos/release?labpath=introduction_to_atomap.ipynb>`_.
 To install Atomap on your own computer, see the :ref:`install instructions <install>`.
 
 .. figure:: images/index/elli_figure.jpg
@@ -41,7 +41,7 @@ To install Atomap on your own computer, see the :ref:`install instructions <inst
     Mapping the variation in distance between oxygen columns. `More information <https://ascimaging.springeropen.com/articles/10.1186/s40679-017-0042-5#Fig5>`_
 
 Atomap is under development and still in alpha, so bugs and errors can be expected.
-Bug reports and feature requests are welcome on the `issue tracker <https://gitlab.com/atomap/atomap/issues>`_.
+Bug reports and feature requests are welcome on the `issue tracker <https://github.com/atomap-dev/atomap/issues>`_.
 Contributors are welcome too!
 
 If you publish scientific articles using Atomap, please consider citing the article `Atomap: a new software tool for the automated analysis of
@@ -49,7 +49,7 @@ atomic resolution images using two-dimensional Gaussian fitting <https://dx.doi.
 (*M. Nord et al, Advanced Structural and Chemical Imaging 2017 3:9*)
 
 Atomap is available under the GNU GPL v3 license.
-The source code is found in the `GitLab repository <https://gitlab.com/atomap/atomap/tree/main/>`_.
+The source code is found in the `GitHub repository <https://github.com/atomap-dev/atomap>`_.
 
 
 Contents on this webpage

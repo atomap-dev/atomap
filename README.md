@@ -1,14 +1,15 @@
 # Atomap
 
-## Webpage: https://atomap.org
+Note: Atomap was migrated from GitLab to GitHub in January 2025.
 
-Webpage (development version), click the atomap.gitlab.io link: https://gitlab.com/atomap/atomap/builds/artifacts/master/file/public_development/index.html?job=pages_development
+## Webpage: https://atomap.org
 
 Atomap is a Python library for analysing atomic resolution
 scanning transmission electron microscopy images.
 It relies on fitting 2-D Gaussian functions to every atomic
 column in an image, and automatically finding all the atomic
 planes with the largest spacings.
+
 
 Installing
 ----------

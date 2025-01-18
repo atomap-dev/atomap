@@ -38,7 +38,7 @@ To run the tests using 5 parallel processes:
 Testing notebooks
 *****************
 
-The Jupyter notebooks in https://gitlab.com/atomap/atomap_demos is also tested using pytest
+The Jupyter notebooks in https://github.com/atomap-dev/atomap-demos is also tested using pytest
 and ``nbval``.
 
 .. code-block:: bash
@@ -83,7 +83,7 @@ You generate the html site by:
 Continuous integration
 ----------------------
 
-The Continuous integration (CI) settings is contained in ``.gitlab-ci.yml``.
+The Continuous integration (CI) settings is contained in ``.github/workflows/tests.yml``.
 This runs all the above-mentioned tests, style checks and sphinx page generation on each branch.
 
 
