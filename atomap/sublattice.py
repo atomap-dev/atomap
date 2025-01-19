@@ -10,15 +10,7 @@ from hyperspy.drawing._markers.texts import Texts
 
 import atomap.tools as at
 import atomap.analysis_tools as an
-from atomap.plotting import (
-    _make_atom_planes_marker_list,
-    _make_atom_position_marker_list,
-    _make_arrow_marker_list,
-    _make_multidim_atom_plane_marker_list,
-    _make_zone_vector_text_marker_list,
-    plot_vector_field,
-    vector_list_to_marker_list,
-)
+import atomap.plotting as apl
 from atomap.atom_finding_refining import construct_zone_axes_from_sublattice
 from atomap.atom_finding_refining import _make_circular_mask
 
@@ -557,7 +549,7 @@ class Sublattice:
             rotate_flip=True,
         )
         if atom_plane_list is not None:
-            marker_list = _make_atom_planes_marker_list(
+            marker_list = apl._make_atom_planes_marker_list(
                 atom_plane_list, scale=data_scale, add_numbers=False
             )
             signal.add_marker(marker_list, permanent=True, plot_marker=False)
@@ -1422,7 +1414,7 @@ class Sublattice:
         """
         if image is None:
             image = self.original_image
-        marker_list = _make_atom_planes_marker_list(
+        marker_list = apl._make_atom_planes_marker_list(
             atom_plane_list, add_numbers=add_numbers, scale=self.pixel_size, color=color
         )
         signal = at.array2signal2d(image, self.pixel_size, self.units)
@@ -1486,7 +1478,7 @@ class Sublattice:
         atom_plane_list = []
         for zone_vector in zone_vector_list:
             atom_plane_list.append(self.atom_planes_by_zone_vector[zone_vector])
-        marker_list = _make_multidim_atom_plane_marker_list(
+        marker_list = apl._make_multidim_atom_plane_marker_list(
             atom_plane_list,
             scale=self.pixel_size,
             add_numbers=add_numbers,
@@ -1499,7 +1491,7 @@ class Sublattice:
         signal_ax1 = signal.axes_manager.signal_axes[1]
         x = signal_ax0.index2value(int(image.shape[0] * 0.3))
         y = signal_ax1.index2value(int(image.shape[1] * 0.1))
-        text_marker_list = _make_zone_vector_text_marker_list(
+        text_marker_list = apl._make_zone_vector_text_marker_list(
             zone_vector_list, x=x, y=y
         )
         signal.add_marker(text_marker_list, permanent=True, plot_marker=False)
@@ -1569,7 +1561,7 @@ class Sublattice:
             image = self.original_image
         if atom_list is None:
             atom_list = self.atom_list
-        marker_list = _make_atom_position_marker_list(
+        marker_list = apl._make_atom_position_marker_list(
             atom_list,
             scale=self.pixel_size,
             color=color,
@@ -1623,12 +1615,12 @@ class Sublattice:
                 ]
             )
         signal = at.array2signal2d(image, self.pixel_size, self.units)
-        marker_list = _make_arrow_marker_list(
+        marker_list = apl._make_arrow_marker_list(
             elli_list, scale=self.pixel_size, color=color
         )
         if atom_plane_list is not None:
             marker_list.extend(
-                _make_atom_planes_marker_list(
+                apl._make_atom_planes_marker_list(
                     atom_plane_list, scale=self.pixel_size, add_numbers=False
                 )
             )
@@ -2007,7 +1999,7 @@ class Sublattice:
         else:
             signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
-            marker_list = _make_atom_planes_marker_list(
+            marker_list = apl._make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
             )
             signal.add_marker(marker_list, permanent=True, plot_marker=False)
@@ -2015,7 +2007,7 @@ class Sublattice:
         signal_ax1 = signal.axes_manager.signal_axes[1]
         x = signal_ax0.index2value(int(signal_ax0.high_index * 0.1))
         y = signal_ax1.index2value(int(signal_ax1.high_index * 0.1))
-        text_marker_list = _make_zone_vector_text_marker_list(
+        text_marker_list = apl._make_zone_vector_text_marker_list(
             zone_vector_list, x=x, y=y
         )
         signal.add_marker(text_marker_list, permanent=True, plot_marker=False)
@@ -2057,7 +2049,7 @@ class Sublattice:
         else:
             signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
-            marker_list = _make_atom_planes_marker_list(
+            marker_list = apl._make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
             )
             signal.add_marker(marker_list, permanent=True, plot_marker=False)
@@ -2065,7 +2057,7 @@ class Sublattice:
         signal_ax1 = signal.axes_manager.signal_axes[1]
         x = signal_ax0.index2value(int(signal_ax0.high_index * 0.1))
         y = signal_ax1.index2value(int(signal_ax1.high_index * 0.1))
-        text_marker_list = _make_zone_vector_text_marker_list(
+        text_marker_list = apl._make_zone_vector_text_marker_list(
             zone_vector_list, x=x, y=y
         )
         signal.add_marker(text_marker_list, permanent=True, plot_marker=False)
@@ -2121,7 +2113,7 @@ class Sublattice:
         else:
             signal = hs.stack(signal_list, show_progressbar=False)
         if atom_plane_list is not None:
-            marker_list = _make_atom_planes_marker_list(
+            marker_list = apl._make_atom_planes_marker_list(
                 atom_plane_list, scale=self.pixel_size, add_numbers=False
             )
             signal.add_marker(marker_list, permanent=True, plot_marker=False)
@@ -2129,7 +2121,7 @@ class Sublattice:
         signal_ax1 = signal.axes_manager.signal_axes[1]
         x = signal_ax0.index2value(int(signal_ax0.high_index * 0.1))
         y = signal_ax1.index2value(int(signal_ax1.high_index * 0.1))
-        text_marker_list = _make_zone_vector_text_marker_list(
+        text_marker_list = apl._make_zone_vector_text_marker_list(
             zone_vector_list, x=x, y=y
         )
         signal.add_marker(text_marker_list, permanent=True, plot_marker=False)
@@ -2684,7 +2676,7 @@ class Sublattice:
         v_quiver = ellipticity * np.sin(rot)
         u_quiver *= -1
 
-        plot_vector_field(
+        apl.plot_vector_field(
             self.x_position, self.y_position, u_quiver, v_quiver, save=save
         )
 
@@ -2775,7 +2767,7 @@ class Sublattice:
         """
         middle_pos_list = self.get_middle_position_list(zone_axis0, zone_axis1)
         vector_list = an.get_vector_shift_list(sublattice, middle_pos_list)
-        marker_list = vector_list_to_marker_list(
+        marker_list = apl.vector_list_to_marker_list(
             vector_list, color=color, scale=self.pixel_size
         )
         signal = at.array2signal2d(self.image, self.pixel_size, self.units)
