@@ -125,14 +125,16 @@ class TestAtomLatticeSignalProperty:
                 [10, 10],
             ],
             np.ones((20, 20)),
-            pixel_size=0.2,
         )
         atom_lattice = am.Atom_Lattice(
             np.ones((100, 100)), sublattice_list=[sublattice]
         )
+        atom_lattice.set_scale(scale=0.2, units="nm")
         signal = atom_lattice.signal
         assert signal.axes_manager.signal_axes[0].scale == 0.2
         assert signal.axes_manager.signal_axes[1].scale == 0.2
+        assert signal.axes_manager.signal_axes[0].units == "nm"
+        assert signal.axes_manager.signal_axes[1].units == "nm"
 
 
 class TestAtomLatticeASEConversion:
