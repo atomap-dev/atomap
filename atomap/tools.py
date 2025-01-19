@@ -12,8 +12,8 @@ from hyperspy.signals import Signal1D, Signal2D, BaseSignal
 from skimage.segmentation import watershed
 
 import numba as nb
-from atomap.sublattice import Sublattice
-from atomap.atom_position import Atom_Position
+import atomap.sublattice as asub
+import atomap.atom_position as ap
 from sklearn.cluster import DBSCAN
 import logging
 
@@ -132,7 +132,7 @@ def _sublattice_thin_copy(sublattice):
     ap_list = sublattice.atom_list
     ap_list_new = []
     for atom_position in ap_list:
-        atom_position_new = Atom_Position(
+        atom_position_new = ap.Atom_Position(
             x=atom_position.pixel_x,
             y=atom_position.pixel_y,
             sigma_x=atom_position.sigma_x,
@@ -151,7 +151,7 @@ def _sublattice_thin_copy(sublattice):
         if len(nearest_neighbor_list_new) != 0:
             atom_position_new.nearest_neighbor_list = nearest_neighbor_list_new
 
-    sublattice_new = Sublattice(image=sublattice.image, atom_position_list=[])
+    sublattice_new = asub.Sublattice(image=sublattice.image, atom_position_list=[])
     sublattice_new.atom_list = ap_list_new
     return sublattice_new
 
@@ -593,7 +593,7 @@ def find_atom_position_between_atom_planes(
 
         from atom_position_class import Atom_Position
 
-        atom = Atom_Position(atom_position[0], atom_position[1])
+        atom = ap.Atom_Position(atom_position[0], atom_position[1])
 
         atom_list.append(atom)
 
@@ -768,9 +768,9 @@ def project_position_property(input_data_list, interface_plane):
     Example
     -------
     >>> from numpy.random import random
-    >>> from atomap.sublattice import Sublattice
+    >>> import atomap.api as am
     >>> pos = [[x, y] for x in range(9) for y in range(9)]
-    >>> sublattice = Sublattice(pos, random((9, 9)))
+    >>> sublattice = am.Sublattice(pos, random((9, 9)))
     >>> sublattice.construct_zone_axes()
     >>> x, y = sublattice.x_position, sublattice.y_position
     >>> z = sublattice.ellipticity
