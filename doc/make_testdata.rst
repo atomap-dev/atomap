@@ -108,3 +108,23 @@ This is done by using ``sublattice_generate_image=False``:
 
 Note that this sublattice will not be useful for testing the position refinement and fitting functionality, as the image is all zeros.
 However, it can be useful for testing fingerprinting and construction of atom planes.
+
+
+Saving test signal as image file
+================================
+
+The image test data can be saved to an image file using ``save_as_image``.
+This image file will have exactly the same amounts of pixels as defined in the ``MakeTestData`` object.
+So for the following example ``test_data.png`` will be 200 time 200 pixels.
+You can save in most image formats: png, tif, jpg and more.
+Note that jpg is a lossy format, which might introduce compression artifacts.
+If you need lossless images, use png or tif.
+
+.. code-block:: python
+
+    >>> import numpy as np
+    >>> t4 = tt.MakeTestData(200, 200)
+    >>> x, y = np.mgrid[0:200:10j, 0:200:10j]
+    >>> x, y = x.flatten(), y.flatten()
+    >>> t4.add_atom_list(x, y)
+    >>> t4.save_as_image("test_data.png")

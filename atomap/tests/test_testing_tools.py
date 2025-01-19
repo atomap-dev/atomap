@@ -193,6 +193,14 @@ class TestMakeTestData:
         s1 = td.signal
         assert not np.all(s0.data == s1.data)
 
+    def test_save_as_image(self):
+        x, y = np.mgrid[10:90:10, 10:90:10]
+        x, y = x.flatten(), y.flatten()
+        sx, sy, A, r = 2.1, 1.3, 9.5, 1.4
+        td = tt.MakeTestData(100, 100)
+        td.add_atom_list(x=x, y=y, sigma_x=sx, sigma_y=sy, amplitude=A, rotation=r)
+        td.save_as_image("test_data.png")
+
 
 class TestMakeVectorTestGaussian(unittest.TestCase):
     def test_running(self):

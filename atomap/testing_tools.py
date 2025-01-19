@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from numpy.random import normal
+import matplotlib.pyplot as plt
 from hyperspy.misc.utils import isiterable
 from atomap.sublattice import Sublattice
 from atomap.atom_position import Atom_Position
@@ -317,6 +318,40 @@ class MakeTestData(object):
             self._image_noise = np.absolute(noise)
         else:
             self._image_noise = noise
+
+    def save_as_image(self, filename):
+        """Save image data is a file using matplotlib
+
+        The image data is saved with the same pixel size
+        as the data. Supports most fileformats (jpg, png, tiff, ...).
+        See matplotlib documentation for a full list.
+
+        Note: jpg and jpeg is a lossy format, meaning you might
+        get compression artifacts. If you want lossless, use png or tiff.
+
+        Parameters
+        ----------
+        filename : str
+
+        Examples
+        --------
+        >>> from atomap.testing_tools import MakeTestData
+        >>> test_data = MakeTestData(500, 300)
+        >>> import numpy as np
+        >>> x, y = np.mgrid[10:290:15j, 10:290:15j]
+        >>> test_data.add_atom_list(x.flatten(), y.flatten())
+        >>> test_data.save_as_image("test_data.png")
+
+        """
+        signal = self.signal
+        dpi = 200
+        px = 1 / dpi
+        shape_x, shape_y = signal.data.shape[0], signal.data.shape[1]
+        fig, ax = plt.subplots(figsize=(shape_y * px, shape_x * px))
+        ax.imshow(signal.data, cmap="binary_r")
+        ax.set_axis_off()
+        fig.subplots_adjust(0, 0, 1, 1)
+        fig.savefig(filename, dpi=dpi)
 
 
 def make_vector_test_gaussian(x, y, standard_deviation=1, n=30):
