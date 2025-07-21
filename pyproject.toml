@@ -39,6 +39,10 @@ classifiers = [
 include = ["atomap*"]
 where = ["."]
 
+[tool.setuptools.package-data]
+"atomap.example_data" = ["*.hspy"]
+"atomap.tests.datasets" = ["*.hdf5"]
+
 [project.license]
 file = "LICENSE"
 
