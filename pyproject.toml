@@ -46,6 +46,11 @@ where = ["."]
 [project.license]
 file = "LICENSE"
 
+[project.optional-dependencies]
+tests = [
+  "pytest",
+]
+
 [project.urls]
 Homepage = "https://atomap.org/"
 Documentation = "https://atomap.org/finding_atom_lattices.html"
