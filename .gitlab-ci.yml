@@ -5,8 +5,8 @@ run_tests:
     script:
     - conda install hyperspy exspy pytest -c conda-forge -y
     - pip3 install -e .
-    - python3 -m pytest --env nogui --doctest-modules atomap/
-    - python3 -m pytest --env nogui --doctest-glob="*.rst" doc/
+    - python3 -m pytest --doctest-modules atomap/
+    - python3 -m pytest --doctest-glob="*.rst" doc/
 
 run_style_check:
     script:

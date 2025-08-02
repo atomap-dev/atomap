@@ -8,6 +8,8 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
+    env:
+      MPLBACKEND: agg
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
@@ -19,6 +21,6 @@ jobs:
       - name: Install
         run: pip install -e .
       - name: Run unit tests and docstring example
-        run: pytest --env nogui --doctest-modules atomap/
+        run: pytest --doctest-modules atomap/
       - name: Run the user guide documentation examples as tests
-        run: pytest --env nogui --doctest-glob="*.rst" doc/
+        run: pytest --doctest-glob="*.rst" doc/

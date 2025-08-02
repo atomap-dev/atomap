@@ -9,4 +9,3 @@ jobs:
     uses: hyperspy/.github/.github/workflows/package_and_test.yml@main
     with:
       ORGANISATION: 'atomap-dev'
-      PYTEST_ARGS: '-k "not test_gui_function_qt"'

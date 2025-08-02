@@ -1,6 +1,7 @@
 import pytest
 from pytest import approx
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseEvent
 from hyperspy.signals import Signal2D
@@ -224,7 +225,10 @@ class TestToggleAtomRefinePosition:
 
 
 class TestSelectAtomsWithGui:
-    @pytest.mark.skip_test_if_env("nogui")  # Does not work on non-gui systems
+    @pytest.mark.skipif(
+        matplotlib.get_backend().lower() == "agg",
+        reason="'agg' backend does not support interactivity.",
+    )
     def test_select_one_atom(self):
         image = np.random.random((200, 200))
         atom_positions = [[10, 20], [50, 50]]
@@ -237,7 +241,10 @@ class TestSelectAtomsWithGui:
         assert len(atom_positions_selected) == 1
         assert atom_positions_selected[0] == [10, 20]
 
-    @pytest.mark.skip_test_if_env("nogui")
+    @pytest.mark.skipif(
+        matplotlib.get_backend().lower() == "agg",
+        reason="'agg' backend does not support interactivity.",
+    )
     def test_select_one_atom_invert_selection(self):
         image = np.random.random((200, 200))
         atom_positions = [[10, 20], [50, 50]]
@@ -252,7 +259,10 @@ class TestSelectAtomsWithGui:
         assert len(atom_positions_selected) == 1
         assert atom_positions_selected[0] == [50, 50]
 
-    @pytest.mark.skip_test_if_env("nogui")
+    @pytest.mark.skipif(
+        matplotlib.get_backend().lower() == "agg",
+        reason="'agg' backend does not support interactivity.",
+    )
     def test_select_no_atom(self):
         image = np.random.random((200, 200))
         atom_positions = [[10, 20], [50, 50]]
