@@ -13,9 +13,11 @@ jobs:
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
           python-version: 3.12
+          conda-remove-defaults: "true"
       - name: Install conda-forge dependencies
-        run: conda install pip hyperspy exspy ase pytest -c conda-forge -y
+        run: conda install pip hyperspy-base exspy ase pytest scikit-learn scikit-image numba
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install
