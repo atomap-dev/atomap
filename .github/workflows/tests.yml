@@ -8,17 +8,21 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
+    env:
+      MPLBACKEND: agg
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
           python-version: 3.12
+          conda-remove-defaults: "true"
       - name: Install conda-forge dependencies
-        run: conda install pip hyperspy exspy ase pytest -c conda-forge -y
+        run: conda install pip hyperspy-base exspy ase pytest scikit-learn scikit-image numba
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install
         run: pip install -e .
       - name: Run unit tests and docstring example
-        run: pytest --env nogui --doctest-modules atomap/
+        run: pytest --doctest-modules atomap/
       - name: Run the user guide documentation examples as tests
-        run: pytest --env nogui --doctest-glob="*.rst" doc/
+        run: pytest --doctest-glob="*.rst" doc/
