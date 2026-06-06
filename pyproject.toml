@@ -9,6 +9,7 @@ authors = [
   {name = "Magnus Nord", email = "magnunor@gmail.com"},
 ]
 dependencies = [
+    "odrpack",
     "scipy>=1.4.0",
     "numpy>=1.13",
     "h5py",

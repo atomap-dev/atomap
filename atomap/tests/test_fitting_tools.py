@@ -22,7 +22,7 @@ class TestODRFitter:
         y = np.arange(0, 10, 1)
         x = np.full_like(y, 5)
         beta = ft.ODR_linear_fitter(x, y)
-        y_vector = [0, ft.linear_fit_func(beta, 5)]
+        y_vector = [0, ft.linear_fit_func(5, beta)]
         x_vector = [1, 0]
         dot = np.dot(x_vector, y_vector)
         assert dot == 0.0

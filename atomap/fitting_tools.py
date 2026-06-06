@@ -1,9 +1,9 @@
 from math import sqrt
 import numpy as np
-import scipy.odr
+import odrpack as odr
 
 
-def linear_fit_func(p, t):
+def linear_fit_func(t, p):
     return p[0] * t + p[1]
 
 
@@ -34,11 +34,8 @@ def ODR_linear_fitter(x, y):
     array([-1.,  1.])
 
     """
-    Model = scipy.odr.Model(linear_fit_func)
-    Data = scipy.odr.RealData(x, y)
-    Odr = scipy.odr.ODR(Data, Model, [10000, 1], maxit=10000)
-    output = Odr.run()
-    beta = output.beta
+    result = odr.odr_fit(linear_fit_func, x, y, [10000, 1], maxit=10000)
+    beta = result.beta
     return beta
 
 

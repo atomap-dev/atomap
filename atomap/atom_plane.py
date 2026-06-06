@@ -396,7 +396,7 @@ class Atom_Plane:
             y_pos = self.get_y_position_list()
             x0, x1 = min(x_pos), max(x_pos)
             new_x = np.linspace(x0, x1, 200)
-            new_y = linear_fit_func(beta, new_x)
+            new_y = linear_fit_func(new_x, beta)
             plt.ioff()
             fig = plt.figure()
             ax = fig.gca(projection=Axes3D.name)
