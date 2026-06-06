@@ -17,7 +17,6 @@ import atomap.atom_position as ap
 from sklearn.cluster import DBSCAN
 import logging
 
-
 _logger = logging.getLogger(__name__)
 
 
