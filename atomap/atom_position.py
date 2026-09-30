@@ -72,8 +72,14 @@ class Atom_Position:
 
         """
         self.pixel_x, self.pixel_y = x, y
+        self.pixel_x_std, self.pixel_y_std = np.nan, np.nan
+        
         self.sigma_x, self.sigma_y = sigma_x, sigma_y
+        self.sigma_x_std, self.sigma_y_std = np.nan, np.nan
+        
         self.rotation = rotation
+        self.rotation_std = np.nan
+        
         self.nearest_neighbor_list = None
         self.in_atomic_plane = []
         self._start_atom = []
@@ -83,6 +89,7 @@ class Atom_Position:
         self.old_pixel_x_list = []
         self.old_pixel_y_list = []
         self.amplitude_gaussian = amplitude
+        self.amplitude_gaussian_std = np.nan
         self._gaussian_fitted = False
         self.amplitude_max_intensity = 1.0
         self.amplitude_min_intensity = 0.0
@@ -93,12 +100,12 @@ class Atom_Position:
         return "<%s, %s (x:%s,y:%s,sx:%s,sy:%s,r:%s,e:%s)>" % (
             self.__class__.__name__,
             self._tag,
-            round(self.pixel_x, 1),
-            round(self.pixel_y, 1),
-            round(self.sigma_x, 1),
-            round(self.sigma_y, 1),
-            round(self.rotation, 1),
-            round(self.ellipticity, 1),
+            round(self.pixel_x, 3),
+            round(self.pixel_y, 3),
+            round(self.sigma_x, 3),
+            round(self.sigma_y, 3),
+            round(self.rotation, 3),
+            round(self.ellipticity, 3),
         )
 
     @property

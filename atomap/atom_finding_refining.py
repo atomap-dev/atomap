@@ -786,6 +786,15 @@ def _copy_gaussian_parameters_to_atom(atom, g):
     atom.amplitude_gaussian = g.A.value
     atom._gaussian_fitted = True
 
+    #getattr instead of g.par.std to ensure compatibility with previous hs
+    atom.pixel_x_std = getattr(g.centre_x, "std", np.nan)
+    atom.pixel_y_std = getattr(g.centre_y, "std", np.nan)    
+    atom.rotation_std = getattr(g.rotation, "std", np.nan)
+    atom.sigma_x_std = getattr(g.sigma_x, "std", np.nan)
+    atom.sigma_y_std = getattr(g.sigma_y, "std", np.nan)
+    atom.amplitude_gaussian_std = getattr(g.A, "std", np.nan)
+    atom._gaussian_fitted = True
+
 
 def get_mask_slice(position_list, radius_list):
     """Get a NumPy slice for extracting atom positions and
