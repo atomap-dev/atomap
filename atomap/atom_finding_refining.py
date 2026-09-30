@@ -2,7 +2,7 @@ from hyperspy.external.progressbar import progressbar
 from scipy.ndimage import gaussian_filter
 from scipy.spatial import cKDTree
 import hyperspy.api as hs
-from hyperspy._signals.signal2d import Signal2D
+from hyperspy.signals import Signal2D
 from hyperspy.drawing._markers.points import Points
 import numpy as np
 from skimage.feature import peak_local_max
