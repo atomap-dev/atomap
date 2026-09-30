@@ -97,11 +97,9 @@ def make_atom_lattice_from_image(
     image0_scale = s_image0.axes_manager[0].scale
     if pixel_separation is None:
         if process_parameter.peak_separation is None:
-            raise ValueError(
-                "pixel_separation is not set.\
+            raise ValueError("pixel_separation is not set.\
                     Either set it in the process_parameter.peak_separation\
-                    or pixel_separation parameter"
-            )
+                    or pixel_separation parameter")
         else:
             pixel_separation = process_parameter.peak_separation / image0_scale
     initial_atom_position_list = get_atom_positions(

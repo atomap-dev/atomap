@@ -606,7 +606,7 @@ def calculate_center_of_mass(arr):
     dy = np.sum(arr, -1)
     dx = np.sum(arr, -2)
 
-    (Y, X) = arr.shape[-2:]
+    Y, X = arr.shape[-2:]
     cx = np.sum(dx * np.arange(X), axis=-1).T
     cy = np.sum(dy * np.arange(Y), axis=-1).T
     return np.array([cy, cx]).T
